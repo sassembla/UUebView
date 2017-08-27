@@ -1,0 +1,1031 @@
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:test FAILED by:timeout. reason:timeout. @ LayoutMachineTests.CreateTagTree (System.String sampleHtml, Single width) [0x000ff] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:89 
+log:start methodName:SampleView2
+log:test FAILED by:timeout. reason:timeout. @ LayoutMachineTests.CreateTagTree (System.String sampleHtml, Single width) [0x000ff] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:89 
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:test FAILED by:timeout. reason:timeout. @ LayoutMachineTests.CreateTagTree (System.String sampleHtml, Single width) [0x000ff] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:89 
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:test FAILED by:timeout. reason:layout timeout. @ MaterializeMachineTests.CreateLayoutedTree (System.String sampleHtml, Single width) [0x0015f] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/MaterializeMachineTests.cs:98 
+log:start methodName:MaterializeHTMLWithSmallImage
+log:start methodName:MaterializeHTMLWithSmallImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndSmallText
+log:start methodName:MaterializeHTMLWithWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImage
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImage
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:MaterializeHTMLWithCustomTag
+log:start methodName:MaterializeHTMLWithCustomTagSmallText
+log:start methodName:MaterializeHTMLWithCustomTagLargeText
+log:start methodName:MultipleBoxConstraints
+log:start methodName:MaterializeHTMLWithCustomTagMultiple
+log:start methodName:MaterializeHTMLWithCustomTagMultipleByInnerContent
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout
+log:test FAILED by:timeout. reason:layout timeout. @ MaterializeMachineTests.CreateLayoutedTree (System.String sampleHtml, Single width) [0x0015f] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/MaterializeMachineTests.cs:98 
+log:start methodName:MaterializeSampleView2_HiddenBreakView
+log:test FAILED by:timeout. reason:layout timeout. @ MaterializeMachineTests.CreateLayoutedTree (System.String sampleHtml, Single width) [0x0015f] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/MaterializeMachineTests.cs:98 
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:test FAILED by:timeout. reason:timeout. @ LayoutMachineTests.CreateTagTree (System.String sampleHtml, Single width) [0x000ff] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:89 
+log:start methodName:SampleView2
+log:test FAILED by:timeout. reason:timeout. @ LayoutMachineTests.CreateTagTree (System.String sampleHtml, Single width) [0x000ff] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:89 
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:test FAILED by:timeout. reason:timeout. @ LayoutMachineTests.CreateTagTree (System.String sampleHtml, Single width) [0x000ff] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:89 
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:test FAILED by:timeout. reason:layout timeout. @ MaterializeMachineTests.CreateLayoutedTree (System.String sampleHtml, Single width) [0x0015f] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/MaterializeMachineTests.cs:98 
+log:start methodName:MaterializeHTMLWithSmallImage
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:test FAILED by:assert failed @ InternalInvoke message:not match, textBox.viewHeight:68.25 @ LayoutMachineTests.LayoutSampleView2_HiddenBreakView () [0x00088] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:558 
+log:start methodName:SampleView2
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:test FAILED by:assert failed @ InternalInvoke message:not match. pContainer2.offsetY:113.25 @ LayoutMachineTests.LayoutHTMLWithDoubleBoxedLayerNeverOverLayout () [0x0019e] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:632 
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:start methodName:MaterializeHTMLWithSmallImage
+log:start methodName:MaterializeHTMLWithSmallImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndSmallText
+log:start methodName:MaterializeHTMLWithWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImage
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImage
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:MaterializeHTMLWithCustomTag
+log:start methodName:MaterializeHTMLWithCustomTagSmallText
+log:start methodName:MaterializeHTMLWithCustomTagLargeText
+log:start methodName:MultipleBoxConstraints
+log:start methodName:MaterializeHTMLWithCustomTagMultiple
+log:start methodName:MaterializeHTMLWithCustomTagMultipleByInnerContent
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:MaterializeSampleView2_HiddenBreakView
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:MaterializeMachineTests. classes:2 of 3
+log:start tests of class:UUebViewCoreTests. classes:3 of 3
+log:start methodName:GenerateSingleViewFromSource
+log:start methodName:GenerateSingleViewFromUrl
+log:start methodName:LoadThenReload
+log:start methodName:ShowAndHide
+log:start methodName:HideAndShow
+log:start methodName:CascadeButton
+log:start methodName:CachedContent
+log:start methodName:ShowLinkByButton
+log:start methodName:ManyImages
+log:start methodName:Sample2
+log:start methodName:Sample2WithBr
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:SetViewName
+log:done tests of class:UUebViewCoreTests. classes:3 of 3
+log:tests end. passed:106 failed:2
+elapsed:00:00:29.5139630
+
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:test FAILED by:assert failed @ InternalInvoke message:not match, textBox.viewHeight:68.25 @ LayoutMachineTests.LayoutSampleView2_HiddenBreakView () [0x00088] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:558 
+log:start methodName:SampleView2
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:test FAILED by:assert failed @ InternalInvoke message:not match. pContainer2.offsetY:113.25 @ LayoutMachineTests.LayoutHTMLWithDoubleBoxedLayerNeverOverLayout () [0x0019e] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:632 
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:start methodName:MaterializeHTMLWithSmallImage
+log:start methodName:MaterializeHTMLWithSmallImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndSmallText
+log:start methodName:MaterializeHTMLWithWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImage
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImage
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:MaterializeHTMLWithCustomTag
+log:start methodName:MaterializeHTMLWithCustomTagSmallText
+log:start methodName:MaterializeHTMLWithCustomTagLargeText
+log:start methodName:MultipleBoxConstraints
+log:start methodName:MaterializeHTMLWithCustomTagMultiple
+log:start methodName:MaterializeHTMLWithCustomTagMultipleByInnerContent
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:MaterializeSampleView2_HiddenBreakView
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:MaterializeMachineTests. classes:2 of 3
+log:start tests of class:UUebViewCoreTests. classes:3 of 3
+log:start methodName:GenerateSingleViewFromSource
+log:start methodName:GenerateSingleViewFromUrl
+log:start methodName:LoadThenReload
+log:start methodName:ShowAndHide
+log:start methodName:HideAndShow
+log:start methodName:CascadeButton
+log:start methodName:CachedContent
+log:start methodName:ShowLinkByButton
+log:start methodName:ManyImages
+log:start methodName:Sample2
+log:start methodName:Sample2WithBr
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:SetViewName
+log:done tests of class:UUebViewCoreTests. classes:3 of 3
+log:tests end. passed:106 failed:2
+elapsed:00:00:28.7067590
+
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:SampleView2
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:test FAILED by:assert failed @ InternalInvoke message:not match. pContainer2SecondLine.offsetY:17.25 @ LayoutMachineTests.LayoutHTMLWithDoubleBoxedLayerNeverOverLayout () [0x00277] in /Users/passepied/Desktop/UUebView/Assets/UUebView/Tests/Information/LayoutMachineTests.cs:640 
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:start methodName:MaterializeHTMLWithSmallImage
+log:start methodName:MaterializeHTMLWithSmallImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndSmallText
+log:start methodName:MaterializeHTMLWithWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImage
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImage
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:MaterializeHTMLWithCustomTag
+log:start methodName:MaterializeHTMLWithCustomTagSmallText
+log:start methodName:MaterializeHTMLWithCustomTagLargeText
+log:start methodName:MultipleBoxConstraints
+log:start methodName:MaterializeHTMLWithCustomTagMultiple
+log:start methodName:MaterializeHTMLWithCustomTagMultipleByInnerContent
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:MaterializeSampleView2_HiddenBreakView
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:MaterializeMachineTests. classes:2 of 3
+log:start tests of class:UUebViewCoreTests. classes:3 of 3
+log:start methodName:GenerateSingleViewFromSource
+log:start methodName:GenerateSingleViewFromUrl
+log:start methodName:LoadThenReload
+log:start methodName:ShowAndHide
+log:start methodName:HideAndShow
+log:start methodName:CascadeButton
+log:start methodName:CachedContent
+log:start methodName:ShowLinkByButton
+log:start methodName:ManyImages
+log:start methodName:Sample2
+log:start methodName:Sample2WithBr
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:SetViewName
+log:done tests of class:UUebViewCoreTests. classes:3 of 3
+log:tests end. passed:107 failed:1
+elapsed:00:00:28.5442430
+
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:SampleView2
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:start methodName:MaterializeHTMLWithSmallImage
+log:start methodName:MaterializeHTMLWithSmallImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndSmallText
+log:start methodName:MaterializeHTMLWithWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImage
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImage
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:MaterializeHTMLWithCustomTag
+log:start methodName:MaterializeHTMLWithCustomTagSmallText
+log:start methodName:MaterializeHTMLWithCustomTagLargeText
+log:start methodName:MultipleBoxConstraints
+log:start methodName:MaterializeHTMLWithCustomTagMultiple
+log:start methodName:MaterializeHTMLWithCustomTagMultipleByInnerContent
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:MaterializeSampleView2_HiddenBreakView
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:MaterializeMachineTests. classes:2 of 3
+log:start tests of class:UUebViewCoreTests. classes:3 of 3
+log:start methodName:GenerateSingleViewFromSource
+log:start methodName:GenerateSingleViewFromUrl
+log:start methodName:LoadThenReload
+log:start methodName:ShowAndHide
+log:start methodName:HideAndShow
+log:start methodName:CascadeButton
+log:start methodName:CachedContent
+log:start methodName:ShowLinkByButton
+log:start methodName:ManyImages
+log:start methodName:Sample2
+log:start methodName:Sample2WithBr
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:SetViewName
+log:done tests of class:UUebViewCoreTests. classes:3 of 3
+log:tests end. passed:108 failed:0
+elapsed:00:00:28.1732730
+
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:SampleView2
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:start methodName:MaterializeHTMLWithSmallImage
+log:start methodName:MaterializeHTMLWithSmallImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndSmallText
+log:start methodName:MaterializeHTMLWithWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImage
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImage
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:MaterializeHTMLWithCustomTag
+log:start methodName:MaterializeHTMLWithCustomTagSmallText
+log:start methodName:MaterializeHTMLWithCustomTagLargeText
+log:start methodName:MultipleBoxConstraints
+log:start methodName:MaterializeHTMLWithCustomTagMultiple
+log:start methodName:MaterializeHTMLWithCustomTagMultipleByInnerContent
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:MaterializeSampleView2_HiddenBreakView
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:MaterializeMachineTests. classes:2 of 3
+log:start tests of class:UUebViewCoreTests. classes:3 of 3
+log:start methodName:GenerateSingleViewFromSource
+log:start methodName:GenerateSingleViewFromUrl
+log:start methodName:LoadThenReload
+log:start methodName:ShowAndHide
+log:start methodName:HideAndShow
+log:start methodName:CascadeButton
+log:start methodName:CachedContent
+log:start methodName:ShowLinkByButton
+log:start methodName:ManyImages
+log:start methodName:Sample2
+log:start methodName:Sample2WithBr
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:SetViewName
+log:done tests of class:UUebViewCoreTests. classes:3 of 3
+log:tests end. passed:108 failed:0
+elapsed:00:00:27.6861500
+
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:SampleView2
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:start methodName:MaterializeHTMLWithSmallImage
+log:start methodName:MaterializeHTMLWithSmallImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndSmallText
+log:start methodName:MaterializeHTMLWithWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImage
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImage
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:MaterializeHTMLWithCustomTag
+log:start methodName:MaterializeHTMLWithCustomTagSmallText
+log:start methodName:MaterializeHTMLWithCustomTagLargeText
+log:start methodName:MultipleBoxConstraints
+log:start methodName:MaterializeHTMLWithCustomTagMultiple
+log:start methodName:MaterializeHTMLWithCustomTagMultipleByInnerContent
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:MaterializeSampleView2_HiddenBreakView
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:MaterializeMachineTests. classes:2 of 3
+log:start tests of class:UUebViewCoreTests. classes:3 of 3
+log:start methodName:GenerateSingleViewFromSource
+log:start methodName:GenerateSingleViewFromUrl
+log:start methodName:LoadThenReload
+log:start methodName:ShowAndHide
+log:start methodName:HideAndShow
+log:start methodName:CascadeButton
+log:start methodName:CachedContent
+log:start methodName:ShowLinkByButton
+log:start methodName:ManyImages
+log:start methodName:Sample2
+log:start methodName:Sample2WithBr
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:SetViewName
+log:done tests of class:UUebViewCoreTests. classes:3 of 3
+log:tests end. passed:108 failed:0
+elapsed:00:00:27.8126400
+
+log:tests started.
+log:start tests of class:HTMLParserTests. classes:0 of 3
+log:start methodName:LoadSimpleHTML
+log:start methodName:LoadDepthAssetListIsDone
+log:start methodName:LoadDepthAssetListWithCustomTag
+log:start methodName:ParseSimpleHTML
+log:start methodName:ParseCustomTag
+log:start methodName:ParseCustomTagMoreDeep
+log:start methodName:ParseCustomTagRecursive
+log:start methodName:ParseImageAsImgContent
+log:start methodName:ParseCustomImgAsImgContent
+log:start methodName:ParseCustomTextAsTextContent
+log:start methodName:ParserTestCustomLayerAndCustomContentCombination
+log:start methodName:Revert
+log:start methodName:ParseDefaultTag
+log:start methodName:WithCustomTag
+log:start methodName:WithWrongCustomTag
+log:start methodName:WithDeepCustomTag
+log:start methodName:WithDeepCustomTagBoxHasBoxAttr
+log:start methodName:Order
+log:start methodName:ParseErrorAtDirectContentUnderLayer
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:CoronWrappedContentSupport
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:CustomEmptyLayerCanSingleCloseTag
+log:start methodName:CustomEmptyLayerCanSingleCloseTag2
+log:done tests of class:HTMLParserTests. classes:0 of 3
+log:start tests of class:LayoutMachineTests. classes:1 of 3
+log:start methodName:LayoutHTML
+log:start methodName:LayoutHTMLHasValidView
+log:start methodName:LayoutHTMLWithSmallTextHasValidView
+log:start methodName:LayoutHTMLWithImage
+log:start methodName:LayoutHTMLWithSmallImage
+log:start methodName:LayoutHTMLWithSmallImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:LayoutHTMLWithWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImage
+log:start methodName:LayoutHTMLWithTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImage
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndText
+log:start methodName:LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:LayoutHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:LayoutHTMLWithCustomTag
+log:start methodName:LayoutHTMLWithCustomTagSmallText
+log:start methodName:LayoutHTMLWithCustomTagLargeText
+log:start methodName:Re_LayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallText
+log:start methodName:RevertLayoutHTMLWithSmallImageAndSmallTextAndBr
+log:start methodName:Order
+log:start methodName:Position
+log:start methodName:MultipleBoxConstraints
+log:start methodName:LayoutHTMLWithCustomTagMultiple
+log:start methodName:LayoutHTMLWithCustomTagMultipleInBody
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:SampleView2
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:LayoutHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:BrSupport
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:LayoutMachineTests. classes:1 of 3
+log:start tests of class:MaterializeMachineTests. classes:2 of 3
+log:start methodName:MaterializeHTML
+log:start methodName:MaterializeHTMLHasValidView
+log:start methodName:MaterializeHTMLWithSmallTextHasValidView
+log:start methodName:MaterializeHTMLWithLink
+log:start methodName:MaterializeHTMLWithLinkWithId
+log:start methodName:MaterializeHTMLWithImage
+log:start methodName:MaterializeHTMLWithImageAsButton
+log:start methodName:MaterializeHTMLWithImageAsButtonWithId
+log:start methodName:MaterializeHTMLWithImageAsButtonWithIdMakeChanges
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayer
+log:start methodName:MaterializeHTMLWithSmallImage
+log:start methodName:MaterializeHTMLWithSmallImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndSmallText
+log:start methodName:MaterializeHTMLWithWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImage
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithWideImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImage
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndText
+log:start methodName:MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText
+log:start methodName:MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText
+log:start methodName:LoadHTMLWithCustomTagLink
+log:start methodName:MaterializeHTMLWithCustomTag
+log:start methodName:MaterializeHTMLWithCustomTagSmallText
+log:start methodName:MaterializeHTMLWithCustomTagLargeText
+log:start methodName:MultipleBoxConstraints
+log:start methodName:MaterializeHTMLWithCustomTagMultiple
+log:start methodName:MaterializeHTMLWithCustomTagMultipleByInnerContent
+log:start methodName:LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer
+log:start methodName:MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout
+log:start methodName:MaterializeSampleView2_HiddenBreakView
+log:start methodName:LayoutSampleView2_HiddenBreakView
+log:start methodName:PSupport
+log:start methodName:PSupport2
+log:done tests of class:MaterializeMachineTests. classes:2 of 3
+log:start tests of class:UUebViewCoreTests. classes:3 of 3
+log:start methodName:GenerateSingleViewFromSource
+log:start methodName:GenerateSingleViewFromUrl
+log:start methodName:LoadThenReload
+log:start methodName:ShowAndHide
+log:start methodName:HideAndShow
+log:start methodName:CascadeButton
+log:start methodName:CachedContent
+log:start methodName:ShowLinkByButton
+log:start methodName:ManyImages
+log:start methodName:Sample2
+log:start methodName:Sample2WithBr
+log:start methodName:UnityRichTextColorSupport
+log:start methodName:SetViewName
+log:done tests of class:UUebViewCoreTests. classes:3 of 3
+log:tests end. passed:108 failed:0
+elapsed:00:00:28.4404180
+

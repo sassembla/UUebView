@@ -1,0 +1,9 @@
+
+.DS_Store
+.vscode/settings.json
+Assembly-CSharp-Editor.csproj
+Assembly-CSharp.csproj
+Library/*
+UUebView.sln
+obj/*
+Temp/*
