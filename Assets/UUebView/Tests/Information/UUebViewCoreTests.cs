@@ -62,7 +62,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
             }
         );
         
@@ -83,7 +83,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromUrl(eventReceiverGameObj, url, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromUrl(eventReceiverGameObj, url, new Vector2(100,100));
             }
         );
         
@@ -108,7 +108,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
             }
         );
         
@@ -150,7 +150,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
             }
         );
         
@@ -176,7 +176,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
             }
         );
         
@@ -203,7 +203,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
             }
         );
         
@@ -230,7 +230,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
             }
         );
         
@@ -256,7 +256,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
             }
         );
         
@@ -292,7 +292,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
             }
         );
         
@@ -328,7 +328,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
             }
         );
         
@@ -359,7 +359,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
             }
         );
         
@@ -425,7 +425,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
             }
         );
         
@@ -449,7 +449,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
                     done = true;
                 };
-                view = UUebViewCore.UUebViewCore.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100), null,null, viewName);
+                view = UUebViewCore.UUebView.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100), null,null, viewName);
             }
         );
         

@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace UUebViewCore {
-	public class LoadingCoroutineObj {
+    public class LoadingCoroutineObj {
 		public bool isDone = false;
 	}
 	
@@ -34,10 +33,46 @@ namespace UUebViewCore {
 		void Start () {
 			if (!string.IsNullOrEmpty(presetUrl) && presetEventReceiver != null) {
 				Debug.Log("show preset view.");
-				var view = UUebViewCore.GenerateSingleViewFromUrl(presetEventReceiver, presetUrl, GetComponent<RectTransform>().sizeDelta);
+				var view = UUebView.GenerateSingleViewFromUrl(presetEventReceiver, presetUrl, GetComponent<RectTransform>().sizeDelta);
 				view.transform.SetParent(this.transform, false);
 			}
 		}
+
+		public static GameObject GenerateSingleViewFromHTML(
+            GameObject eventReceiverGameObj, 
+            string source, 
+            Vector2 viewRect, 
+            Autoya.HttpRequestHeaderDelegate requestHeader=null,
+            Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null,
+            string viewName=ConstSettings.ROOTVIEW_NAME
+        ) {
+            var viewObj = new GameObject("UUebView");
+            viewObj.AddComponent<RectTransform>();
+            var uuebView = viewObj.AddComponent<UUebView>();
+            var uuebViewCore = new UUebViewCore(uuebView, viewName, requestHeader, httpResponseHandlingDelegate);
+            uuebViewCore.LoadHtml(source, viewRect, eventReceiverGameObj);
+
+            return viewObj;
+        }
+
+        public static GameObject GenerateSingleViewFromUrl(
+            GameObject eventReceiverGameObj, 
+            string url, 
+            Vector2 viewRect, 
+            Autoya.HttpRequestHeaderDelegate requestHeader=null,
+            Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null,
+            string viewName=ConstSettings.ROOTVIEW_NAME
+        ) {
+            var viewObj = new GameObject("UUebView");
+            viewObj.AddComponent<RectTransform>();
+            var uuebView = viewObj.AddComponent<UUebView>();
+            var uuebViewCore = new UUebViewCore(uuebView, viewName, requestHeader, httpResponseHandlingDelegate);
+            uuebViewCore.DownloadHtml(url, viewRect, eventReceiverGameObj);
+
+            return viewObj;
+        }
+
+
 
 		object lockObj = new object();
 		private Queue<IEnumerator> queuedCoroutines = new Queue<IEnumerator>();

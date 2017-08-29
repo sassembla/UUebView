@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace UUebViewCore {
 
     public class ChildPos {

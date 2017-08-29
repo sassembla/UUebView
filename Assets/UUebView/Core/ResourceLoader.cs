@@ -111,7 +111,7 @@ namespace UUebViewCore {
                 var responseCode = (int)request.responseCode;
 				var responseHeaders = request.GetResponseHeaders();
 
-                if (request.isNetworkError) {
+                if (request.isError) {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,
@@ -202,7 +202,6 @@ namespace UUebViewCore {
                                     throw new Exception("unexpected loading.");
                                 }
                                 default: {
-                                    var tag = GetTagFromValue(tagValue);
                                     var loadPath = GetCustomTagLoadPath(tagValue, treeType);
 
                                     var cor = LoadCustomPrefabFromLoadPathOrCache(loadPath);
@@ -304,7 +303,6 @@ namespace UUebViewCore {
                                 break;
                             }
                             default: {
-                                var tag = GetTagFromValue(tagValue);
                                 var loadPath = GetCustomTagLoadPath(tagValue, treeType);
 
                                 var cor = LoadCustomPrefabFromLoadPathOrCache(loadPath);
@@ -451,7 +449,6 @@ namespace UUebViewCore {
                     IEnumerator<Sprite> cor = null;
                     switch (scheme) {
                         case "assetbundle:": {
-                            var bundleName = uriSource;
                             cor = LoadImageFromAssetBundle(uriSource);
                             break;
                         }
@@ -526,7 +523,7 @@ namespace UUebViewCore {
             var reqHeaders = requestHeader(HttpMethod.Get, url, new Dictionary<string, string>(), string.Empty);
 
             // start download tex from url.
-            using (var request = UnityWebRequestTexture.GetTexture(url)) {
+            using (var request = UnityWebRequest.GetTexture(url)) {
                 foreach (var reqHeader in reqHeaders) {
                     request.SetRequestHeader(reqHeader.Key, reqHeader.Value);
                 }
@@ -551,7 +548,7 @@ namespace UUebViewCore {
                 var responseHeaders = request.GetResponseHeaders();
                 
                 
-                if (request.isNetworkError) {
+                if (request.isError) {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,
@@ -596,8 +593,7 @@ namespace UUebViewCore {
 
         private string GetCustomTagLoadPath (int tagValue, TreeType treeType) {
             var tag = GetTagFromValue(tagValue);
-            var targetPrefab = string.Empty;
-
+           
             switch (treeType) {
                 case TreeType.CustomLayer:
                 case TreeType.CustomEmptyLayer: {
@@ -753,7 +749,6 @@ namespace UUebViewCore {
             IEnumerator cor = null;
             switch (scheme) {
                 case "assetbundle:": {
-                    var bundleName = uriSource;
                     cor = LoadTagsFromAssetBundle(uriSource, succeeded, failed);
                     break;
                 }
@@ -825,7 +820,7 @@ namespace UUebViewCore {
                 var responseCode = (int)request.responseCode;
                 var responseHeaders = request.GetResponseHeaders();
                 
-                if (request.isNetworkError) {
+                if (request.isError) {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,

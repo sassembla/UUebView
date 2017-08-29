@@ -594,7 +594,7 @@ namespace UUebViewCore {
 				var urlCandidate = data.Substring(keywordLen + 1/*delim len*/, endDelimIndex - keywordLen - 1/*delim len*/);
 				
 				try {
-					var uri = new Uri(urlCandidate);
+					new Uri(urlCandidate);
 				} catch (Exception e) {
 					parseFailed((int)ParseErrors.FAILED_TO_PARSE_LIST_URI, "failed to get uri from depth asset list url. error:" + e);
 					yield break;

@@ -26,41 +26,6 @@ namespace UUebViewCore {
         private LayoutMachine layoutMachine;
         private MaterializeMachine materializeMachine;
 
-
-        public static GameObject GenerateSingleViewFromHTML(
-            GameObject eventReceiverGameObj, 
-            string source, 
-            Vector2 viewRect, 
-            Autoya.HttpRequestHeaderDelegate requestHeader=null,
-            Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null,
-            string viewName=ConstSettings.ROOTVIEW_NAME
-        ) {
-            var viewObj = new GameObject("UUebView");
-            viewObj.AddComponent<RectTransform>();
-            var uuebView = viewObj.AddComponent<UUebView>();
-            var uuebViewCore = new UUebViewCore(uuebView, viewName, requestHeader, httpResponseHandlingDelegate);
-            uuebViewCore.LoadHtml(source, viewRect, eventReceiverGameObj);
-
-            return viewObj;
-        }
-
-        public static GameObject GenerateSingleViewFromUrl(
-            GameObject eventReceiverGameObj, 
-            string url, 
-            Vector2 viewRect, 
-            Autoya.HttpRequestHeaderDelegate requestHeader=null,
-            Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null,
-            string viewName=ConstSettings.ROOTVIEW_NAME
-        ) {
-            var viewObj = new GameObject("UUebView");
-            viewObj.AddComponent<RectTransform>();
-            var uuebView = viewObj.AddComponent<UUebView>();
-            var uuebViewCore = new UUebViewCore(uuebView, viewName, requestHeader, httpResponseHandlingDelegate);
-            uuebViewCore.DownloadHtml(url, viewRect, eventReceiverGameObj);
-
-            return viewObj;
-        }
-
         public UUebViewCore (UUebView uuebView, string viewName=ConstSettings.ROOTVIEW_NAME, Autoya.HttpRequestHeaderDelegate requestHeader=null, Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null) {
             this.view = uuebView;
             this.view.name = viewName;

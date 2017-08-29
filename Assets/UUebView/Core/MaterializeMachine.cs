@@ -12,7 +12,6 @@ namespace UUebViewCore {
     public class MaterializeMachine {
 		private readonly ResourceLoader resLoader;
         private UUebViewCore core;
-		private GameObject root;
         public MaterializeMachine(ResourceLoader resLoader) {
 			this.resLoader = resLoader;
 		}
@@ -22,7 +21,6 @@ namespace UUebViewCore {
 		public IEnumerator Materialize (GameObject root, UUebViewCore core, TagTree tree, float yOffset, Action onLoaded) {
 			// Debug.LogWarning("yOffsetで、viewの範囲にあるものだけを表示する、とかができそう。TableViewとかにコンテンツ足して云々とか。まあそこまで必要かっていうと微妙。");
 
-			this.root = root;
 			{
 				var rootRectTrans = root.GetComponent<RectTransform>();
 				this.core = core;

@@ -139,7 +139,6 @@ namespace UUebViewCore {
                 var boxYPosRecords = new Dictionary<float, float>();
                 var collisionGrouId = 0;
             
-                var childViewCursor = basePos;
                 /*
                     レイヤーなので、prefabをロードして、原点位置は0,0、
                         サイズは親サイズ、という形で生成する。
@@ -357,9 +356,7 @@ namespace UUebViewCore {
                                             
                                             // 子コンテナ自体は除外
                                             linedElements.Remove(child);
-
-                                            var childContainer = child;
-                                            
+ 
                                             // 現在整列してるコンテンツの整列を行う。
                                             linedElements.Add(insertingChild);
 
