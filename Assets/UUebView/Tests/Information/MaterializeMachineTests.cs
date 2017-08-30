@@ -47,6 +47,7 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
 
                 view = rootObj.AddComponent<UUebView>();
                 core = new UUebViewCore.UUebViewCore(view);
+                view.SetCore(core);
                 
                 var canvas = GameObject.Find("Canvas/MaterializeTestPlace");
                 rootObj.transform.SetParent(canvas.transform, false);
@@ -69,7 +70,7 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
             }
         );
         
-        RunOnMainThread(() => view.Internal_CoroutineExecutor(cor));
+        RunOnMainThread(() => view.Core.Internal_CoroutineExecutor(cor));
         
         WaitUntil(
             () => parsedRoot != null, 1, "too late."
@@ -93,7 +94,7 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
             }
         );
 
-        RunOnMainThread(() => view.Internal_CoroutineExecutor(cor2));
+        RunOnMainThread(() => view.Core.Internal_CoroutineExecutor(cor2));
 
         WaitUntil(
             () => layouted != null, 5, "layout timeout."
@@ -112,12 +113,12 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
                 var cor = materializeMachine.Materialize(rootObj, core, tree, 0, () => {
                     materializeDone = true;
                 });
-                view.Internal_CoroutineExecutor(cor);
+                view.Core.Internal_CoroutineExecutor(cor);
             }
         );
         
         WaitUntil(
-            () => materializeDone && !view.IsLoading(), 5, "slow materialize. materializeDone:" + materializeDone + " view.IsLoading():" + view.IsLoading()
+            () => materializeDone && !view.Core.IsLoading(), 5, "slow materialize. materializeDone:" + materializeDone + " view.IsLoading():" + view.Core.IsLoading()
         );
     }
 

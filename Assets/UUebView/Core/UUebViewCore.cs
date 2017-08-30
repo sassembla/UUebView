@@ -19,28 +19,28 @@ namespace UUebViewCore {
         }
     }
 
+    public interface IUUebView {
+        void AddChild(Transform t);
+        void UpdateSize(Vector2 size);
+        GameObject GetGameObject();
+        void StartCoroutine(IEnumerator iEnum);
+    }
+
     public class UUebViewCore {
         private Dictionary<string, List<TagTree>> listenerDict = new Dictionary<string, List<TagTree>>();
-        public readonly UUebView view;
+        public readonly IUUebView view;
         public readonly ResourceLoader resLoader;
         private LayoutMachine layoutMachine;
         private MaterializeMachine materializeMachine;
 
-        public UUebViewCore (UUebView uuebView, string viewName=ConstSettings.ROOTVIEW_NAME, Autoya.HttpRequestHeaderDelegate requestHeader=null, Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null) {
+        public UUebViewCore (IUUebView uuebView, Autoya.HttpRequestHeaderDelegate requestHeader=null, Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null) {
             this.view = uuebView;
-            this.view.name = viewName;
-            uuebView.Core = this;
 
             resLoader = new ResourceLoader(this.LoadParallel, requestHeader, httpResponseHandlingDelegate);
-            resLoader.cacheBox.transform.SetParent(this.view.transform);
+            this.view.AddChild(resLoader.cacheBox.transform);
             
             layoutMachine = new LayoutMachine(resLoader);
             materializeMachine = new MaterializeMachine(resLoader);
-        }
-
-
-        public bool IsLoading () {
-            return view.IsLoading();
         }
 
         private void StartCalculateProgress () {
@@ -53,32 +53,30 @@ namespace UUebViewCore {
             }
 
             var progressCor = CreateProgressCoroutine();
-            view.Internal_CoroutineExecutor(progressCor);
+            Internal_CoroutineExecutor(progressCor);
         }
 
         private void UpdateParentViewSizeIfExist () {
-            // set content size to view's parent if exist.
-            if (view.transform.parent != null) {
-                var parentRectTrans = view.transform.parent.GetComponent<RectTransform>();
-                if (parentRectTrans != null) {
-                    parentRectTrans.sizeDelta = new Vector2(layoutedTree.viewWidth, layoutedTree.viewHeight);
-                }
-            }
+            view.UpdateSize(new Vector2(layoutedTree.viewWidth, layoutedTree.viewHeight));
+        }
+
+        private LoadingCoroutineObj[] LoadingActs () {
+            return loadingCoroutines.Where(r => !r.isDone).ToArray();
         }
 
         private IEnumerator CreateProgressCoroutine () {            
-            while (view.IsWaitStartLoading()) {
+            while (IsWaitStartLoading()) {
                 yield return null;
             }
 
-            var loadingActions = view.LoadingActs();
+            var loadingActions = LoadingActs();
             var loadingCount = loadingActions.Length;
             var perProgressUnit = 1.0 / loadingCount;
             var perProgress = perProgressUnit;
             
            
-            while (view.IsLoading()) {
-                var currentLoadingCount = view.LoadingActs().Length;
+            while (IsLoading()) {
+                var currentLoadingCount = LoadingActs().Length;
                 if (currentLoadingCount != loadingCount) {
                     var diff = loadingCount - currentLoadingCount;
                     perProgress = perProgress + (perProgressUnit * diff);
@@ -120,7 +118,7 @@ namespace UUebViewCore {
             }
 
             var cor = Parse(source);
-            view.CoroutineExecutor(cor);
+            CoroutineExecutor(cor);
         }
 
         public void DownloadHtml (string url, Vector2 viewRect, GameObject eventReceiverGameObj=null) {
@@ -132,7 +130,7 @@ namespace UUebViewCore {
             this.eventReceiverGameObj = eventReceiverGameObj;
             
             var cor = DownloadHTML(url);
-            view.CoroutineExecutor(cor);
+            CoroutineExecutor(cor);
         }
 
         private IEnumerator DownloadHTML (string url) {
@@ -246,7 +244,7 @@ namespace UUebViewCore {
 
                     resLoader.BackGameObjects(usingIds);
                     materialize = materializeMachine.Materialize(
-                        view.gameObject, 
+                        view.GetGameObject(), 
                         this, 
                         this.layoutedTree, 
                         0f, 
@@ -288,7 +286,7 @@ namespace UUebViewCore {
 
                     resLoader.BackGameObjects(usingIds);
                     materialize = materializeMachine.Materialize(
-                        view.gameObject, 
+                        view.GetGameObject(),
                         this, 
                         this.layoutedTree, 
                         0f, 
@@ -317,7 +315,7 @@ namespace UUebViewCore {
          */
         public void Reload () {
             resLoader.Reset();
-            view.CoroutineExecutor(Load(layoutedTree, viewRect, eventReceiverGameObj));
+            CoroutineExecutor(Load(layoutedTree, viewRect, eventReceiverGameObj));
         }
 
         /**
@@ -328,7 +326,7 @@ namespace UUebViewCore {
         }
 
         public void Update () {
-            view.CoroutineExecutor(Update(layoutedTree, viewRect, eventReceiverGameObj));
+            CoroutineExecutor(Update(layoutedTree, viewRect, eventReceiverGameObj));
         }
 
         public void OnImageTapped (GameObject tag, string src, string buttonId="") {
@@ -404,10 +402,92 @@ namespace UUebViewCore {
         }
 
         public void LoadParallel (IEnumerator cor) {
-            view.CoroutineExecutor(cor);
+            CoroutineExecutor(cor);
+        }
+
+        private object lockObj = new object();
+		private Queue<IEnumerator> queuedCoroutines = new Queue<IEnumerator>();
+		private Queue<IEnumerator> unmanagedCoroutines = new Queue<IEnumerator>();
+        private List<LoadingCoroutineObj> loadingCoroutines = new List<LoadingCoroutineObj>();
+		
+
+        public void Dequeue (IUUebView view) {
+            lock (lockObj) {
+				while (0 < queuedCoroutines.Count) {
+					var cor = queuedCoroutines.Dequeue();
+					var loadCorObj = new LoadingCoroutineObj();
+					var loadingCor = CreateLoadingCoroutine(cor, loadCorObj);
+					view.StartCoroutine(loadingCor);
+
+					// collect loading coroutines.
+					AddLoading(loadCorObj);
+				}
+
+				while (0 < unmanagedCoroutines.Count) {
+					var cor = unmanagedCoroutines.Dequeue();
+					view.StartCoroutine(cor);
+				}
+			}
+        }
+
+        private IEnumerator CreateLoadingCoroutine (IEnumerator cor, LoadingCoroutineObj loadCor) {
+			while (cor.MoveNext()) {
+				yield return null;
+			}
+			loadCor.isDone = true;
+		}
+
+		private void AddLoading (LoadingCoroutineObj runObj) {
+            loadingCoroutines.Add(runObj);
+        }
+
+		public void Internal_CoroutineExecutor (IEnumerator iEnum) {
+			lock (lockObj) {
+				unmanagedCoroutines.Enqueue(iEnum);
+			}
+		}
+		
+		public void CoroutineExecutor (IEnumerator iEnum) {
+			lock (lockObj) {
+				queuedCoroutines.Enqueue(iEnum);
+			}
+		}
+
+		public bool IsWaitStartLoading () {
+			lock (lockObj) {
+				if (queuedCoroutines.Any()) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public bool IsLoading () {
+			lock (lockObj) {
+				if (queuedCoroutines.Any()) {
+					return true;
+				}
+
+				if (loadingCoroutines.Where(cor => !cor.isDone).Any()) {
+					// Debug.LogError("loading:" + loadingCoroutines.Count);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+        public class LoadingCoroutineObj {
+            public bool isDone = false;
         }
     }
 
+    public enum ContentType {
+		HTML,
+		IMAGE,
+		LINK,
+		CUSTOMTAGLIST
+	}
 
     public interface IUUebViewEventHandler : IEventSystemHandler {
         void OnLoadStarted ();

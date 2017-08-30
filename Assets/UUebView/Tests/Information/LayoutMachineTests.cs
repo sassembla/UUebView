@@ -35,7 +35,10 @@ public class LayoutMachineTests : MiyamasuTestRunner {
         RunOnMainThread(
             () => {
                 executor = new GameObject("layoutMachineTest").AddComponent<UUebView>();
-                loader = new ResourceLoader(executor.CoroutineExecutor);
+                var core = new UUebViewCore.UUebViewCore(executor);
+                executor.SetCore(core);
+
+                loader = new ResourceLoader(executor.Core.CoroutineExecutor);
             }
         );
 
@@ -62,7 +65,7 @@ public class LayoutMachineTests : MiyamasuTestRunner {
             }
         );
 
-        RunOnMainThread(() => executor.CoroutineExecutor(cor));
+        RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
         
         WaitUntil(
             () => parsedRoot != null, 1, "too late."
@@ -84,7 +87,7 @@ public class LayoutMachineTests : MiyamasuTestRunner {
             }
         );
 
-        RunOnMainThread(() => executor.CoroutineExecutor(loaderCor));
+        RunOnMainThread(() => executor.Core.CoroutineExecutor(loaderCor));
 
         WaitUntil(
             () => layoutedRoot != null, 5, "timeout."
@@ -274,7 +277,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
             
             WaitUntil(
                 () => parsedRoot != null, 1, "too late."
@@ -296,7 +299,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
 
 
             WaitUntil(
@@ -320,7 +323,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor2));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor2));
 
 
             WaitUntil(
@@ -342,7 +345,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
             
             WaitUntil(
                 () => parsedRoot != null, 1, "too late."
@@ -364,7 +367,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
 
 
             WaitUntil(
@@ -387,7 +390,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor2));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor2));
 
 
             WaitUntil(
@@ -410,7 +413,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
             
             WaitUntil(
                 () => parsedRoot != null, 1, "too late."
@@ -432,7 +435,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
 
 
             WaitUntil(
@@ -455,7 +458,7 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.CoroutineExecutor(cor2));
+            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor2));
 
 
             WaitUntil(

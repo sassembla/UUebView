@@ -1,14 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace UUebViewCore {
-    public class LoadingCoroutineObj {
-		public bool isDone = false;
-	}
-	
-	/**
+    /**
 		UUebView component.
 
 		testing usage:
@@ -17,7 +14,7 @@ namespace UUebViewCore {
 		actual usage:
 			let's use UUebViewCore.GenerateSingleViewFromHTML or UUebViewCore.GenerateSingleViewFromUrl.
 	 */
-	public class UUebView : MonoBehaviour {
+	public class UUebView : MonoBehaviour, IUUebView {
 		/*
 			preset parameters.
 			you can use this UUebView with preset paramters for testing.
@@ -27,7 +24,7 @@ namespace UUebViewCore {
 
 
 		public UUebViewCore Core {
-			get; set;
+			get; private set;
 		}
 
 		void Start () {
@@ -48,8 +45,11 @@ namespace UUebViewCore {
         ) {
             var viewObj = new GameObject("UUebView");
             viewObj.AddComponent<RectTransform>();
+			viewObj.name = viewName;
+
             var uuebView = viewObj.AddComponent<UUebView>();
-            var uuebViewCore = new UUebViewCore(uuebView, viewName, requestHeader, httpResponseHandlingDelegate);
+			var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate);
+			uuebView.SetCore(uuebViewCore);
             uuebViewCore.LoadHtml(source, viewRect, eventReceiverGameObj);
 
             return viewObj;
@@ -65,86 +65,22 @@ namespace UUebViewCore {
         ) {
             var viewObj = new GameObject("UUebView");
             viewObj.AddComponent<RectTransform>();
+			viewObj.name = viewName;
+			
             var uuebView = viewObj.AddComponent<UUebView>();
-            var uuebViewCore = new UUebViewCore(uuebView, viewName, requestHeader, httpResponseHandlingDelegate);
+            var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate);
+			uuebView.SetCore(uuebViewCore);
             uuebViewCore.DownloadHtml(url, viewRect, eventReceiverGameObj);
 
             return viewObj;
         }
 
-
-
-		object lockObj = new object();
-		private Queue<IEnumerator> queuedCoroutines = new Queue<IEnumerator>();
-		private Queue<IEnumerator> unmanagedCoroutines = new Queue<IEnumerator>();
-        private List<LoadingCoroutineObj> loadingCoroutines = new List<LoadingCoroutineObj>();
-		
-
-
-		void Update () {
-			lock (lockObj) {
-				while (0 < queuedCoroutines.Count) {
-					var cor = queuedCoroutines.Dequeue();
-					var loadCorObj = new LoadingCoroutineObj();
-					var loadingCor = CreateLoadingCoroutine(cor, loadCorObj);
-					StartCoroutine(loadingCor);
-
-					// collect loading coroutines.
-					AddLoading(loadCorObj);
-				}
-
-				while (0 < unmanagedCoroutines.Count) {
-					var cor = unmanagedCoroutines.Dequeue();
-					StartCoroutine(cor);
-				}
-			}
-		}
-
-		private IEnumerator CreateLoadingCoroutine (IEnumerator cor, LoadingCoroutineObj loadCor) {
-			while (cor.MoveNext()) {
-				yield return null;
-			}
-			loadCor.isDone = true;
-		}
-
-		private void AddLoading (LoadingCoroutineObj runObj) {
-            loadingCoroutines.Add(runObj);
+        public void SetCore (UUebViewCore core) {
+            this.Core = core;
         }
 
-		public void Internal_CoroutineExecutor (IEnumerator iEnum) {
-			lock (lockObj) {
-				unmanagedCoroutines.Enqueue(iEnum);
-			}
-		}
-		
-		public void CoroutineExecutor (IEnumerator iEnum) {
-			lock (lockObj) {
-				queuedCoroutines.Enqueue(iEnum);
-			}
-		}
-
-		public bool IsWaitStartLoading () {
-			lock (lockObj) {
-				if (queuedCoroutines.Any()) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		public bool IsLoading () {
-			lock (lockObj) {
-				if (queuedCoroutines.Any()) {
-					return true;
-				}
-
-				if (loadingCoroutines.Where(cor => !cor.isDone).Any()) {
-					// Debug.LogError("loading:" + loadingCoroutines.Count);
-					return true;
-				}
-			}
-
-			return false;
+		void Update () {
+			Core.Dequeue(this);
 		}
 
         public void EmitButtonEventById (string elementId) {
@@ -155,15 +91,21 @@ namespace UUebViewCore {
             Core.OnLinkTapped(elementId);
         }
 
-        public LoadingCoroutineObj[] LoadingActs () {
-            return loadingCoroutines.Where(r => !r.isDone).ToArray();
+        void IUUebView.AddChild (Transform transform) {
+            transform.SetParent(this.transform);
+        }
+
+        void IUUebView.UpdateSize (Vector2 size) {
+            var parentRectTrans = this.transform.parent.GetComponent<RectTransform>();
+			parentRectTrans.sizeDelta = size;
+        }
+
+        GameObject IUUebView.GetGameObject () {
+            return this.gameObject;
+        }
+
+        void IUUebView.StartCoroutine (IEnumerator iEnum) {
+            this.StartCoroutine(iEnum);
         }
     }
-
-	public enum ContentType {
-		HTML,
-		IMAGE,
-		LINK,
-		CUSTOMTAGLIST
-	}
 }

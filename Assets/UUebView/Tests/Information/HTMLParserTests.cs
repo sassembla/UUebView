@@ -29,10 +29,11 @@ public class HTMLParserTests : MiyamasuTestRunner {
         RunOnMainThread(
             () => {
                 executor = new GameObject("htmlParserTest").AddComponent<UUebView>();
-                loader = new ResourceLoader(executor.CoroutineExecutor);
+                var core = new UUebViewCore.UUebViewCore(executor);
+                executor.SetCore(core);
+                loader = new ResourceLoader(executor.Core.CoroutineExecutor);
             }
         );
-        
         
         parser = new HTMLParser(loader);
     }
@@ -71,7 +72,7 @@ public class HTMLParserTests : MiyamasuTestRunner {
                 parsedRoot = parsed;
             }
         );
-        RunOnMainThread(() => executor.CoroutineExecutor(cor));
+        RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
         
         WaitUntil(
             () => parsedRoot != null, 1, "too late."
