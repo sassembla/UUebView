@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections;
-using UUebViewCore;
+using UUebView;
 
 /**
 	test for customizer.
@@ -18,9 +18,9 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
 
     
     GameObject rootObj;
-    UUebView view;
+    UUebView.UUebViewComponent view;
 
-    UUebViewCore.UUebViewCore core;
+    UUebView.UUebViewCore core;
 
     private void ShowLayoutRecursive (TagTree tree) {
         Debug.Log("tree:" + core.resLoader.GetTagFromValue(tree.tagValue) + " offsetX:" + tree.offsetX + " offsetY:" + tree.offsetY + " width:" + tree.viewWidth + " height:" + tree.viewHeight);
@@ -45,8 +45,8 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
                 rectTrans.anchorMax = new Vector2(0,1);
                 rectTrans.pivot = new Vector2(0,1);
 
-                view = rootObj.AddComponent<UUebView>();
-                core = new UUebViewCore.UUebViewCore(view);
+                view = rootObj.AddComponent<UUebViewComponent>();
+                core = new UUebView.UUebViewCore(view);
                 view.SetCore(core);
                 
                 var canvas = GameObject.Find("Canvas/MaterializeTestPlace");

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace UUebViewCore {
+namespace UUebView {
     [Serializable] public class UUebTags {
         [SerializeField] public string viewName;
         [SerializeField] public ContentInfo[] contents;

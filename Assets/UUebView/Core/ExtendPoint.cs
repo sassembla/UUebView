@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace UUebViewCore {
+namespace UUebView {
     public enum HttpMethod {
         Get
     }

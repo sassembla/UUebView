@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace UUebViewCore {
+namespace UUebView {
     /**
 		UUebView component.
 
@@ -12,9 +12,9 @@ namespace UUebViewCore {
 			attach this component to gameobject and set preset urls and event receiver.
 
 		actual usage:
-			let's use UUebViewCore.GenerateSingleViewFromHTML or UUebViewCore.GenerateSingleViewFromUrl.
+			let's use UUebView.GenerateSingleViewFromHTML or UUebView.GenerateSingleViewFromUrl.
 	 */
-	public class UUebView : MonoBehaviour, IUUebView {
+	public class UUebViewComponent : MonoBehaviour, IUUebView {
 		/*
 			preset parameters.
 			you can use this UUebView with preset paramters for testing.
@@ -30,7 +30,7 @@ namespace UUebViewCore {
 		void Start () {
 			if (!string.IsNullOrEmpty(presetUrl) && presetEventReceiver != null) {
 				Debug.Log("show preset view.");
-				var view = UUebView.GenerateSingleViewFromUrl(presetEventReceiver, presetUrl, GetComponent<RectTransform>().sizeDelta);
+				var view = UUebViewComponent.GenerateSingleViewFromUrl(presetEventReceiver, presetUrl, GetComponent<RectTransform>().sizeDelta);
 				view.transform.SetParent(this.transform, false);
 			}
 		}
@@ -47,7 +47,7 @@ namespace UUebViewCore {
             viewObj.AddComponent<RectTransform>();
 			viewObj.name = viewName;
 
-            var uuebView = viewObj.AddComponent<UUebView>();
+            var uuebView = viewObj.AddComponent<UUebViewComponent>();
 			var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate);
 			uuebView.SetCore(uuebViewCore);
             uuebViewCore.LoadHtml(source, viewRect, eventReceiverGameObj);
@@ -67,7 +67,7 @@ namespace UUebViewCore {
             viewObj.AddComponent<RectTransform>();
 			viewObj.name = viewName;
 			
-            var uuebView = viewObj.AddComponent<UUebView>();
+            var uuebView = viewObj.AddComponent<UUebViewComponent>();
             var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate);
 			uuebView.SetCore(uuebViewCore);
             uuebViewCore.DownloadHtml(url, viewRect, eventReceiverGameObj);

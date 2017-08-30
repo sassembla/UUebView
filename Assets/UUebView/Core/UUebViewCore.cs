@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 
-namespace UUebViewCore {
+namespace UUebView {
 
     public struct ParseError {
         public readonly int code;

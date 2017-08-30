@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace UUebViewCore {
+namespace UUebView {
 	public class FileController {
 		public static void RemakeDirectory (string localFolderPath) {
 			if (Directory.Exists(localFolderPath)) Directory.Delete(localFolderPath, true);

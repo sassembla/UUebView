@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections;
-using UUebViewCore;
+using UUebView;
 
 /**
 	test for layoutMachine.
@@ -16,7 +16,7 @@ public class LayoutMachineTests : MiyamasuTestRunner {
 
     private ResourceLoader loader;
 
-    private UUebView executor;
+    private UUebView.UUebViewComponent executor;
 
     private void ShowLayoutRecursive (TagTree tree) {
         Debug.Log("tree:" + loader.GetTagFromValue(tree.tagValue) + " offsetX:" + tree.offsetX + " offsetY:" + tree.offsetY + " width:" + tree.viewWidth + " height:" + tree.viewHeight);
@@ -34,8 +34,8 @@ public class LayoutMachineTests : MiyamasuTestRunner {
 
         RunOnMainThread(
             () => {
-                executor = new GameObject("layoutMachineTest").AddComponent<UUebView>();
-                var core = new UUebViewCore.UUebViewCore(executor);
+                executor = new GameObject("layoutMachineTest").AddComponent<UUebViewComponent>();
+                var core = new UUebView.UUebViewCore(executor);
                 executor.SetCore(core);
 
                 loader = new ResourceLoader(executor.Core.CoroutineExecutor);

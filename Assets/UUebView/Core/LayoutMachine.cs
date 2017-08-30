@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UUebViewCore {
+namespace UUebView {
     /**
         レイアウトを実行するクラス。
     */

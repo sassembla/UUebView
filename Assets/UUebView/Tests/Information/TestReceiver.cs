@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UUebViewCore;
+using UUebView;
 
 public class TestReceiver : MonoBehaviour, IUUebViewEventHandler {
     public Action OnLoadStarted;

@@ -10,7 +10,7 @@ using UnityEngine.Events;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace UUebViewCore {
+namespace UUebView {
     
     public enum TreeType {
         NotFound,

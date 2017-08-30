@@ -1,4 +1,4 @@
-namespace UUebViewCore {
+namespace UUebView {
 	/*
 		tags with specific feature.
 		the tag which is not contained in this enum will be resolved at runtime.

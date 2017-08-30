@@ -1,4 +1,4 @@
-namespace UUebViewCore {
+namespace UUebView {
 
     public class ChildPos {
         public float offsetX;

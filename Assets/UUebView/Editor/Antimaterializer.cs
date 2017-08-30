@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UUebViewCore {
+namespace UUebView {
     public class Antimaterializer {
         private static string[] defaultTagStrs;
 

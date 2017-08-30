@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace UUebViewCore {
+namespace UUebView {
 
     // キャッシュ保持と各種coroutineの生成を行う。
 

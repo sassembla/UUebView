@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections;
 using UnityEditor;
 using System.IO;
-using UUebViewCore;
+using UUebView;
 
 /**
 	test for materializer

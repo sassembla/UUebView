@@ -9,7 +9,7 @@ using UnityEngine.Events;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace UUebViewCore {
+namespace UUebView {
 
 	public enum ParseErrors {
 		NOT_RESERVED_TAG_IN_LAYER,

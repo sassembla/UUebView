@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace UUebViewCore {
+namespace UUebView {
     public enum HTMLAttribute {
 		_UNKNOWN,
 

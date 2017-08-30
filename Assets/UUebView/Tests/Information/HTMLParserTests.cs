@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using UnityEngine.UI;
 using UnityEngine.Events;
-using UUebViewCore;
+using UUebView;
 using System.Collections;
 
 /**
@@ -16,7 +16,7 @@ public class HTMLParserTests : MiyamasuTestRunner {
 
     private ResourceLoader loader;
 
-    private UUebView executor;
+    private UUebView.UUebViewComponent executor;
 
     [MSetup] public void Setup () {
 
@@ -28,8 +28,8 @@ public class HTMLParserTests : MiyamasuTestRunner {
         
         RunOnMainThread(
             () => {
-                executor = new GameObject("htmlParserTest").AddComponent<UUebView>();
-                var core = new UUebViewCore.UUebViewCore(executor);
+                executor = new GameObject("htmlParserTest").AddComponent<UUebViewComponent>();
+                var core = new UUebView.UUebViewCore(executor);
                 executor.SetCore(core);
                 loader = new ResourceLoader(executor.Core.CoroutineExecutor);
             }

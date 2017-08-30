@@ -1,4 +1,4 @@
-namespace UUebViewCore {
+namespace UUebView {
     public class ConstSettings {
         public const string UUEBVIEW_DECL = "<!DOCTYPE uuebview href=";
         public const int TAG_MAX_LEN = 100;
