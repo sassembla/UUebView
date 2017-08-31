@@ -9,18 +9,18 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1780310263329024}
+  m_RootGameObject: {fileID: 1284880934431666}
   m_IsPrefabParent: 1
---- !u!1 &1780310263329024
+--- !u!1 &1284880934431666
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224189429667134996}
-  - component: {fileID: 222779273771155980}
-  - component: {fileID: 114897608563187908}
+  - component: {fileID: 224301643420204698}
+  - component: {fileID: 222371895123154086}
+  - component: {fileID: 114729804258894898}
   m_Layer: 5
   m_Name: TITLETEXT
   m_TagString: Untagged
@@ -28,12 +28,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114897608563187908
+--- !u!114 &114729804258894898
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1780310263329024}
+  m_GameObject: {fileID: 1284880934431666}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
@@ -61,18 +61,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: New Text
---- !u!222 &222779273771155980
+--- !u!222 &222371895123154086
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1780310263329024}
---- !u!224 &224189429667134996
+  m_GameObject: {fileID: 1284880934431666}
+--- !u!224 &224301643420204698
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1780310263329024}
+  m_GameObject: {fileID: 1284880934431666}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

@@ -30,8 +30,12 @@ namespace UUebView {
 		void Start () {
 			if (!string.IsNullOrEmpty(presetUrl) && presetEventReceiver != null) {
 				Debug.Log("show preset view.");
-				var view = UUebViewComponent.GenerateSingleViewFromUrl(presetEventReceiver, presetUrl, GetComponent<RectTransform>().sizeDelta);
-				view.transform.SetParent(this.transform, false);
+				var viewObj = this.gameObject;
+                
+                var uuebView = viewObj.GetComponent<UUebViewComponent>();
+                var uuebViewCore = new UUebViewCore(uuebView);
+                uuebView.SetCore(uuebViewCore);
+                uuebViewCore.DownloadHtml(presetUrl, GetComponent<RectTransform>().sizeDelta, presetEventReceiver);
 			}
 		}
 
@@ -80,7 +84,7 @@ namespace UUebView {
         }
 
 		void Update () {
-			Core.Dequeue(this);
+            Core.Dequeue(this);
 		}
 
         public void EmitButtonEventById (string elementId) {
