@@ -9,18 +9,18 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1787771065665434}
+  m_RootGameObject: {fileID: 1686614472101768}
   m_IsPrefabParent: 1
---- !u!1 &1787771065665434
+--- !u!1 &1686614472101768
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224082880128931126}
-  - component: {fileID: 222019976323034856}
-  - component: {fileID: 114161906188931612}
+  - component: {fileID: 224575220325695994}
+  - component: {fileID: 222422167574236800}
+  - component: {fileID: 114769195773940310}
   m_Layer: 5
   m_Name: MYA
   m_TagString: Untagged
@@ -28,12 +28,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114161906188931612
+--- !u!114 &114769195773940310
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1787771065665434}
+  m_GameObject: {fileID: 1686614472101768}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
@@ -59,20 +59,20 @@ MonoBehaviour:
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
-    m_LineSpacing: 0.69
+    m_LineSpacing: 1
   m_Text: New Text
---- !u!222 &222019976323034856
+--- !u!222 &222422167574236800
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1787771065665434}
---- !u!224 &224082880128931126
+  m_GameObject: {fileID: 1686614472101768}
+--- !u!224 &224575220325695994
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1787771065665434}
+  m_GameObject: {fileID: 1686614472101768}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

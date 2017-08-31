@@ -13,11 +13,12 @@ namespace UUebView {
 
 		actual usage:
 			let's use UUebView.GenerateSingleViewFromHTML or UUebView.GenerateSingleViewFromUrl.
+            they returns view GameObject of UUebView and attach it to your window.
 	 */
 	public class UUebViewComponent : MonoBehaviour, IUUebView {
 		/*
 			preset parameters.
-			you can use this UUebView with preset paramters for testing.
+			you can use UUebView with preset paramters for testing.
 		 */
 		public string presetUrl;
 		public GameObject presetEventReceiver;
@@ -28,6 +29,10 @@ namespace UUebView {
 		}
 
 		void Start () {
+            /*
+                if preset parameters exists, UUebView shows preset view on this gameObject.
+                this feature is for testing.
+             */
 			if (!string.IsNullOrEmpty(presetUrl) && presetEventReceiver != null) {
 				Debug.Log("show preset view.");
 				var viewObj = this.gameObject;
