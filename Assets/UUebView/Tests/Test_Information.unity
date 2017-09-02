@@ -2449,7 +2449,7 @@ GameObject:
   - component: {fileID: 834305886}
   - component: {fileID: 834305885}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: PresetComponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

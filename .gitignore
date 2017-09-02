@@ -8,3 +8,4 @@ UUebView.sln
 obj/*
 Temp/*
 miyamasu_test.log
+.vscode/launch.json

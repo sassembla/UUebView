@@ -33,7 +33,7 @@ namespace UUebView {
         private LayoutMachine layoutMachine;
         private MaterializeMachine materializeMachine;
 
-        public UUebViewCore (IUUebView uuebView, Autoya.HttpRequestHeaderDelegate requestHeader=null, Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null) {
+        public UUebViewCore (IUUebView uuebView, ResourceLoader.MyHttpRequestHeaderDelegate requestHeader=null, ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate=null) {
             this.view = uuebView;
 
             resLoader = new ResourceLoader(this.LoadParallel, requestHeader, httpResponseHandlingDelegate);

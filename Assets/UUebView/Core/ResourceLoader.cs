@@ -13,6 +13,26 @@ namespace UUebView {
     // キャッシュ保持と各種coroutineの生成を行う。
 
     public class ResourceLoader {
+        //  外部に公開する関数ポインタの型定義
+        public delegate Dictionary<string, string> MyHttpRequestHeaderDelegate (string method, string url, Dictionary<string, string> requestHeader, string data);
+        
+        private MyHttpRequestHeaderDelegate httpRequestHeaderDelegate; 
+        private Dictionary<string, string> BasicRequestHeaderDelegate(string method, string url, Dictionary<string, string> requestHeader, string data) {
+            return requestHeader;
+        }
+
+
+        public delegate void MyHttpResponseHandlingDelegate (string connectionId, Dictionary<string, string> responseHeader, int httpCode, object data, string errorReason, Action<string, object> succeeded, Action<string, int, string> failed);
+
+        private MyHttpResponseHandlingDelegate httpResponseHandlingDelegate; 
+        private void BasicResponseHandlingDelegate(string connectionId, Dictionary<string, string> responseHeader, int httpCode, object data, string errorReason, Action<string, object> succeeded, Action<string, int, string> failed) {
+            if (200 <= httpCode && httpCode < 299) {
+				succeeded(connectionId, data);
+				return;
+			}
+			failed(connectionId, httpCode, errorReason);
+        }
+
         private class SpriteCache : Dictionary<string, Sprite> {};
         private class PrefabCache : Dictionary<string, GameObject> {};
         private class GameObjCache : Dictionary<string, GameObject> {};
@@ -33,26 +53,13 @@ namespace UUebView {
 
         private GameObjCache goCache = new GameObjCache();
 
-        private readonly Autoya.HttpRequestHeaderDelegate requestHeader;
-		private Dictionary<string, string> BasicRequestHeaderDelegate (HttpMethod method, string url, Dictionary<string, string> requestHeader, string data) {
-			return requestHeader;
-		}
 
-		private readonly Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate;
-		private void BasicResponseHandlingDelegate (string connectionId, Dictionary<string, string> responseHeaders, int httpCode, object data, string errorReason, Action<string, object> succeeded, Action<string, int, string, AutoyaStatus> failed) {
-			if (200 <= httpCode && httpCode < 299) {
-				succeeded(connectionId, data);
-				return;
-			}
-			failed(connectionId, httpCode, errorReason, new AutoyaStatus());
-		}
 
-        
-
+    
         public readonly GameObject cacheBox;
         public readonly Action<IEnumerator> LoadParallel;
 
-        public ResourceLoader (Action<IEnumerator> LoadParallel, Autoya.HttpRequestHeaderDelegate requestHeader=null, Autoya.HttpResponseHandlingDelegate httpResponseHandlingDelegate=null) {
+        public ResourceLoader (Action<IEnumerator> LoadParallel, MyHttpRequestHeaderDelegate requestHeader=null, MyHttpResponseHandlingDelegate httpResponseHandlingDelegate=null) {
             this.LoadParallel = LoadParallel;
 
             cacheBox = new GameObject("UUebViewGOPool");
@@ -73,9 +80,10 @@ namespace UUebView {
                 set request header generation func and response validation delegate.
              */
             if (requestHeader != null) {
-				this.requestHeader = requestHeader;
+				// reqHeaderがなんか存在してるので、
+                this.httpRequestHeaderDelegate = requestHeader;
 			} else {
-				this.requestHeader = BasicRequestHeaderDelegate;
+				this.httpRequestHeaderDelegate = BasicRequestHeaderDelegate;
 			}
 			
 			if (httpResponseHandlingDelegate != null) {
@@ -90,7 +98,7 @@ namespace UUebView {
             var timeoutTick = (DateTime.UtcNow + TimeSpan.FromSeconds(timeoutSec)).Ticks;
             var connectionId = ConstSettings.CONNECTIONID_DOWNLOAD_HTML_PREFIX + Guid.NewGuid().ToString();
             using(var request = UnityWebRequest.Get(url)) {
-                var reqHeader = requestHeader(HttpMethod.Get, url, new Dictionary<string, string>(), string.Empty);
+                var reqHeader = httpRequestHeaderDelegate("GET", url, new Dictionary<string, string>(), string.Empty);
                 foreach (var item in reqHeader) {
                     request.SetRequestHeader(item.Key, item.Value);
                 }
@@ -121,7 +129,7 @@ namespace UUebView {
                         (conId, data) => {
                             throw new Exception("request encountered some kind of error.");
                         }, 
-                        (conId, code, reason, autoyaStatus) => {
+                        (conId, code, reason) => {
                             failed(ContentType.HTML, code, "failed to download html:" + url + " reason:" + reason);
                         }
                     );
@@ -139,7 +147,7 @@ namespace UUebView {
                     (conId, data) => {
                         htmlStr = Encoding.UTF8.GetString(request.downloadHandler.data);
                     }, 
-                    (conId, code, reason, autoyaStatus) => {
+                    (conId, code, reason) => {
                         failed(ContentType.HTML, code, "failed to download html:" + url + " reason:" + reason);
                     }
                 );
@@ -520,7 +528,7 @@ namespace UUebView {
 
         private IEnumerator<Sprite> LoadImageFromWeb (string url) {
             var connectionId = ConstSettings.CONNECTIONID_DOWNLOAD_IMAGE_PREFIX + Guid.NewGuid().ToString();
-            var reqHeaders = requestHeader(HttpMethod.Get, url, new Dictionary<string, string>(), string.Empty);
+            var reqHeaders = httpRequestHeaderDelegate("GET", url, new Dictionary<string, string>(), string.Empty);
 
             // start download tex from url.
             using (var request = UnityWebRequest.GetTexture(url)) {
@@ -558,7 +566,7 @@ namespace UUebView {
                         (conId, data) => {
                             throw new Exception("request encountered some kind of error.");
                         }, 
-                        (conId, code, reason, autoyaStatus) => {
+                        (conId, code, reason) => {
                             // do nothing.
                         }
                     );
@@ -580,7 +588,7 @@ namespace UUebView {
                         // cache this sprite for other requests.
                         spr = Sprite.Create(tex, new Rect(0,0, tex.width, tex.height), Vector2.zero);
                     }, 
-                    (conId, code, reason, autoyaStatus) => {
+                    (conId, code, reason) => {
                         // do nothing.
                     }
                 );
@@ -794,7 +802,7 @@ namespace UUebView {
         
         private IEnumerator LoadTagsFromWeb (string url, Action<UUebTags> loadSucceeded, Action<int, string> loadFailed) {
             var connectionId = ConstSettings.CONNECTIONID_DOWNLOAD_UUEBTAGS_PREFIX + Guid.NewGuid().ToString();
-            var reqHeaders = requestHeader(HttpMethod.Get, url, new Dictionary<string, string>(), string.Empty);
+            var reqHeaders = httpRequestHeaderDelegate("GET", url, new Dictionary<string, string>(), string.Empty);
 
             using (var request = UnityWebRequest.Get(url)) {
                 foreach (var reqHeader in reqHeaders) {
@@ -830,7 +838,7 @@ namespace UUebView {
                         (conId, data) => {
                             throw new Exception("request encountered some kind of error.");
                         }, 
-                        (conId, code, reason, autoyaStatus) => {
+                        (conId, code, reason) => {
                             loadFailed(code, reason);
                         }
                     );
@@ -849,7 +857,7 @@ namespace UUebView {
 
                         loadSucceeded(newDepthAssetList);
                     }, 
-                    (conId, code, reason, autoyaStatus) => {
+                    (conId, code, reason) => {
                         loadFailed(code, reason);
                     }
                 );
@@ -908,6 +916,5 @@ namespace UUebView {
             undefinedTagDict[tagCandidateStr] = count;
             return count;
         }
-
     }
 }
