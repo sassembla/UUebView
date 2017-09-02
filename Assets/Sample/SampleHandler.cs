@@ -29,12 +29,13 @@ public class SampleHandler : MonoBehaviour, IUUebViewEventHandler {
 
     public void OnElementTapped(ContentType type, GameObject element, string param, string id)
     {
-        // throw new System.NotImplementedException();
+        if (type == ContentType.IMAGE) {
+			element.AddComponent<Rigidbody>();
+		}
     }
 
     public void OnLoaded()
     {
-		
         var contentSizeDelta = scrollViewContent.GetComponent<RectTransform>().sizeDelta;
 		contentSizeDelta = new Vector2(contentSizeDelta.x, uuebView.GetComponent<RectTransform>().sizeDelta.y);
     }

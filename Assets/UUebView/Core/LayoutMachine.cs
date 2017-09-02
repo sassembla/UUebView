@@ -660,8 +660,8 @@ namespace UUebView {
                     yield break;
                 }
 
-                var additionalWidth = 0;
-                var additionalHeight = 0;
+                var additionalWidth = 2;
+                var additionalHeight = 2;
 
                 if (isStartAtZeroOffset) {
                     if (isMultilined) {
