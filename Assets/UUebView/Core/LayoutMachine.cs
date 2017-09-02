@@ -50,6 +50,9 @@ namespace UUebView {
             コンテンツ単位でのレイアウトの起点。ここからtreeTypeごとのレイアウトを実行する。
          */
         private IEnumerator<ChildPos> DoLayout (TagTree tree, ViewCursor viewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
+            if (viewCursor.viewWidth < 0) {
+                throw new Exception("cannot use negative width. viewCursor:" + viewCursor);
+            }
             // Debug.LogError("tree:" + Debug_GetTagStrAndType(tree) + " viewCursor:" + viewCursor);
             // Debug.LogWarning("まだ実装してない、brとかhrでの改行処理。 実際にはpとかも一緒で、「このコンテンツが終わったら改行する」みたいな属性が必須。区分けとしてはここではないか。＿なんちゃらシリーズと一緒に分けちゃうのもありかな〜");
 
@@ -125,6 +128,10 @@ namespace UUebView {
                 var boxPos = resLoader.GetUnboxedLayerSize(layerTree.tagValue);
                 var rect = TagTree.GetChildViewRectFromParentRectTrans(parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight, boxPos);
                 basePos = new ViewCursor(parentBoxViewCursor.offsetX + rect.position.x, parentBoxViewCursor.offsetY + rect.position.y, parentBoxViewCursor.viewWidth - rect.position.x, boxPos.originalHeight);
+                
+                if (basePos.viewWidth < 0) {
+                    Debug.LogError("basePos:" + basePos + " parent:" + parentBoxViewCursor);
+                }
             } else {
                 // 親がboxなので、boxのoffsetYとサイズを継承する。offsetXは常に0で来る。
                 // layerのコンテナとしての特性として、xには常に0が入る = 左詰めでレイアウトが開始される。
@@ -515,7 +522,7 @@ namespace UUebView {
                                 nextChildViewCursor = new ViewCursor(
                                     containersLastChild.viewWidth, 
                                     (childContainer.offsetY + childContainer.viewHeight) - containersLastChild.viewHeight, 
-                                    containerViewCursor.viewWidth - containersLastChild.viewWidth,
+                                    containerViewCursor.viewWidth - (containersLastChild.offsetX + containersLastChild.viewWidth),
                                     containerViewCursor.viewHeight
                                 );
                                 continue;
@@ -587,10 +594,6 @@ namespace UUebView {
             もしテキストが複数行に渡る場合、最終行だけを新規コンテンツとして上位に返す。
          */
         private IEnumerator<ChildPos> DoTextLayout (TagTree textTree, ViewCursor textViewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
-            if (textViewCursor.viewWidth < 0) {
-                throw new Exception("DoTextLayout cannot use negative width. textViewCursor:" + textViewCursor);
-            }
-
             var text = textTree.keyValueStore[HTMLAttribute._CONTENT] as string;
             
             var cor = resLoader.LoadPrefab(textTree.tagValue, textTree.treeType);
@@ -607,11 +610,11 @@ namespace UUebView {
             // use prefab's text component for using it's text setting.
             var textComponent = prefab.GetComponent<Text>();
             if (textComponent == null) {
-                throw new Exception("failed to get Text component from prefab:" + prefab.name + " of text content:" + text);
+                throw new Exception("failed to get Text component from prefab:" + resLoader.UUebTagsName() + "/" + prefab.name + " of text content:" + text);
             }
 
             if (textComponent.font == null) {
-                throw new Exception("font is null. prefab:" + prefab.name);
+                throw new Exception("font is null. prefab:" + resLoader.UUebTagsName() + "/" + prefab.name);
             }
             
             // set content to prefab.
@@ -657,6 +660,9 @@ namespace UUebView {
                     yield break;
                 }
 
+                var additionalWidth = 0;
+                var additionalHeight = 0;
+
                 if (isStartAtZeroOffset) {
                     if (isMultilined) {
                         // Debug.LogError("行頭での折り返しのある複数行 text:" + text);
@@ -679,16 +685,15 @@ namespace UUebView {
                         var totalHeight = 0;
                         for (var i = 0; i < generator.lineCount-1; i++) {
                             var line = generator.lines[i];
-                            // Debug.LogWarning("ここに+1がないと実質的な表示用高さが足りなくなるケースがあって、すごく怪しい。");
-                            totalHeight += (int)(line.height * textComponent.lineSpacing);
+                            totalHeight += (int)(line.height * textComponent.lineSpacing) + additionalHeight;
                         }
                         
                         // このビューのポジションをセット
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, totalHeight);
                     } else {
                         // Debug.LogError("行頭の単一行 text:" + text);
-                        var width = textComponent.preferredWidth;
-                        var height = generator.lines[0].height * textComponent.lineSpacing;
+                        var width = textComponent.preferredWidth + additionalWidth;
+                        var height = (generator.lines[0].height * textComponent.lineSpacing) + additionalHeight;
                         
                         // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                         insertion(InsertType.TailInsertedToLine, textTree);
@@ -696,12 +701,12 @@ namespace UUebView {
                         // Debug.LogError("行頭の単一行 text:" + text + " textViewCursor:" + textViewCursor);
 
                         // Debug.LogError("行頭の単一行 newViewCursor:" + newViewCursor);
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textComponent.preferredWidth, height);
+                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                     }
                 } else {
                     if (isMultilined) {
                         // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
-                        var currentLineHeight = generator.lines[0].height * textComponent.lineSpacing;
+                        var currentLineHeight = (generator.lines[0].height * textComponent.lineSpacing) + additionalHeight;
 
                         // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
                         var currentLineContent = text.Substring(0, generator.lines[1].startCharIdx);
@@ -710,7 +715,7 @@ namespace UUebView {
                         // get preferredWidht of text from trimmed line.
                         textComponent.text = currentLineContent;
 
-                        var currentLineWidth = textComponent.preferredWidth;
+                        var currentLineWidth = textComponent.preferredWidth + additionalWidth;
 
                         var restContent = text.Substring(generator.lines[1].startCharIdx);
                         var nextLineContent = new InsertedTree(textTree, restContent, textTree.tagValue);
@@ -722,15 +727,15 @@ namespace UUebView {
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
                     } else {
                         // Debug.LogError("行中追加の単一行 text:" + text);
-                        var width = textComponent.preferredWidth;
-                        var height = generator.lines[0].height * textComponent.lineSpacing;
+                        var width = textComponent.preferredWidth + additionalWidth;
+                        var height = (generator.lines[0].height * textComponent.lineSpacing) + additionalHeight;
                         
                         // Debug.LogError("行中の単一行 text:" + text + " textViewCursor:" + textViewCursor);
                         // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                         insertion(InsertType.TailInsertedToLine, textTree);
                         
                         // Debug.LogError("newViewCursor:" + newViewCursor);
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textComponent.preferredWidth, height);
+                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                     }
                 }
             }

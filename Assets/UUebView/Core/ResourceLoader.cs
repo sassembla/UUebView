@@ -617,6 +617,13 @@ namespace UUebView {
             }            
         }
 
+        public string UUebTagsName () {
+            if (uuebTags == null) {
+                return string.Empty;
+            }
+            return uuebTags.viewName;
+        }
+
         public void BackGameObjects (params string[] usingIds) {
             var cachedKeys = goCache.Keys.ToArray();
 
