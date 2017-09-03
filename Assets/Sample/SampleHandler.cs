@@ -22,6 +22,10 @@ public class SampleHandler : MonoBehaviour, IUUebViewEventHandler {
 		
 	}
 
+	public void Reload () {
+		uuebView.GetComponent<UUebViewComponent>().Core.Reload();
+	}
+
     public void OnElementLongTapped(ContentType type, string param, string id)
     {
         // throw new System.NotImplementedException();
