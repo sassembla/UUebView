@@ -29,7 +29,7 @@ namespace UUebView {
         };
 
         public IEnumerator Layout (TagTree rootTree, Vector2 view, Action<TagTree> layouted) {
-            var viewCursor = ViewCursor.ZeroOffsetViewCursor(new ViewCursor(0,0,view.x,view.y));
+            var viewCursor = new ViewCursor(0,0,view.x,view.y);
             
             var cor = DoLayout(rootTree, viewCursor);
             
@@ -53,7 +53,7 @@ namespace UUebView {
          */
         private IEnumerator<ChildPos> DoLayout (TagTree tree, ViewCursor viewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
             if (viewCursor.viewWidth < 0) {
-                throw new Exception("cannot use negative width. viewCursor:" + viewCursor);
+                throw new Exception("cannot use negative width. viewCursor:" + viewCursor + " tag:" + Debug_GetTagStrAndType(tree));
             }
             // Debug.LogError("tree:" + Debug_GetTagStrAndType(tree) + " viewCursor:" + viewCursor);
             // Debug.LogWarning("まだ実装してない、brとかhrでの改行処理。 実際にはpとかも一緒で、「このコンテンツが終わったら改行する」みたいな属性が必須。区分けとしてはここではないか。＿なんちゃらシリーズと一緒に分けちゃうのもありかな〜");
@@ -61,7 +61,7 @@ namespace UUebView {
             IEnumerator<ChildPos> cor = null;
             switch (tree.treeType) {
                 case TreeType.CustomLayer: {
-                    cor = DoLayerLayout(tree, viewCursor);
+                    cor = DoLayerLayout(tree, viewCursor, insertion);
                     break;
                 }
                 case TreeType.CustomEmptyLayer: {
@@ -121,19 +121,24 @@ namespace UUebView {
             customTagLayer/box/boxContents(layerとか) という構造になっていて、boxはlayer内に必ず規定のポジションでレイアウトされる。
             ここだけ相対的なレイアウトが確実に崩れる。
          */
-        private IEnumerator<ChildPos> DoLayerLayout (TagTree layerTree, ViewCursor parentBoxViewCursor) {
+        private IEnumerator<ChildPos> DoLayerLayout (TagTree layerTree, ViewCursor parentBoxViewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
             ViewCursor basePos;
             
             if (!layerTree.keyValueStore.ContainsKey(HTMLAttribute._LAYER_PARENT_TYPE)) {
                 // 親がboxではないlayerは、layer生成時の高さを使って基礎高さを出す。
                 // 内包するboxの位置基準値が生成時のものなので、あらかじめ持っておいた値を使うのが好ましい。
                 var boxPos = resLoader.GetUnboxedLayerSize(layerTree.tagValue);
+
+                // 親のサイズから、今回レイヤーコンテンツを詰める箱を作り出す
                 var rect = TagTree.GetChildViewRectFromParentRectTrans(parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight, boxPos);
-                basePos = new ViewCursor(parentBoxViewCursor.offsetX + rect.position.x, parentBoxViewCursor.offsetY + rect.position.y, parentBoxViewCursor.viewWidth - rect.position.x, boxPos.originalHeight);
-                
-                if (basePos.viewWidth < 0) {
-                    Debug.LogError("basePos:" + basePos + " parent:" + parentBoxViewCursor);
+
+                if (rect.width <= 0) {
+                    // 送り出して改行してもらう
+                    insertion(InsertType.RetryWithNextLine, null);
+                    yield break;
                 }
+
+                basePos = new ViewCursor(parentBoxViewCursor.offsetX + rect.position.x, parentBoxViewCursor.offsetY + rect.position.y, rect.width, boxPos.originalHeight);
             } else {
                 // 親がboxなので、boxのoffsetYとサイズを継承する。offsetXは常に0で来る。
                 // layerのコンテナとしての特性として、xには常に0が入る = 左詰めでレイアウトが開始される。
@@ -203,9 +208,11 @@ namespace UUebView {
                     boxYPosRecords[yPos] = childCursor.viewHeight - childBoxViewRect.height;
                 }
 
-                // 最終グループの追加値をviewの高さに足す
-                var tallestInGroup = boxYPosRecords.Keys.Max();
-                additionalHeight = boxYPosRecords[tallestInGroup] + additionalHeight;    
+                if (boxYPosRecords.Any()) {
+                    // 最終グループの追加値をviewの高さに足す
+                    var tallestInGroup = boxYPosRecords.Keys.Max();
+                    additionalHeight = boxYPosRecords[tallestInGroup] + additionalHeight;    
+                }
             }
 
             // 基礎高さ + 増加分高さ
@@ -219,8 +226,7 @@ namespace UUebView {
         private IEnumerator<ChildPos> DoEmptyLayerLayout (TagTree emptyLayerTree, ViewCursor viewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
             var baseViewCursorHeight = viewCursor.viewHeight;
 
-            var childView = ViewCursor.ZeroOffsetViewCursor(viewCursor);
-
+            var childView = new ViewCursor(0, viewCursor.offsetY, viewCursor.viewWidth, viewCursor.viewHeight);
             var cor = DoContainerLayout(emptyLayerTree, childView, (type, tree) => {throw new Exception("never called.");});
             
             while (cor.MoveNext()) {

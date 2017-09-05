@@ -566,7 +566,7 @@ else
         var textBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0];
         var updatetextBox = textBox.GetChildren()[0];
         // Debug.LogError("updatetextBox:" + updatetextBox.viewHeight);
-        Assert(textBox.viewHeight == 1325, "not match, textBox.viewHeight:" + textBox.viewHeight);
+        Assert(textBox.viewHeight == 1950, "not match, textBox.viewHeight:" + textBox.viewHeight);
     }
 
     [MTest] public void SampleView2 () {
@@ -627,7 +627,7 @@ else
         // }
         
         var pContainer = pAndUpdateText[0];
-        Assert(pContainer.viewWidth.ToString() == "209", "not match. pContainer.viewWidth:" + pContainer.viewWidth);
+        Assert(pContainer.viewWidth.ToString() == "208.9", "not match. pContainer.viewWidth:" + pContainer.viewWidth);
 
         var lastPContents = pContainer.GetChildren().Last();
         Assert(lastPContents.offsetY.ToString() == "96", "not match. lastPContents.offsetY:" + lastPContents.offsetY);
@@ -640,7 +640,7 @@ else
         Assert(updateTextContainer2.offsetY == 96f, "not match. updateTextContainer2.offsetY:" + updateTextContainer2.offsetY);
         
         var pContainer2 = pAndUpdateText[3];
-        Assert(pContainer2.offsetY == 113.25, "not match. pContainer2.offsetY:" + pContainer2.offsetY);
+        Assert(pContainer2.offsetY == 121, "not match. pContainer2.offsetY:" + pContainer2.offsetY);
         
         var pContainer2FirstLine = pContainer2.GetChildren()[0];
         Assert(pContainer2FirstLine.offsetX == 44f, "not match. pContainer2FirstLine.offsetX:" + pContainer2FirstLine.offsetX);
@@ -648,7 +648,7 @@ else
 
         var pContainer2SecondLine = pContainer2.GetChildren()[1];
         Assert(pContainer2SecondLine.offsetX == 0f, "not match. pContainer2SecondLine.offsetX:" + pContainer2SecondLine.offsetX);
-        Assert(pContainer2SecondLine.offsetY.ToString() == "17.25", "not match. pContainer2SecondLine.offsetY:" + pContainer2SecondLine.offsetY);
+        Assert(pContainer2SecondLine.offsetY.ToString() == "25", "not match. pContainer2SecondLine.offsetY:" + pContainer2SecondLine.offsetY);
     }
 
     [MTest] public void BrSupport () {
