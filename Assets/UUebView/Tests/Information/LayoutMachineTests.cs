@@ -75,19 +75,21 @@ public class LayoutMachineTests : MiyamasuTestRunner {
             throw new Exception("failed to parse. error:" + parsedRoot.errors[0].reason);
         }
 
-        var layoutMachine = new LayoutMachine(
-            loader
-        );
-        
-        var loaderCor = layoutMachine.Layout(
-            parsedRoot,
-            new Vector2(width,100),
-            layoutedTree => {
-                layoutedRoot = layoutedTree;
-            }
-        );
+        RunOnMainThread(() => {
+            var layoutMachine = new LayoutMachine(
+                loader
+            );
+            
+            var loaderCor = layoutMachine.Layout(
+                parsedRoot,
+                new Vector2(width,100),
+                layoutedTree => {
+                    layoutedRoot = layoutedTree;
+                }
+            );
 
-        RunOnMainThread(() => executor.Core.CoroutineExecutor(loaderCor));
+            executor.Core.CoroutineExecutor(loaderCor);
+        });
 
         WaitUntil(
             () => layoutedRoot != null, 5, "timeout."
@@ -286,20 +288,23 @@ else
 
         {
             var done = false;
-            var layoutMachine = new LayoutMachine(
-                loader      
-            );
+            
+            LayoutMachine layoutMachine = null;
+            RunOnMainThread(() => {
+                layoutMachine = new LayoutMachine(
+                    loader
+                );
 
-            var cor = layoutMachine.Layout(
-                parsedRoot,
-                new Vector2(100,100),
-                layoutedTree => {
-                    done = true;
-                    Assert(layoutedTree.viewHeight == 112, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
-                }
-            );
-
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
+                var cor = layoutMachine.Layout(
+                    parsedRoot,
+                    new Vector2(100,100),
+                    layoutedTree => {
+                        done = true;
+                        Assert(layoutedTree.viewHeight == 112, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
+                    }
+                );
+                executor.Core.CoroutineExecutor(cor);
+            });
 
 
             WaitUntil(
@@ -310,10 +315,7 @@ else
                 re-layout.
             */
             var done2 = false;
-            var layoutMachine2 = new LayoutMachine(
-                loader
-            );
-
+           
             var cor2 = layoutMachine.Layout(
                 parsedRoot,
                 new Vector2(100,100),
@@ -354,20 +356,23 @@ else
 
         {
             var done = false;
-            var layoutMachine = new LayoutMachine(
-                loader      
-            );
+            
+            LayoutMachine layoutMachine = null;
+            RunOnMainThread(() => {
+                layoutMachine = new LayoutMachine(
+                    loader
+                );
 
-            var cor = layoutMachine.Layout(
-                parsedRoot,
-                new Vector2(100,100),
-                layoutedTree => {
-                    done = true;
-                    Assert(layoutedTree.viewHeight == 112, "not match.");
-                }
-            );
-
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
+                var cor = layoutMachine.Layout(
+                    parsedRoot,
+                    new Vector2(100,100),
+                    layoutedTree => {
+                        done = true;
+                        Assert(layoutedTree.viewHeight == 112, "not match.");
+                    }
+                );
+                executor.Core.CoroutineExecutor(cor);
+            });
 
 
             WaitUntil(
@@ -422,20 +427,23 @@ else
 
         {
             var done = false;
-            var layoutMachine = new LayoutMachine(
-                loader      
-            );
+            
+            LayoutMachine layoutMachine = null;
+            RunOnMainThread(() => {
+                layoutMachine = new LayoutMachine(
+                    loader
+                );
 
-            var cor = layoutMachine.Layout(
-                parsedRoot,
-                new Vector2(100,100),
-                layoutedTree => {
-                    done = true;
-                    Assert(layoutedTree.viewHeight == 112, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
-                }
-            );
-
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
+                var cor = layoutMachine.Layout(
+                    parsedRoot,
+                    new Vector2(100,100),
+                    layoutedTree => {
+                        done = true;
+                        Assert(layoutedTree.viewHeight == 112, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
+                    }
+                );
+                executor.Core.CoroutineExecutor(cor);
+            });
 
 
             WaitUntil(
@@ -558,7 +566,7 @@ else
         var textBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0];
         var updatetextBox = textBox.GetChildren()[0];
         // Debug.LogError("updatetextBox:" + updatetextBox.viewHeight);
-        Assert(textBox.viewHeight == 68.25f, "not match, textBox.viewHeight:" + textBox.viewHeight);
+        Assert(textBox.viewHeight == 1325, "not match, textBox.viewHeight:" + textBox.viewHeight);
     }
 
     [MTest] public void SampleView2 () {

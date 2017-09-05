@@ -84,17 +84,18 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
         }
 
         TagTree layouted = null;
-        var layoutMachine = new LayoutMachine(core.resLoader);
+        RunOnMainThread(() => {
+            var layoutMachine = new LayoutMachine(core.resLoader);
 
-        var cor2 = layoutMachine.Layout(
-            parsedRoot, 
-            new Vector2(width,100),
-            layoutedTree => {
-                layouted = layoutedTree;
-            }
-        );
-
-        RunOnMainThread(() => view.Core.Internal_CoroutineExecutor(cor2));
+            var cor2 = layoutMachine.Layout(
+                parsedRoot, 
+                new Vector2(width,100),
+                layoutedTree => {
+                    layouted = layoutedTree;
+                }
+            );
+            view.Core.Internal_CoroutineExecutor(cor2);
+        });
 
         WaitUntil(
             () => layouted != null, 5, "layout timeout."

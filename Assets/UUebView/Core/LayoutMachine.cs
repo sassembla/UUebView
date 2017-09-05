@@ -12,9 +12,11 @@ namespace UUebView {
     */
     public class LayoutMachine {
         private readonly ResourceLoader resLoader;
+        private readonly TextGenerator generator;
 
           public LayoutMachine (ResourceLoader resLoader) {
             this.resLoader = resLoader;
+            this.generator = new TextGenerator();
         }
 
         private enum InsertType {
@@ -617,9 +619,13 @@ namespace UUebView {
                 throw new Exception("font is null. prefab:" + resLoader.UUebTagsName() + "/" + prefab.name);
             }
             
-            // set content to prefab.
+
+            // invalidate first.
+            generator.Invalidate();
             
-            var generator = new TextGenerator();
+
+
+            // set content to prefab.
             
             textComponent.text = text;
             var setting = textComponent.GetGenerationSettings(new Vector2(textViewCursor.viewWidth, float.PositiveInfinity));
@@ -654,8 +660,30 @@ namespace UUebView {
                 var isStartAtZeroOffset = onLayoutPresetX == 0 && textViewCursor.offsetX == 0;
                 var isMultilined = 1 < lineCount;
 
-                // 複数行存在するんだけど、2行目のスタートが0文字目の場合、1行目に1文字も入っていない。コンテンツ全体を次の行で開始させる。
+                // 複数行存在するんだけど、2行目のスタートが0文字目の場合、1行目に1文字も入っていない。
                 if (isMultilined && generator.lines[1].startCharIdx == 0) {
+                    // 行頭でこれが起きる場合、コンテンツ幅が圧倒的に不足していて、一文字も入らないということが起きている。
+                    // 1文字ずつ切り分けて表示する。
+                    if (isStartAtZeroOffset) {
+                        // 最初の1文字目を強制的にセットする
+                        var bodyContent = text.Substring(0, 1);
+                        
+                        // 内容の反映
+                        textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
+                        
+                        // 最終行
+                        var lastLineContent = text.Substring(1);
+
+                        // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
+                        var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
+                        insertion(InsertType.InsertContentToNextLine, nextLineContent);
+
+                       
+                        var charHeight = GetCharHeight(bodyContent, textComponent);
+                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
+                    }
+
+                    // コンテンツ全体を次の行で開始させる。
                     insertion(InsertType.RetryWithNextLine, null);
                     yield break;
                 }
@@ -740,7 +768,7 @@ namespace UUebView {
                 }
             }
         }
-
+        
         private IEnumerator<ChildPos> DoCRLFLayout (TagTree crlfTree, ViewCursor viewCursor) {
             // return empty size cursor.
             var zeroSizeCursor = ViewCursor.ZeroSizeCursor(viewCursor);
@@ -748,6 +776,7 @@ namespace UUebView {
             // treeに位置をセットしてposを返す
             yield return crlfTree.SetPosFromViewCursor(zeroSizeCursor);
         }
+
 
         private string Debug_GetTagStrAndType (TagTree tree) {
             return resLoader.GetTagFromValue(tree.tagValue) + "_" + tree.treeType;
@@ -762,6 +791,18 @@ namespace UUebView {
             }
 
             hiddenTree.SetHidePos();
+        }
+
+        private float GetCharHeight (string headChara, Text textComponent) {
+            generator.Invalidate();
+
+            // set text for getting preferred width.
+            textComponent.text = headChara;
+            
+            var setting = textComponent.GetGenerationSettings(new Vector2(textComponent.preferredWidth, float.PositiveInfinity));
+            generator.Populate(headChara, setting);
+
+            return generator.lines[0].height;
         }
         
         /**
