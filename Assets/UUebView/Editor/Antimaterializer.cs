@@ -73,10 +73,15 @@ namespace UUebView {
             // recursiveに、コンテンツを分解していく。
             for (var i = 0; i < target.transform.childCount; i++) {
                 var child = target.transform.GetChild(i);
-                
-                CollectConstraintsAndContents(viewName, child.gameObject, layersInEditor, contents, rootHeight);
+                CollectLayerConstraintsAndContents(viewName, child.gameObject, layersInEditor, contents, rootHeight);
             }
 
+            // 存在するlayer内の要素に対して、重なっているもの、縦に干渉しないものをグループとして扱う。
+            foreach (var currentLayer in layersInEditor) {
+                if (currentLayer.layerInfo.boxes.Any()) {
+                    CollectCollisionInLayer(currentLayer);
+                }
+            }
             
             var UUebTags = new UUebTags(viewName, contents.ToArray(), layersInEditor.Select(l => l.layerInfo).ToArray());
 
@@ -92,7 +97,7 @@ namespace UUebView {
         /**
             存在するパーツ単位でconstraintsを生成する
          */
-        private static void CollectConstraintsAndContents (string viewName, GameObject source, List<LayerInfoOnEditor> currentLayers, List<ContentInfo> currentContents, float rootHeight) {
+        private static void CollectLayerConstraintsAndContents (string viewName, GameObject source, List<LayerInfoOnEditor> currentLayers, List<ContentInfo> currentContents, float rootHeight) {
             // このレイヤーにあるものに対して、まずコピーを生成し、そのコピーに対して処理を行う。
             var currentTargetInstance = GameObject.Instantiate(source);
             currentTargetInstance.name = source.name;
@@ -120,35 +125,41 @@ namespace UUebView {
                     }
                 }
             }
-
-            // 存在するlayer内の要素に対して、重なっているもの、縦に干渉しないものをグループとして扱う。
-            foreach (var currentLayer in currentLayers) {
-                if (currentLayer.layerInfo.boxes.Any()) {
-                    CollectCollisionInLayer(currentLayer);
-                }
-            }
         }
 
         private static void CollectCollisionInLayer (LayerInfoOnEditor layer) {
+            // レイヤー単位で内容に対して衝突判定を行う。
             var collisionGroupId = 0;
+            
+            var firstBox = layer.layerInfo.boxes[0];
+            firstBox.collisionGroupId = collisionGroupId;
 
-            layer.layerInfo.boxes[0].collisionGroupId = collisionGroupId;
+            // ここでは使用しない右下余白パラメータ
             float a = 0;
             var beforeBoxRect = TagTree.GetChildViewRectFromParentRectTrans(layer.collisionBaseSize.x, layer.collisionBaseSize.y, layer.layerInfo.boxes[0].rect, out a, out a);
-            Debug.LogError("分解開始");
 
+            Debug.LogError("分解開始 layer:" + layer.layerInfo.layerName);
+
+            Debug.LogError("初期グループ box:" + firstBox.boxName);
+
+            Debug.LogError("初期rect:" + beforeBoxRect);
+            
             for (var i = 1; i < layer.layerInfo.boxes.Length; i++) {
                 var box = layer.layerInfo.boxes[i];
                 var rect = TagTree.GetChildViewRectFromParentRectTrans(layer.collisionBaseSize.x, layer.collisionBaseSize.y, box.rect, out a, out a);
-
+                
+                var isOverlap = beforeBoxRect.Overlaps(rect);
+                var isHorOverlap = HorizontalOverlaps(beforeBoxRect, rect);
+                
                 // 重なっておらず、横方向での重なりがなく、縦に重なる部分がある場合、別のグループとして設定する。
                 if (beforeBoxRect.Overlaps(rect) || HorizontalOverlaps(beforeBoxRect, rect)) {
                     box.collisionGroupId = collisionGroupId;
                     beforeBoxRect = CombinedRect(beforeBoxRect, rect);
-                    Debug.LogError("同一グループ:" + collisionGroupId);
+                    Debug.LogError("同一グループ:" + collisionGroupId + " box:" + box.boxName + " isOverlap:" + isOverlap + " isHorOverlap:" + isHorOverlap);
+                    Debug.LogError("次のrect:" + beforeBoxRect);
                 } else {
-                    Debug.LogError("新規グループ:" + collisionGroupId);
                     collisionGroupId++;
+                    Debug.LogError("新規グループ:" + collisionGroupId + " box:" + box.boxName);
                     box.collisionGroupId = collisionGroupId;
                     beforeBoxRect = rect;
                 }
@@ -264,6 +275,11 @@ namespace UUebView {
                 foreach (Transform component in currentLayerInstance.transform) {
                     var childGameObject = component.gameObject;
 
+                    // enableでなければスキップ
+                    if (!childGameObject.activeSelf) {
+                        continue;
+                    }
+
                     var newChildGameObject = GameObject.Instantiate(childGameObject);
                     newChildGameObject.name = childGameObject.name;
 
@@ -276,8 +292,7 @@ namespace UUebView {
                     box情報を生成
                 */
                 { 
-                    foreach (Transform component in currentLayerInstance.transform) {
-                        var boxObject = component.gameObject;
+                    foreach (var boxObject in copiedChildList) {
                         var boxRectTrans = boxObject.GetComponent<RectTransform>();
                         
                         var boxName = layerName + "_" + boxObject.name;
