@@ -188,8 +188,6 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
     }
 
     [MTest] public void MaterializeHTMLWithImageAsButtonWithIdMakeChanges () {
-        Debug.LogWarning("保留。");
-        return;
         var sample = @"
 <body>
 <p listen='imageId' hidden='true'>something</p>

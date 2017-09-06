@@ -115,7 +115,7 @@ public class LayoutMachineTests : MiyamasuTestRunner {
         var sample = @"
 <body>over 100px string should be multi lined text with good separation. need some length.</body>";
         var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 112, "not match.");
+        Assert(tree.viewHeight == 118, "not match. tree.viewHeight:" + tree.viewHeight);
     }
 
     [MTest] public void LayoutHTMLWithImage () {
@@ -143,7 +143,7 @@ public class LayoutMachineTests : MiyamasuTestRunner {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
         var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 112, "not match.");
+        Assert(tree.viewHeight == 117, "not match. tree.viewHeight:" + tree.viewHeight);
     }
     
 
@@ -258,79 +258,11 @@ else
             if (0 < tree.GetChildren().Count) {
                 tree = tree.GetChildren()[tree.GetChildren().Count-1];
                 if (tree.offsetY != 0) {
-                    Assert(tree.offsetY.ToString() == "754.95", "not match, offsetY:" + tree.offsetY);
+                    Assert(tree.offsetY.ToString() == "799.95", "not match, offsetY:" + tree.offsetY);
                 }
             } else {
                 break;
             }
-        }
-    }
-
-
-    [MTest] public void Re_LayoutHTMLWithSmallImageAndSmallText () {
-        var sample = @"
-<body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
-        ParsedTree parsedRoot = null;
-        {
-            var cor = parser.ParseRoot(
-                sample, 
-                parsed => {
-                    parsedRoot = parsed;
-                }
-            );
-
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
-            
-            WaitUntil(
-                () => parsedRoot != null, 1, "too late."
-            );
-        }
-
-        {
-            var done = false;
-            
-            LayoutMachine layoutMachine = null;
-            RunOnMainThread(() => {
-                layoutMachine = new LayoutMachine(
-                    loader
-                );
-
-                var cor = layoutMachine.Layout(
-                    parsedRoot,
-                    new Vector2(100,100),
-                    layoutedTree => {
-                        done = true;
-                        Assert(layoutedTree.viewHeight == 112, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
-                    }
-                );
-                executor.Core.CoroutineExecutor(cor);
-            });
-
-
-            WaitUntil(
-                () => done, 5, "timeout."
-            );
-
-            /*
-                re-layout.
-            */
-            var done2 = false;
-           
-            var cor2 = layoutMachine.Layout(
-                parsedRoot,
-                new Vector2(100,100),
-                layoutedTree => {
-                    done2 = true;
-                    Assert(layoutedTree.viewHeight == 112, "not match after re-layout. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
-                }
-            );
-
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor2));
-
-
-            WaitUntil(
-                () => done2, 5, "timeout."
-            );
         }
     }
 
@@ -368,7 +300,7 @@ else
                     new Vector2(100,100),
                     layoutedTree => {
                         done = true;
-                        Assert(layoutedTree.viewHeight == 112, "not match.");
+                        Assert(layoutedTree.viewHeight == 117, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
                     }
                 );
                 executor.Core.CoroutineExecutor(cor);
@@ -391,7 +323,7 @@ else
                 new Vector2(100,100),
                 layoutedTree => {
                     done2 = true;
-                    Assert(layoutedTree.viewHeight == 112, "not match. actual:" + layoutedTree.viewHeight);
+                    Assert(layoutedTree.viewHeight == 117, "not match. actual:" + layoutedTree.viewHeight);
                 }
             );
 
@@ -439,7 +371,7 @@ else
                     new Vector2(100,100),
                     layoutedTree => {
                         done = true;
-                        Assert(layoutedTree.viewHeight == 112, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
+                        Assert(layoutedTree.viewHeight == 116, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
                     }
                 );
                 executor.Core.CoroutineExecutor(cor);
@@ -462,7 +394,7 @@ else
                 new Vector2(100,100),
                 layoutedTree => {
                     done2 = true;
-                    Assert(layoutedTree.viewHeight == 112, "not match. actual:" + layoutedTree.viewHeight);
+                    Assert(layoutedTree.viewHeight == 116, "not match. actual:" + layoutedTree.viewHeight);
                 }
             );
 
@@ -566,7 +498,7 @@ else
         var textBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0];
         var updatetextBox = textBox.GetChildren()[0];
         // Debug.LogError("updatetextBox:" + updatetextBox.viewHeight);
-        Assert(textBox.viewHeight == 1950, "not match, textBox.viewHeight:" + textBox.viewHeight);
+        Assert(textBox.viewHeight == 2023, "not match, textBox.viewHeight:" + textBox.viewHeight);
     }
 
     [MTest] public void SampleView2 () {
@@ -630,17 +562,17 @@ else
         Assert(pContainer.viewWidth.ToString() == "208.9", "not match. pContainer.viewWidth:" + pContainer.viewWidth);
 
         var lastPContents = pContainer.GetChildren().Last();
-        Assert(lastPContents.offsetY.ToString() == "96", "not match. lastPContents.offsetY:" + lastPContents.offsetY);
+        Assert(lastPContents.offsetY.ToString() == "100", "not match. lastPContents.offsetY:" + lastPContents.offsetY);
 
         var updateTextContainer = pAndUpdateText[1];
         Assert(updateTextContainer.offsetX == 51f, "not match. updateTextContainer.offsetX:" + updateTextContainer.offsetX);
-        Assert(updateTextContainer.offsetY == 96f, "not match. updateTextContainer.offsetY:" + updateTextContainer.offsetY);
+        Assert(updateTextContainer.offsetY == 100f, "not match. updateTextContainer.offsetY:" + updateTextContainer.offsetY);
 
         var updateTextContainer2 = pAndUpdateText[2];
-        Assert(updateTextContainer2.offsetY == 96f, "not match. updateTextContainer2.offsetY:" + updateTextContainer2.offsetY);
+        Assert(updateTextContainer2.offsetY == 100f, "not match. updateTextContainer2.offsetY:" + updateTextContainer2.offsetY);
         
         var pContainer2 = pAndUpdateText[3];
-        Assert(pContainer2.offsetY == 121, "not match. pContainer2.offsetY:" + pContainer2.offsetY);
+        Assert(pContainer2.offsetY == 125, "not match. pContainer2.offsetY:" + pContainer2.offsetY);
         
         var pContainer2FirstLine = pContainer2.GetChildren()[0];
         Assert(pContainer2FirstLine.offsetX == 44f, "not match. pContainer2FirstLine.offsetX:" + pContainer2FirstLine.offsetX);

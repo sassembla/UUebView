@@ -710,9 +710,6 @@ namespace UUebView {
                     yield break;
                 }
 
-                var additionalWidth = 0;
-                var additionalHeight = 0;
-
                 if (isStartAtZeroOffset) {
                     if (isMultilined) {
                         // Debug.LogError("行頭での折り返しのある複数行 text:" + text);
@@ -731,19 +728,19 @@ namespace UUebView {
                         insertion(InsertType.InsertContentToNextLine, nextLineContent);
 
                         // 最終行以外はハコ型に収まった状態なので、ハコとして出力する。
-                        // 最終一つ前までの高さを出して、
-                        var totalHeight = 0;
+                        // 最終一つ前までの高さを出して、このコンテンツの高さとして扱う。
+                        var totalHeight = 0f + generator.lineCount-1;// lineの高さだけを足すと、必ずlineCount-1ぶんだけ不足する。この挙動は謎。
                         for (var i = 0; i < generator.lineCount-1; i++) {
                             var line = generator.lines[i];
-                            totalHeight += (int)(line.height * textComponent.lineSpacing) + additionalHeight;
+                            totalHeight += (line.height * textComponent.lineSpacing);
                         }
-                        
+
                         // このビューのポジションをセット
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, totalHeight);
                     } else {
                         // Debug.LogError("行頭の単一行 text:" + text);
-                        var width = textComponent.preferredWidth + additionalWidth;
-                        var height = (generator.lines[0].height * textComponent.lineSpacing) + additionalHeight;
+                        var width = textComponent.preferredWidth;
+                        var height = (generator.lines[0].height * textComponent.lineSpacing);
                         
                         // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                         insertion(InsertType.TailInsertedToLine, textTree);
@@ -756,7 +753,7 @@ namespace UUebView {
                 } else {
                     if (isMultilined) {
                         // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
-                        var currentLineHeight = (generator.lines[0].height * textComponent.lineSpacing) + additionalHeight;
+                        var currentLineHeight = (generator.lines[0].height * textComponent.lineSpacing);
 
                         // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
                         var currentLineContent = text.Substring(0, generator.lines[1].startCharIdx);
@@ -765,7 +762,7 @@ namespace UUebView {
                         // get preferredWidht of text from trimmed line.
                         textComponent.text = currentLineContent;
 
-                        var currentLineWidth = textComponent.preferredWidth + additionalWidth;
+                        var currentLineWidth = textComponent.preferredWidth;
 
                         var restContent = text.Substring(generator.lines[1].startCharIdx);
                         var nextLineContent = new InsertedTree(textTree, restContent, textTree.tagValue);
@@ -777,8 +774,8 @@ namespace UUebView {
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
                     } else {
                         // Debug.LogError("行中追加の単一行 text:" + text);
-                        var width = textComponent.preferredWidth + additionalWidth;
-                        var height = (generator.lines[0].height * textComponent.lineSpacing) + additionalHeight;
+                        var width = textComponent.preferredWidth;
+                        var height = (generator.lines[0].height * textComponent.lineSpacing);
                         
                         // Debug.LogError("行中の単一行 text:" + text + " textViewCursor:" + textViewCursor);
                         // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
