@@ -185,16 +185,18 @@ namespace UUebView {
                     */
                     var boxCollisionGroupId = (int)boxTree.keyValueStore[HTMLAttribute._COLLISION];
                     
-                    Debug.LogError("boxCollisionGroupId:" + boxCollisionGroupId);
+                    // Debug.LogError("boxCollisionGroupId:" + boxCollisionGroupId);
 
                     if (collisionGrouId != boxCollisionGroupId) {
-                        var tallest = boxYPosRecords.Select(kv => kv.Key).Max();
-                        additionalHeight = boxYPosRecords[tallest] + additionalHeight;
-                        
-                        // update. entried to new collision group.
-                        collisionGrouId = boxCollisionGroupId;
+                        if (boxYPosRecords.Any()) {
+                            var tallest = boxYPosRecords.Select(kv => kv.Key).Max();
+                            additionalHeight = boxYPosRecords[tallest] + additionalHeight;
+                            
+                            // update. entried to new collision group.
+                            collisionGrouId = boxCollisionGroupId;
 
-                        boxYPosRecords.Clear();
+                            boxYPosRecords.Clear();
+                        }
                     }
                     
                     var childView = new ViewCursor(childBoxViewRect.x, childBoxViewRect.y + additionalHeight, childBoxViewRect.width, childBoxViewRect.height);
@@ -219,13 +221,9 @@ namespace UUebView {
                 if (boxYPosRecords.Any()) {
                     // 最終グループの追加値をviewの高さに足す
                     var tallestInGroup = boxYPosRecords.Keys.Max();
-                    Debug.LogError("tallestInGroup:" + tallestInGroup);
+                    // Debug.LogError("tallestInGroup:" + tallestInGroup);
                     additionalHeight = boxYPosRecords[tallestInGroup] + additionalHeight;
                 }
-                
-                foreach (var s in boxYPosRecords) {
-                    Debug.LogError("s:" + s.Key + " v:" + s.Value);
-                }                
             }
 
             // 基礎高さ + 増加分高さ

@@ -68,12 +68,13 @@ namespace UUebView {
                 throw new Exception("root gameObject should have rectTrans.anchorMin:(0,1) ectTrans.anchorMax:(0,1) rectTrans.pivot:(0,1) anchor. please set it.");
             }
             
+            var rootWidth = rectTrans.sizeDelta.x;
             var rootHeight = rectTrans.sizeDelta.y;
 
             // recursiveに、コンテンツを分解していく。
             for (var i = 0; i < target.transform.childCount; i++) {
                 var child = target.transform.GetChild(i);
-                CollectLayerConstraintsAndContents(viewName, child.gameObject, layersInEditor, contents, rootHeight);
+                CollectLayerConstraintsAndContents(viewName, child.gameObject, layersInEditor, contents, rootWidth, rootHeight);
             }
 
             // 存在するlayer内の要素に対して、重なっているもの、縦に干渉しないものをグループとして扱う。
@@ -97,7 +98,7 @@ namespace UUebView {
         /**
             存在するパーツ単位でconstraintsを生成する
          */
-        private static void CollectLayerConstraintsAndContents (string viewName, GameObject source, List<LayerInfoOnEditor> currentLayers, List<ContentInfo> currentContents, float rootHeight) {
+        private static void CollectLayerConstraintsAndContents (string viewName, GameObject source, List<LayerInfoOnEditor> currentLayers, List<ContentInfo> currentContents, float rootWidth, float rootHeight) {
             // このレイヤーにあるものに対して、まずコピーを生成し、そのコピーに対して処理を行う。
             var currentTargetInstance = GameObject.Instantiate(source);
             currentTargetInstance.name = source.name;
@@ -120,7 +121,7 @@ namespace UUebView {
                     }
                     default: {
                         // target is layer.
-                        ModifyLayerInstance(viewName, currentTargetInstance, currentLayers, rootHeight);
+                        ModifyLayerInstance(viewName, currentTargetInstance, currentLayers, rootWidth, rootHeight);
                         break;
                     }
                 }
@@ -138,50 +139,59 @@ namespace UUebView {
             float a = 0;
             var beforeBoxRect = TagTree.GetChildViewRectFromParentRectTrans(layer.collisionBaseSize.x, layer.collisionBaseSize.y, layer.layerInfo.boxes[0].rect, out a, out a);
 
-            Debug.LogError("分解開始 layer:" + layer.layerInfo.layerName);
-
-            Debug.LogError("初期グループ box:" + firstBox.boxName);
-
-            Debug.LogError("初期rect:" + beforeBoxRect);
-            
             for (var i = 1; i < layer.layerInfo.boxes.Length; i++) {
                 var box = layer.layerInfo.boxes[i];
                 var rect = TagTree.GetChildViewRectFromParentRectTrans(layer.collisionBaseSize.x, layer.collisionBaseSize.y, box.rect, out a, out a);
-                
-                var isOverlap = beforeBoxRect.Overlaps(rect);
+
                 var isHorOverlap = HorizontalOverlaps(beforeBoxRect, rect);
                 
-                // 重なっておらず、横方向での重なりがなく、縦に重なる部分がある場合、別のグループとして設定する。
-                if (beforeBoxRect.Overlaps(rect) || HorizontalOverlaps(beforeBoxRect, rect)) {
+                // 最低でも横方向の重なりがあるので、同一グループとしてまとめる。
+                if (isHorOverlap) {
                     box.collisionGroupId = collisionGroupId;
-                    beforeBoxRect = CombinedRect(beforeBoxRect, rect);
-                    Debug.LogError("同一グループ:" + collisionGroupId + " box:" + box.boxName + " isOverlap:" + isOverlap + " isHorOverlap:" + isHorOverlap);
-                    Debug.LogError("次のrect:" + beforeBoxRect);
+
+                    beforeBoxRect = WrapRect(beforeBoxRect, rect);
                 } else {
                     collisionGroupId++;
-                    Debug.LogError("新規グループ:" + collisionGroupId + " box:" + box.boxName);
                     box.collisionGroupId = collisionGroupId;
                     beforeBoxRect = rect;
                 }
             }
         }
 
+        /**
+            横方向に重なりがある場合trueを返す
+         */
         private static bool HorizontalOverlaps (Rect before, Rect adding) {
-            if (adding.position.y + adding.size.y < before.position.y) {
-                return false;
+            if (Mathf.Abs(before.center.y - adding.center.y) < before.height/2 + adding.height/2) {
+                return true;
             }
-            if (before.position.y + before.size.y < adding.position.y) {
-                return false;
-            }
-            return true;
+            return false;
         }
 
-        private static Rect CombinedRect (Rect before, Rect adding) {
-            var x = Mathf.Min(before.position.x, adding.position.x);
-            var y = Mathf.Min(before.position.y, adding.position.y);
-            var width = Mathf.Max(before.position.x + before.size.x, adding.position.x + before.size.x);
-            var height = Mathf.Max(before.position.y + before.size.y, adding.position.y + before.size.y);
-            return new Rect(x,y,width,height);
+        private static Rect WrapRect (Rect before, Rect adding) {
+            float x, y, width, height = 0f;
+
+            if (before.x < adding.x) {
+                x = before.x;
+                // 幅は、beforeを起点に、beforeかaddingのどちらか長い方。
+                // beforeのほうが左にあるので、欲しいbeforeから含めた幅はx差 + adding.widthになる。
+                width = Mathf.Max(before.width, (adding.x - before.x) + adding.width);
+            } else {
+                x = adding.x;
+                width = Mathf.Max(adding.width, (before.x - adding.x) + before.width);
+            }
+
+            if (before.y < adding.y) {
+                y = before.y;
+                // 高さは、beforeを起点に、beforeかaddingのどちらか長い方。
+                // beforeのほうが上にあるので、欲しいbeforeから含めた幅はy差 + adding.heightになる。
+                height = Mathf.Max(before.height, (adding.y - before.y) + adding.height);
+            } else {
+                y = adding.y;
+                height = Mathf.Max(adding.height, (before.y - adding.y) + before.height);
+            }
+            
+            return new Rect(x, y, width, height);
         }
 
         private static void ModifyContentInstance (string viewName, GameObject currentContentInstance, List<ContentInfo> currentContents) {
@@ -244,14 +254,17 @@ namespace UUebView {
             }
         }
 
-        private static void ModifyLayerInstance (string viewName, GameObject currentLayerInstance, List<LayerInfoOnEditor> currentLayers, float parentHeight) {
+        private static void ModifyLayerInstance (string viewName, GameObject currentLayerInstance, List<LayerInfoOnEditor> currentLayers, float parentWidth, float parentHeight) {
             // このインスタンスのポジションを0,0 leftTopAnchor、左上pivotにする。
             // レイヤーのインスタンスは、インスタンス化時に必ず親のサイズにフィットするように変形される。
             // ただし、親がboxではないlayerの場合、パーツ作成時の高さが使用される。
             // アンカーは成立するため、相対的な配置をしつつ、レイアウトを綺麗に行うことができる。
             var rectTrans = currentLayerInstance.GetComponent<RectTransform>();
 
+            var anchorWidth = (parentWidth * rectTrans.anchorMin.x) + (parentWidth * (1 - rectTrans.anchorMax.x));
             var anchorHeight = (parentHeight * rectTrans.anchorMin.y) + (parentHeight * (1 - rectTrans.anchorMax.y));
+
+            var calculatedWidth = parentWidth - anchorWidth - rectTrans.offsetMin.x + rectTrans.offsetMax.x;
             var calculatedHeight = parentHeight - anchorHeight - rectTrans.offsetMin.y + rectTrans.offsetMax.y;
             
             var unboxedLayerSize = new BoxPos(rectTrans, calculatedHeight);
@@ -260,8 +273,13 @@ namespace UUebView {
             rectTrans.anchorMin = new Vector2(0,1);
             rectTrans.anchorMax = new Vector2(0,1);
             rectTrans.pivot = new Vector2(0,1);
-
-            var size = rectTrans.sizeDelta;
+            
+            
+            var size = new Vector2(calculatedWidth, calculatedHeight);
+            if (size.x <= 0 || size.y <= 0) {
+                throw new Exception("layer size is negative. size:" + size);
+            }
+            
             var layerName = currentLayerInstance.name.ToLower();
             
 
@@ -362,7 +380,7 @@ namespace UUebView {
                     取り出しておいたchildに対して再帰
                 */
                 foreach (var disposableChild in copiedChildList) {
-                    ModifyLayerInstance(viewName, disposableChild, currentLayers, calculatedHeight);
+                    ModifyLayerInstance(viewName, disposableChild, currentLayers, calculatedWidth, calculatedHeight);
                 }
             }
         }
