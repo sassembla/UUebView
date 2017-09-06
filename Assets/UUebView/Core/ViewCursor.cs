@@ -13,6 +13,13 @@ namespace UUebView {
             this.viewHeight = baseTree.viewHeight;
         }
 
+        public ChildPos (float offsetX, float offsetY, float viewWidth, float viewHeight) {
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+            this.viewWidth = viewWidth;
+            this.viewHeight = viewHeight;
+        }
+
         /**
             左詰めで、次の要素の起点となるviewCursorを返す
          */

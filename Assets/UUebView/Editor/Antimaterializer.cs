@@ -133,17 +133,21 @@ namespace UUebView {
             var collisionGroupId = 0;
 
             layer.layerInfo.boxes[0].collisionGroupId = collisionGroupId;
-            var beforeBoxRect = TagTree.GetChildViewRectFromParentRectTrans(layer.collisionBaseSize.x, layer.collisionBaseSize.y, layer.layerInfo.boxes[0].rect);
-            
+            float a = 0;
+            var beforeBoxRect = TagTree.GetChildViewRectFromParentRectTrans(layer.collisionBaseSize.x, layer.collisionBaseSize.y, layer.layerInfo.boxes[0].rect, out a, out a);
+            Debug.LogError("分解開始");
+
             for (var i = 1; i < layer.layerInfo.boxes.Length; i++) {
                 var box = layer.layerInfo.boxes[i];
-                var rect = TagTree.GetChildViewRectFromParentRectTrans(layer.collisionBaseSize.x, layer.collisionBaseSize.y, box.rect);
+                var rect = TagTree.GetChildViewRectFromParentRectTrans(layer.collisionBaseSize.x, layer.collisionBaseSize.y, box.rect, out a, out a);
 
                 // 重なっておらず、横方向での重なりがなく、縦に重なる部分がある場合、別のグループとして設定する。
                 if (beforeBoxRect.Overlaps(rect) || HorizontalOverlaps(beforeBoxRect, rect)) {
                     box.collisionGroupId = collisionGroupId;
                     beforeBoxRect = CombinedRect(beforeBoxRect, rect);
+                    Debug.LogError("同一グループ:" + collisionGroupId);
                 } else {
+                    Debug.LogError("新規グループ:" + collisionGroupId);
                     collisionGroupId++;
                     box.collisionGroupId = collisionGroupId;
                     beforeBoxRect = rect;

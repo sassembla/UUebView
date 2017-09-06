@@ -123,28 +123,33 @@ namespace UUebView {
          */
         private IEnumerator<ChildPos> DoLayerLayout (TagTree layerTree, ViewCursor parentBoxViewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
             ViewCursor basePos;
+
+            float rightAnchorWidth = 0;
+            float bottomAnchorHeight = 0;
             
-            if (!layerTree.keyValueStore.ContainsKey(HTMLAttribute._LAYER_PARENT_TYPE)) {
+            if (layerTree.keyValueStore.ContainsKey(HTMLAttribute._LAYER_PARENT_TYPE)) {
+                // 親がboxなので、boxのoffsetYとサイズを継承する。offsetXは常に0で来る。
+            
+                // layerのコンテナとしての特性として、xには常に0が入る = 左詰めでレイアウトが開始される。
+                basePos = new ViewCursor(0, parentBoxViewCursor.offsetY, parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight);
+            } else {
                 // 親がboxではないlayerは、layer生成時の高さを使って基礎高さを出す。
                 // 内包するboxの位置基準値が生成時のものなので、あらかじめ持っておいた値を使うのが好ましい。
                 var boxPos = resLoader.GetUnboxedLayerSize(layerTree.tagValue);
-
+                
                 // 親のサイズから、今回レイヤーコンテンツを詰める箱を作り出す
-                var rect = TagTree.GetChildViewRectFromParentRectTrans(parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight, boxPos);
-
+                var rect = TagTree.GetChildViewRectFromParentRectTrans(parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight, boxPos, out rightAnchorWidth, out bottomAnchorHeight);
+                
+                // 幅が、このレイヤーが入る最低サイズ未満なので、改行での挿入を促す。
                 if (rect.width <= 0) {
                     // 送り出して改行してもらう
                     insertion(InsertType.RetryWithNextLine, null);
                     yield break;
                 }
+                
 
                 basePos = new ViewCursor(parentBoxViewCursor.offsetX + rect.position.x, parentBoxViewCursor.offsetY + rect.position.y, rect.width, boxPos.originalHeight);
-            } else {
-                // 親がboxなので、boxのoffsetYとサイズを継承する。offsetXは常に0で来る。
-                // layerのコンテナとしての特性として、xには常に0が入る = 左詰めでレイアウトが開始される。
-                basePos = new ViewCursor(0, parentBoxViewCursor.offsetY, parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight);
             }
-
 
             // collisionGroup単位での追加高さ、一番下まで伸びてるやつを基準にする。
             float additionalHeight = 0f;
@@ -171,7 +176,8 @@ namespace UUebView {
                         位置情報はkvに入っているが、親のviewの値を使ってレイアウト後の位置に関する数値を出す。
                     */
                     var boxRect = boxTree.keyValueStore[HTMLAttribute._BOX] as BoxPos;
-                    var childBoxViewRect = TagTree.GetChildViewRectFromParentRectTrans(basePos.viewWidth, basePos.viewHeight, boxRect);
+                    float a;
+                    var childBoxViewRect = TagTree.GetChildViewRectFromParentRectTrans(basePos.viewWidth, basePos.viewHeight, boxRect, out a, out a);
                     
                     /*
                         collisionGroupによる区切りで、コンテンツ帯ごとの高さを出し、
@@ -179,6 +185,8 @@ namespace UUebView {
                     */
                     var boxCollisionGroupId = (int)boxTree.keyValueStore[HTMLAttribute._COLLISION];
                     
+                    Debug.LogError("boxCollisionGroupId:" + boxCollisionGroupId);
+
                     if (collisionGrouId != boxCollisionGroupId) {
                         var tallest = boxYPosRecords.Select(kv => kv.Key).Max();
                         additionalHeight = boxYPosRecords[tallest] + additionalHeight;
@@ -211,8 +219,13 @@ namespace UUebView {
                 if (boxYPosRecords.Any()) {
                     // 最終グループの追加値をviewの高さに足す
                     var tallestInGroup = boxYPosRecords.Keys.Max();
-                    additionalHeight = boxYPosRecords[tallestInGroup] + additionalHeight;    
+                    Debug.LogError("tallestInGroup:" + tallestInGroup);
+                    additionalHeight = boxYPosRecords[tallestInGroup] + additionalHeight;
                 }
+                
+                foreach (var s in boxYPosRecords) {
+                    Debug.LogError("s:" + s.Key + " v:" + s.Value);
+                }                
             }
 
             // 基礎高さ + 増加分高さ
@@ -220,7 +233,12 @@ namespace UUebView {
 
             // Debug.LogWarning("after layerTree:" + GetTagStr(layerTree.tagValue) + " layerViewCursor:" + layerViewCursor);
             // treeに位置をセットしてposを返す
-            yield return layerTree.SetPos(basePos.offsetX, basePos.offsetY, basePos.viewWidth, newHeight);
+            
+            // layerにセットするパラメータは、レイヤー自体のレイアウトに使用する。余白を含めたオフセット、幅が使用される。
+            layerTree.SetPos(basePos.offsetX, basePos.offsetY, basePos.viewWidth, newHeight);
+
+            // このコンテンツを表示するのに消費したポジションとして、親のオフセットから開始して、このコンテンツの余白までを含めたサイズを指定する。
+            yield return new ChildPos(parentBoxViewCursor.offsetX, parentBoxViewCursor.offsetY, basePos.offsetX + basePos.viewWidth + rightAnchorWidth, basePos.offsetY + newHeight + bottomAnchorHeight);
         }
 
         private IEnumerator<ChildPos> DoEmptyLayerLayout (TagTree emptyLayerTree, ViewCursor viewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
@@ -896,8 +914,6 @@ namespace UUebView {
                 
                 // 現在の子供のレイアウトが終わっていて、なおかつライン処理、改行が済んでいる。
             }
-            
-            // Debug.Log("lastChildEndY:" + lastChildEndY + " これが更新されない場合、レイアウトされたパーツにサイズが入ってない。");
 
             // 最終コンテンツのoffsetを使ってboxの高さをセット
             // treeに位置をセットしてposを返す

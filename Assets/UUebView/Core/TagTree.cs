@@ -204,17 +204,24 @@ namespace UUebView {
         /**
             画面幅、高さから、uGUIの計算を行って実際のレイアウト時のパラメータを算出する。
          */
-        public static Rect GetChildViewRectFromParentRectTrans (float parentWidth, float parentHeight, BoxPos pos) {
+        public static Rect GetChildViewRectFromParentRectTrans (float parentWidth, float parentHeight, BoxPos pos, out float right, out float bottom) {
             // アンカーからwidthとheightを出す。
+            
+            // アンカー 画面端からの、親のサイズを元にした比例距離
             var anchorWidth = (parentWidth * pos.anchorMin.x) + (parentWidth * (1 - pos.anchorMax.x));
             var anchorHeight = (parentHeight * pos.anchorMin.y) + (parentHeight * (1 - pos.anchorMax.y));
 
+            // width, height 親の画面サイズからアンカーによる固定幅を引き、さらにオフセット値を引く。(maxには-が入るため足す形になる)
             var viewWidth = parentWidth - anchorWidth - pos.offsetMin.x + pos.offsetMax.x;
             var viewHeight = parentHeight - anchorHeight - pos.offsetMin.y + pos.offsetMax.y;
 
             // 左上原点を出す。
             var offsetX = (parentWidth * pos.anchorMin.x) + pos.offsetMin.x;
             var offsetY = (parentHeight * (1-pos.anchorMax.y)) - (pos.offsetMax.y);
+
+            // 右下の余白のパラメータを返す
+            right = (parentWidth * (1 - pos.anchorMax.x)) + (-pos.offsetMax.x);
+            bottom = (parentHeight * (1 - pos.anchorMax.y)) + (-pos.offsetMax.y);
 
             return new Rect(offsetX, offsetY, viewWidth, viewHeight);
         }
