@@ -21,7 +21,7 @@ namespace UUebView {
 
     public interface IUUebView {
         void AddChild(Transform t);
-        void UpdateSize(Vector2 size);
+        void UpdateParentSizeIfExist(Vector2 size);
         GameObject GetGameObject();
         void StartCoroutine(IEnumerator iEnum);
     }
@@ -57,7 +57,7 @@ namespace UUebView {
         }
 
         private void UpdateParentViewSizeIfExist () {
-            view.UpdateSize(new Vector2(layoutedTree.viewWidth, layoutedTree.viewHeight));
+            view.UpdateParentSizeIfExist(new Vector2(layoutedTree.viewWidth, layoutedTree.viewHeight));
         }
 
         private LoadingCoroutineObj[] LoadingActs () {
@@ -329,8 +329,8 @@ namespace UUebView {
             CoroutineExecutor(Update(layoutedTree, viewRect, eventReceiverGameObj));
         }
 
-        public void OnImageTapped (GameObject tag, string src, string buttonId="") {
-            // Debug.LogError("image. tag:" + tag + " key:" + key + " buttonId:" + buttonId);
+        public void OnImageTapped (GameObject element, string src, string buttonId="") {
+            // Debug.LogError("image. element:" + element + " key:" + key + " buttonId:" + buttonId);
 
             if (!string.IsNullOrEmpty(buttonId)) {
                 if (listenerDict.ContainsKey(buttonId)) {
@@ -340,28 +340,13 @@ namespace UUebView {
             }
 
             if (eventReceiverGameObj != null) {
-                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.IMAGE, tag, src, buttonId));
+                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.IMAGE, element, src, buttonId));
             }
         }
 
-        public void OnImageTapped (string buttonId) {
-            var tagAndKey = materializeMachine.eventObjectCache[buttonId];
-            // Debug.LogError("image. tag:" + tag + " key:" + key + " buttonId:" + buttonId);
 
-            if (!string.IsNullOrEmpty(buttonId)) {
-                if (listenerDict.ContainsKey(buttonId)) {
-                    listenerDict[buttonId].ForEach(t => t.ShowOrHide());
-                    Update();
-                }
-            }
-
-            if (eventReceiverGameObj != null) {
-                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.IMAGE, tagAndKey.Key, tagAndKey.Value, buttonId));
-            }
-        }
-
-        public void OnLinkTapped (GameObject tag, string href, string linkId="") {
-            // Debug.LogError("link. tag:" + tag + " key:" + key + " linkId:" + linkId);
+        public void OnLinkTapped (GameObject element, string href, string linkId="") {
+            // Debug.LogError("link. element:" + element + " key:" + key + " linkId:" + linkId);
 
             if (!string.IsNullOrEmpty(linkId)) {
                 if (listenerDict.ContainsKey(linkId)) {
@@ -371,23 +356,7 @@ namespace UUebView {
             }
 
             if (eventReceiverGameObj != null) {
-                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.LINK, tag, href, linkId));
-            }
-        }
-
-        public void OnLinkTapped (string linkId) {
-            var tagAndKey = materializeMachine.eventObjectCache[linkId];
-            // Debug.LogError("link. tag:" + tag + " key:" + key + " linkId:" + linkId);
-
-            if (!string.IsNullOrEmpty(linkId)) {
-                if (listenerDict.ContainsKey(linkId)) {
-                    listenerDict[linkId].ForEach(t => t.ShowOrHide());
-                    Update();
-                }
-            }
-
-            if (eventReceiverGameObj != null) {
-                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.LINK, tagAndKey.Key, tagAndKey.Value, linkId));
+                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.LINK, element, href, linkId));
             }
         }
         

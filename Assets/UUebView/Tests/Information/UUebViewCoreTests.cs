@@ -1,4 +1,5 @@
 
+using System;
 using Miyamasu;
 using UnityEngine;
 using UUebView;
@@ -11,7 +12,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
     GameObject view;
     
     private int index;
-    private void Show (GameObject view) {
+    private void Show (GameObject view, Action loaded=null) {
         RunOnMainThread(
             () => {
                 var canvas = GameObject.Find("Canvas/UUebViewCoreTestPlace");
@@ -31,6 +32,9 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                 view.transform.SetParent(baseObj.transform, false);
 
                 index++;
+                if (loaded != null) {
+                    loaded();
+                }
             }
         );
     }
@@ -339,9 +343,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
         );
     }
     
-    [MTest] public void Sample2WithBr () {
-        Debug.LogWarning("保留");
-        return;
+    [MTest] public void HideThenShow () {
         var source = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <bg>
@@ -352,24 +354,25 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
         </textbox>
     </textbg>
 </bg>";
+        UUebView.UUebViewComponent uUebView = null;
+
         var done = false;
-        
         RunOnMainThread(
             () => {
                 eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+                    uUebView = view.GetComponent<UUebViewComponent>();
                     done = true;
                 };
                 view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
             }
         );
-        
-        Show(view);
+
+        var shown = false;
+        Show(view, () => {shown = true;});
 
         WaitUntil(
-            () => done, 5, "too late."
+            () => shown && done, 5, "too late."
         );
-
-        UUebView.UUebViewComponent uUebView = null;
         
         // show hidden contents.
         {
@@ -379,8 +382,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                     eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
                         updated = true;
                     };
-                    uUebView = view.GetComponent<UUebViewComponent>();
-                    uUebView.EmitButtonEventById("readmore");
+                    uUebView.EmitButtonEventById(null, string.Empty, "readmore");
                 }
             );
 
@@ -397,7 +399,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
                     eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
                         updated = true;
                     };
-                    uUebView.EmitButtonEventById("readmore");
+                    uUebView.EmitButtonEventById(null, string.Empty, "readmore");
                 }
             );
 
@@ -408,8 +410,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 
         var tree = uUebView.Core.layoutedTree;
         var targetTextBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[1];
-        // Assert(targetTextBox.offsetY == 20f, "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
-        Assert(targetTextBox.offsetY == 20f, "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
+        Assert(targetTextBox.offsetY == 26f, "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
         // ShowLayoutRecursive(tree, uUebView.Core.resLoader);
     }
 
