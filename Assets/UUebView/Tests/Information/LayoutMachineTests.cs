@@ -628,36 +628,49 @@ else
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
         
         Assert(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
-        Assert(p[1].offsetY == 16f, "not match. custombgs[1].offsetY:" + p[1].offsetY);
+        Assert(p[2].offsetY == 16f, "not match. custombgs[2].offsetY:" + p[2].offsetY);
     }
 
-    [MTest] public void PSupport () {
+    [MTest] public void BrBrSupport () {
         var sample = @"
 <p>
-    p1<a href=''>a1</a>p2
+    something<br><br>
+    else
 </p>";
         var tree = CreateTagTree(sample);
-        var p1 = tree.GetChildren()[0];
+        var p = tree.GetChildren()[0]/*p*/.GetChildren();
         
-        Assert(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
+        Assert(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+        Assert(p[3].offsetY == 32f, "not match. custombgs[3].offsetY:" + p[3].offsetY);
     }
 
-    [MTest] public void PSupport2 () {
-        Debug.LogWarning("保留。");
-        return;
-        var sample = @"
-<p>
-    p1<a href=''>a1</a>p2
-</p><p>
-    p3
-</p>";
-        var tree = CreateTagTree(sample);
-        var p1 = tree.GetChildren()[0];
-        var p2 = tree.GetChildren()[1];
+//     [MTest] public void PSupport () {
+//         var sample = @"
+// <p>
+//     p1<a href=''>a1</a>p2
+// </p>";
+//         var tree = CreateTagTree(sample);
+//         var p1 = tree.GetChildren()[0];
         
-        Assert(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
+//         Assert(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
+//     }
 
-        Assert(p1.offsetY == 0, "not match. p1.offsetY:" + p1.offsetY);
-        Assert(p2.offsetY == 16f, "not match. p2.offsetY:" + p2.offsetY);
-    }
+//     [MTest] public void PSupport2 () {
+//         Debug.LogWarning("保留。");
+//         return;
+//         var sample = @"
+// <p>
+//     p1<a href=''>a1</a>p2
+// </p><p>
+//     p3
+// </p>";
+//         var tree = CreateTagTree(sample);
+//         var p1 = tree.GetChildren()[0];
+//         var p2 = tree.GetChildren()[1];
+        
+//         Assert(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
+
+//         Assert(p1.offsetY == 0, "not match. p1.offsetY:" + p1.offsetY);
+//         Assert(p2.offsetY == 16f, "not match. p2.offsetY:" + p2.offsetY);
+//     }
 }

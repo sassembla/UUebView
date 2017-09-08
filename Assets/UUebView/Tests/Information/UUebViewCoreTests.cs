@@ -437,6 +437,29 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
         );
     }
 
+    [MTest] public void UnityRichTextSizeSupport () {
+        var source = @"
+<p>
+    a<size=50>large string</size>b
+</p>";
+        var done = false;
+        
+        RunOnMainThread(
+            () => {
+                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+                    done = true;
+                };
+                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+            }
+        );
+        
+        Show(view);
+
+        WaitUntil(
+            () => done, 5, "too late."
+        );
+    }
+
     [MTest] public void SetViewName () {
         var viewName = "SetViewName";
         var source = @"

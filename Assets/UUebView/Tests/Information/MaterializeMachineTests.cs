@@ -512,6 +512,16 @@ else
         Show(tree);
     }
 
+    [MTest] public void MaterializeBrBrSupport () {
+        var sampleHtml = @"
+<p>
+    something<br><br>
+    else
+</p>";
+        var tree = CreateLayoutedTree(sampleHtml);
+        Show(tree);
+    }
+
     [MTest] public void PSupport () {
         var sampleHtml = @"
 <p>

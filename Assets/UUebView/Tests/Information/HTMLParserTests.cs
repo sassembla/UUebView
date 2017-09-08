@@ -428,6 +428,20 @@ public class HTMLParserTests : MiyamasuTestRunner {
         Assert(pChildren.Count == 1, "not match, pChildren count:" + pChildren.Count);
     }
 
+    [MTest] public void UnityRichTextSizeSupport () {
+        var sampleHtml = @"
+<p>
+    a<size=50>large string</size>b
+</p>";
+        var parsedRoot = GetParsedRoot(sampleHtml);
+        var pChildren = parsedRoot.GetChildren()[0].GetChildren();
+        foreach (var pp in pChildren) {
+            // Debug.LogError("pp:" + pp.tagValue + " text:" + pp.keyValueStore[HTMLAttribute._CONTENT]);
+            Assert(pp.keyValueStore[HTMLAttribute._CONTENT] as string == "a<size=50>large string</size>b", "not match, " + pp.keyValueStore[HTMLAttribute._CONTENT]);
+        }
+        Assert(pChildren.Count == 1, "not match, pChildren count:" + pChildren.Count);
+    }
+
     [MTest] public void CustomEmptyLayerCanSingleCloseTag () {
         var sampleHtml = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>

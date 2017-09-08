@@ -23,6 +23,7 @@ namespace UUebView {
             Continue,
             InsertContentToNextLine,
             RetryWithNextLine,
+            Crlf,
             HeadInsertedToTheEndOfLine,
             TailInsertedToLine,
             LastLineEndedInTheMiddleOfLine,
@@ -81,7 +82,7 @@ namespace UUebView {
                     break;
                 }
                 case TreeType.Content_CRLF: {
-                    cor = DoCRLFLayout(tree, viewCursor);
+                    cor = DoCRLFLayout(tree, viewCursor, insertion);
                     break;
                 }
                 default: {
@@ -410,6 +411,7 @@ namespace UUebView {
                                 return ViewCursor.Empty;
                             }
                         );
+
                         
                         while (cor.MoveNext()) {
                             if (cor.Current != null) {
@@ -434,6 +436,39 @@ namespace UUebView {
                          */
                         
                         switch (currentInsertType) {
+                            case InsertType.Crlf: {
+                                // 現在のコンテナの文字設定のデフォルト行高さを取得、次の行を開始する。
+                                var cor2 = GetDefaultHeightOfContainerText(containerTree);
+                                while (cor2.MoveNext()) {
+                                    yield return null;
+                                }
+                                
+                                var defaultTextHeight = cor2.Current;
+
+                                var childOffsetY = nextChildViewCursor.offsetY + defaultTextHeight;
+
+                                /*
+                                    さて次の行の開始概念をどうするか。
+                                    Liningを行い、クリアする。そこまではOKで、
+                                    んん、さっきと一緒か。lining前のoffsetY + heightと、lining後のoffsetYを
+                                */
+                                // 処理の開始時にラインにいれていたもの(crlf)を削除
+                                linedElements.Remove(child);
+
+                                // 含まれているものの整列処理をし、列の高さを受け取る
+                                var newLineOffsetY = DoLining(linedElements);
+
+                                // 整列と高さ取得が完了したのでリセット
+                                linedElements.Clear();
+                                
+                                // 改行する文字高さ自体がlining後のoffsetYよりも高い場合、そちらを採用する
+                                if (newLineOffsetY < childOffsetY) {
+                                    newLineOffsetY = childOffsetY;
+                                }
+
+                                nextChildViewCursor = ViewCursor.NextLine(newLineOffsetY, containerViewCursor.viewWidth, containerViewCursor.viewHeight);
+                                continue;
+                            }
                             case InsertType.RetryWithNextLine: {
                                 // Debug.LogError("テキストコンテンツが0行を叩き出したので、このコンテンツ自体をもう一度レイアウトする。");
                                 
@@ -565,21 +600,11 @@ namespace UUebView {
                         // 子供の設置位置を取得
                         var layoutedPos = cor.Current;
 
-                        // 次のコンテンツの開始位置をセットする。
+                        // 次のコンテンツの開始位置を取得
                         var nextPos = ChildPos.NextRightCursor(layoutedPos, containerViewCursor.viewWidth);
                         
-                        // レイアウト直後に次のポイントの開始位置が規定幅を超えているか、改行要素が来た場合、現行の行のライニングを行う。
-                        if (child.treeType == TreeType.Content_CRLF) {
-                            // 行化
-                            var nextLineOffsetY = DoLining(linedElements);
-
-                            // ライン解消
-                            linedElements.Clear();
-                            // Debug.LogError("crlf over.");
-
-                            // 改行処理を加えた次の開始位置
-                            nextChildViewCursor = ViewCursor.NextLine(nextLineOffsetY, containerViewCursor.viewWidth, containerViewCursor.viewHeight);
-                        } else if (containerViewCursor.viewWidth <= nextPos.offsetX) {
+                        // レイアウト直後に次のポイントの開始位置が規定幅を超えている場合、現行の行のライニングを行う。
+                        if (containerViewCursor.viewWidth <= nextPos.offsetX) {
                             // 行化
                             var nextLineOffsetY = DoLining(linedElements);
 
@@ -613,13 +638,26 @@ namespace UUebView {
             yield return containerTree.SetPos(containerViewCursor.offsetX, containerViewCursor.offsetY, mostRightPoint, mostBottomPoint);
         }
 
-        /**
-            テキストコンテンツのレイアウトを行う。
-            もしテキストが複数行に渡る場合、最終行だけを新規コンテンツとして上位に返す。
-         */
-        private IEnumerator<ChildPos> DoTextLayout (TagTree textTree, ViewCursor textViewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
-            var text = textTree.keyValueStore[HTMLAttribute._CONTENT] as string;
-            
+        private IEnumerator<float> GetDefaultHeightOfContainerText (TagTree textTree) {
+            var textComponentCor = GetTextComponent(textTree);
+
+            while (textComponentCor.MoveNext()) {
+                if (textComponentCor.Current != null) {
+                    break;
+                }
+                yield return -1;
+            }
+
+            var textComponent = textComponentCor.Current;
+            textComponent.text = "A";
+
+            var defaultHeight = textComponent.preferredHeight;
+            textComponent.text = string.Empty;
+
+            yield return defaultHeight;
+        }
+
+        private IEnumerator<Text> GetTextComponent (TagTree textTree, string text=null) {
             var cor = resLoader.LoadPrefab(textTree.tagValue, textTree.treeType);
 
             while (cor.MoveNext()) {
@@ -640,13 +678,31 @@ namespace UUebView {
             if (textComponent.font == null) {
                 throw new Exception("font is null. prefab:" + resLoader.UUebTagsName() + "/" + prefab.name);
             }
+
+            yield return textComponent;
+        }
+
+        /**
+            テキストコンテンツのレイアウトを行う。
+            もしテキストが複数行に渡る場合、最終行だけを新規コンテンツとして上位に返す。
+         */
+        private IEnumerator<ChildPos> DoTextLayout (TagTree textTree, ViewCursor textViewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
+            var text = textTree.keyValueStore[HTMLAttribute._CONTENT] as string;
             
+            var textComponentCor = GetTextComponent(textTree, text);
+
+            while (textComponentCor.MoveNext()) {
+                if (textComponentCor.Current != null) {
+                    break;
+                }
+                yield return null;
+            }
+
+            var textComponent = textComponentCor.Current;
 
             // invalidate first.
             generator.Invalidate();
             
-
-
             // set content to prefab.
             
             textComponent.text = text;
@@ -788,12 +844,13 @@ namespace UUebView {
             }
         }
         
-        private IEnumerator<ChildPos> DoCRLFLayout (TagTree crlfTree, ViewCursor viewCursor) {
-            // return empty size cursor.
-            var zeroSizeCursor = ViewCursor.ZeroSizeCursor(viewCursor);
+        private IEnumerator<ChildPos> DoCRLFLayout (TagTree crlfTree, ViewCursor viewCursor, Func<InsertType, TagTree, ViewCursor> insertion=null) {
+            // 親へとcrlfを伝達することで、改行処理を行ってもらう。
+            insertion(InsertType.Crlf, crlfTree);
 
-            // treeに位置をセットしてposを返す
-            yield return crlfTree.SetPosFromViewCursor(zeroSizeCursor);
+            // コンテンツ自体は0サイズでセット、
+            var currentViewCursor = ViewCursor.ZeroSizeCursor(viewCursor);
+            yield return crlfTree.SetPosFromViewCursor(currentViewCursor);
         }
 
 
