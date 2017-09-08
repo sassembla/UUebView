@@ -272,6 +272,7 @@ namespace UUebView {
 										tempReadPoint = tempCharIndex;
 
 										// Debug.LogError("data[tempCharIndex]:" + data[tempCharIndex]);
+										var treeType = resLoader.GetTreeType(tag);
 
 										/*
 											single close tag found.
@@ -280,7 +281,6 @@ namespace UUebView {
 										if (data[startTagEndIndex - 1] == '/') {// <tag [attr]/>
 											// Debug.LogError("-1 is / @tag:" + tag);
 											
-											var treeType = resLoader.GetTreeType(tag);
 											if (treeType == TreeType.NotFound) {
 												parseFailed((int)ParseErrors.UNDEFINED_TAG, "the tag:" + resLoader.GetTagFromValue(tag) + " is not defined in both uuebTags and default tags.");
 												yield break;
@@ -308,14 +308,22 @@ namespace UUebView {
 										
 										var endTagIndex = FindEndTag(endTag, cascadedStartTagHead, data, tempCharIndex);
 										if (endTagIndex == -1) {
+											// retrieve <p>.
+											if (tag == (int)HTMLTag.p) {
+												var singlePTree = new TagTree(tag, kv, treeType);
+												singlePTree.SetParent(parentTree);
+												
+												charIndex = tempCharIndex;
+												readPoint = charIndex;
+												continue;
+											}
+
 											yield break;
 										}
 
 										// Debug.LogError("endTagIndex:" + endTagIndex);
 
 										{
-											var treeType = resLoader.GetTreeType(tag);
-
 											if (treeType == TreeType.NotFound) {
 												parseFailed((int)ParseErrors.UNDEFINED_TAG, "the tag:" + resLoader.GetTagFromValue(tag) + " is not defined in both uuebTags and default tags.");
 												yield break;
@@ -384,6 +392,17 @@ namespace UUebView {
 
 										var endTagIndex = FindEndTag(endTag, cascadedStartTagHead, data, tempCharIndex);
 										if (endTagIndex == -1) {
+											// retrieve <p>.
+											if (tag == (int)HTMLTag.p) {
+												var singlePTree = new TagTree(tag);
+												singlePTree.SetParent(parentTree);
+												
+												charIndex = tempCharIndex;
+												readPoint = charIndex;
+												continue;
+											}
+
+											parseFailed((int)ParseErrors.UNDEFINED_TAG, "the tag:" + resLoader.GetTagFromValue(tag) + " is not closed.");
 											yield break;
 										}
 

@@ -465,5 +465,18 @@ public class HTMLParserTests : MiyamasuTestRunner {
         Assert(parsedRoot.GetChildren().Count == 1, "count:" + parsedRoot.GetChildren().Count);
         Assert(parsedRoot.GetChildren()[0].GetChildren().Count == 2, "count:" + parsedRoot.GetChildren()[0].GetChildren().Count);
     }
+
+
+    [MTest] public void AlignSupport () {
+        var sampleHtml = @"
+<body><p align='center'>aaa</p></body>";
+        var parsedRoot = GetParsedRoot(sampleHtml);
+    }
+
+    [MTest] public void SinglePSupport () {
+        var sampleHtml = @"
+<body>bbb<p>aaa</body>";
+        var parsedRoot = GetParsedRoot(sampleHtml);
+    }
     
 }
