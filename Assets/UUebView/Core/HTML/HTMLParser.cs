@@ -15,6 +15,7 @@ namespace UUebView {
 		NOT_RESERVED_TAG_IN_LAYER,
         FAILED_TO_PARSE_LIST_URI,
 		FAILED_TO_PARSE_DOCTYPE,
+		FAILED_TO_PARSE_ATTRIBUTE,
         CLOSETAG_NOT_FOUND,
         FAILED_TO_PARSE_COMMENT,
         UNSUPPORTED_ATTR_FOUND,
@@ -140,6 +141,7 @@ namespace UUebView {
 							case (int)HTMLTag.html: {
 								var endTagStartPos = GetStartPointOfCloseTag(data, charIndex, foundTag);
 								if (endTagStartPos == -1) {
+									parseFailed((int)ParseErrors.CLOSETAG_NOT_FOUND, "the tag:" + resLoader.GetTagFromValue(foundTag) + " is not closed.");
 									yield break;
 								}
 
@@ -161,6 +163,7 @@ namespace UUebView {
 							case (int)HTMLTag.title:{
 								charIndex = GetClosePointOfTag(data, charIndex, foundTag);
 								if (charIndex == -1) {
+									parseFailed((int)ParseErrors.CLOSETAG_NOT_FOUND, "the tag:" + resLoader.GetTagFromValue(foundTag) + " is not closed.");
 									yield break;
 								}
 
@@ -264,6 +267,7 @@ namespace UUebView {
 										
 										var kv = GetAttr(tag, attrStr);
 										if (kv == null) {
+											parseFailed((int)ParseErrors.FAILED_TO_PARSE_ATTRIBUTE, "the tag:" + resLoader.GetTagFromValue(tag) + " contains unnecessary space after tag.");
 											yield break;
 										}
 										
@@ -318,6 +322,7 @@ namespace UUebView {
 												continue;
 											}
 
+											parseFailed((int)ParseErrors.CLOSETAG_NOT_FOUND, "the tag:" + resLoader.GetTagFromValue(foundTag) + " is not closed.");
 											yield break;
 										}
 
@@ -402,7 +407,7 @@ namespace UUebView {
 												continue;
 											}
 
-											parseFailed((int)ParseErrors.UNDEFINED_TAG, "the tag:" + resLoader.GetTagFromValue(tag) + " is not closed.");
+											parseFailed((int)ParseErrors.ILLIGAL_CHAR, "the tag:" + resLoader.GetTagFromValue(tag) + " is not closed.");
 											yield break;
 										}
 
@@ -768,6 +773,16 @@ namespace UUebView {
 				}
 
 				var val = source.Substring(valStartIndex + 1, valEndIndex - (valStartIndex + 1));
+
+				// align check.
+				if (keyEnum == HTMLAttribute.ALIGN) {
+					try {
+						Enum.Parse(typeof(AlignMode), val, true);
+					} catch {
+						parseFailed((int)ParseErrors.UNEXPECTED_ATTR_DESCRIPTION, "attribute align at tag:" + resLoader.GetTagFromValue(tagIndex) + " contains illigal align description. legals are:'center','left','right'. source:" + originalAttrSource);
+						return null;
+					}
+				}
 
 				kvDict[keyEnum] = val;
 

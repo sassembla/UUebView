@@ -334,6 +334,15 @@ namespace UUebView {
 
                 親カーソルから子カーソルを生成。高さに関しては適当。
             */
+
+            AlignMode alignMode = AlignMode.def;
+            if (containerTree.keyValueStore.ContainsKey(HTMLAttribute.ALIGN)) {
+                var keyStr = containerTree.keyValueStore[HTMLAttribute.ALIGN] as string;
+
+                // no try-catch needed. already checked in html parser.
+                alignMode = (AlignMode)Enum.Parse(typeof(AlignMode), keyStr, true);
+            }
+
             var containerChildren = containerTree.GetChildren();
             var childCount = containerChildren.Count;
 
@@ -393,7 +402,7 @@ namespace UUebView {
                                             linedElements.Add(insertingChild);
 
                                             // ライン化処理
-                                            DoLining(linedElements);
+                                            DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
                                             
                                             // 消化
                                             linedElements.Clear();
@@ -456,7 +465,7 @@ namespace UUebView {
                                 linedElements.Remove(child);
 
                                 // 含まれているものの整列処理をし、列の高さを受け取る
-                                var newLineOffsetY = DoLining(linedElements);
+                                var newLineOffsetY = DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
 
                                 // 整列と高さ取得が完了したのでリセット
                                 linedElements.Clear();
@@ -476,7 +485,7 @@ namespace UUebView {
                                 linedElements.Remove(child);
 
                                 // 含まれているものの整列処理をし、列の高さを受け取る
-                                var newLineOffsetY = DoLining(linedElements);
+                                var newLineOffsetY = DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
 
                                 // 整列と高さ取得が完了したのでリセット
                                 linedElements.Clear();
@@ -544,7 +553,7 @@ namespace UUebView {
                                 /*
                                     これ以降のコンテンツは次行になるため、現在の行についてLining処理を行う。
                                  */ 
-                                var newLineOffsetY = DoLining(linedElements);
+                                var newLineOffsetY = DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
 
                                 // 整列と高さ取得が完了したのでリセット
                                 linedElements.Clear();
@@ -606,7 +615,7 @@ namespace UUebView {
                         // レイアウト直後に次のポイントの開始位置が規定幅を超えている場合、現行の行のライニングを行う。
                         if (containerViewCursor.viewWidth <= nextPos.offsetX) {
                             // 行化
-                            var nextLineOffsetY = DoLining(linedElements);
+                            var nextLineOffsetY = DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
 
                             // ライン解消
                             linedElements.Clear();
@@ -629,7 +638,7 @@ namespace UUebView {
             
             // 最後の列が存在する場合、整列。(最後の要素が改行要因とかだと最後の列が存在しない場合がある)
             if (linedElements.Any()) {
-                DoLining(linedElements);
+                DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
             }
             
             // Debug.LogError("mostBottomPoint:" + mostBottomPoint + " tag:" + Debug_GetTagStrAndType(containerTree));
@@ -883,9 +892,10 @@ namespace UUebView {
         
         /**
             linedChildrenの中で一番高度のあるコンテンツをもとに、他のコンテンツを下揃いに整列させ、次の行の開始Yを返す。
+            alignがある場合、Xも変更する。
             整列が終わったら、それぞれのコンテンツのオフセットをいじる。サイズは変化しない。
         */
-        private float DoLining (List<TagTree> linedChildren) {
+        private float DoLining (float viewWidth, List<TagTree> linedChildren, AlignMode align) {
             var nextOffsetY = 0f;
             var tallestOffsetY = 0f;
             var tallestHeightPoint = 0f;
@@ -912,6 +922,42 @@ namespace UUebView {
                 child.offsetY = child.offsetY + diff;
             }
             
+            switch (align) {
+                case AlignMode.def: {// or left
+                    // do nothing.
+                    break;
+                }
+                case AlignMode.center: {
+                    // このラインの全コンテンツに対して、左端から右端までの長さを取り、offsetXの値を変更する。
+                    var left = linedChildren.FirstOrDefault();
+                    var right = linedChildren.LastOrDefault();
+                    if (left != null && right != null) {
+                        // 0 ~ right edge.
+                        var contentWidthSpace = viewWidth - (right.offsetX + right.viewWidth);
+                        var leftAlignWidth = contentWidthSpace/2;
+                        for (var i = 0; i < linedChildren.Count; i++) {
+                            var child = linedChildren[i];
+                            child.offsetX += leftAlignWidth;
+                        }
+                    }
+                    break;
+                }
+                case AlignMode.right: {
+                    // このラインの全コンテンツに対して、左端から右端までの長さを取り、offsetXの値を変更する。
+                    var left = linedChildren.FirstOrDefault();
+                    var right = linedChildren.LastOrDefault();
+                    if (left != null && right != null) {
+                        // 0 ~ right edge.
+                        var contentWidthSpace = viewWidth - (right.offsetX + right.viewWidth);
+                        var leftAlignWidth = contentWidthSpace;
+                        for (var i = 0; i < linedChildren.Count; i++) {
+                            var child = linedChildren[i];
+                            child.offsetX += leftAlignWidth;
+                        }
+                    }
+                    break;
+                }
+            }
             // Debug.LogError("lining nextOffsetY:" + nextOffsetY);
             return nextOffsetY;
         }

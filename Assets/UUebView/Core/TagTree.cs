@@ -23,6 +23,13 @@ namespace UUebView {
         CustomEmptyLayer,
     }
 
+    public enum AlignMode {
+        def,
+        left=def,
+        center,
+        right
+    }
+
     public class ParsedTree : TagTree {
         public List<ParseError> errors = new List<ParseError>();
         public static string ShowErrors (ParsedTree tree) {

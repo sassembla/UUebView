@@ -12,12 +12,17 @@ namespace UUebView {
         _LAYER_PARENT_TYPE,
 
         // attributes.
+
+        // html attr.
         ID,
+        SRC,
+        HREF,
+        ALIGN,
+
+        // special attr.
         LISTEN,
         BUTTON,
         HIDDEN,
-        SRC,
-        HREF,
     }
 
     public class AttributeKVs : Dictionary<HTMLAttribute, object> {}

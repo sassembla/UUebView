@@ -522,6 +522,24 @@ else
         Show(tree);
     }
 
+    [MTest] public void MaterializeCenterAlignSupport () {
+        var sampleHtml = @"
+<p align='center'>aaa</p>";
+
+        var tree = CreateLayoutedTree(sampleHtml);
+        Show(tree);
+    }
+
+    [MTest] public void MaterializeRightAlignSupport () {
+        var sampleHtml = @"
+<p align='right'>aaa</p>";
+
+        var tree = CreateLayoutedTree(sampleHtml);
+        Show(tree);
+    }
+
+    
+
     [MTest] public void PSupport () {
         var sampleHtml = @"
 <p>
