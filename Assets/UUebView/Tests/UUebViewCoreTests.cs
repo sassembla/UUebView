@@ -483,4 +483,47 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
             () => done, 5, "too late."
         );
     }
+
+    /*
+        なんでかこれがエラーになる。
+@"
+<body>
+    <h1>Miyamasu Runtime Console</h1>
+    <p>
+        <br>
+        aaa
+        <br>
+        bbb
+        <br>
+        ccc
+        <br>
+        ddd
+        <br>
+        aaa
+        <br>
+        bbb
+        <br>
+        ccc
+        <br>
+        ddd
+        <br>
+        aaa
+        <br>
+        bbb
+        <br>
+        ccc
+        <br>
+        ddd
+    </p>
+</body>";
+
+
+
+@"
+<h1>Miyamasu Runtime Console</h1>
+<p>
+    <br>ddd<br>
+</p>"
+
+    */
 }
