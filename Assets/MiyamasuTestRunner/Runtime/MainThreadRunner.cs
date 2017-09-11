@@ -1,51 +1,127 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using UUebView;
 
 namespace Miyamasu {
-	public class MainThreadRunner : MonoBehaviour {
-		private List<EnumPair> readyEnums = new List<EnumPair>();
-		private List<EnumPair> runningEnums = new List<EnumPair>();
-		private List<EnumPair> doneEnums = new List<EnumPair>();
-		
-		private object lockObj = new object();
+	public class MainThreadRunner : MonoBehaviour, IUUebViewEventHandler {
+		private int index = 0;
+		private bool started;
 
-		private struct EnumPair {
-			public IEnumerator iEnum;
-			public Action onDone;
-			public EnumPair (IEnumerator iEnum, Action onDone) {
-				this.iEnum = iEnum;
-				this.onDone = onDone;
+		private string htmlContent = @"
+<h1>Miyamasu Runtime Console</h1>
+<p>
+	ddd<br>
+</p>";
+
+		IEnumerator Start () {
+			while (iEnumGens == null) {
+				// wait to set enumGens;
+				yield return null;
 			}
+			
+			// wait for check UnityTest is running or not.
+			yield return new WaitForSeconds(1);
+			
+			if (Miyamasu.Recorder.isRunning) {
+				Destroy(this);
+				yield break;
+			}
+
+			var canvasCor = Resources.LoadAsync<GameObject>("Prefabs/MiyamasuCanvas");
+
+			while (!canvasCor.isDone) {
+				yield return null;
+			}
+
+			var canvasPrefab = canvasCor.asset as GameObject;
+			var canvas = Instantiate(canvasPrefab);
+
+			var scrollViewRectCandidates = canvas.transform.GetComponentsInChildren<RectTransform>();
+			GameObject attachTargetView = null;
+			foreach (var rect in scrollViewRectCandidates) {
+				if (rect.name == "Content") {
+					attachTargetView = rect.gameObject;
+					break;
+				}
+			}
+
+			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(600,100));			
+			view.transform.SetParent(attachTargetView.transform);
+
+
+			started = true;
+			yield return ContCor();
 		}
+
 		void Update () {
-			lock (lockObj) {
-				foreach (var enumPair in readyEnums) {
-					runningEnums.Add(enumPair);
-				}
-				readyEnums.Clear();
-			}
+			if (started && Recorder.isStoppedByFail) {
+				Recorder.isStoppedByFail = false;
 
-			foreach (var runningEnum in runningEnums) {
-				if (!runningEnum.iEnum.MoveNext()) {
-					runningEnum.onDone();
-					doneEnums.Add(runningEnum);
-				}
-			}
-
-			if (0 < doneEnums.Count) {
-				foreach (var doneEnum in doneEnums) {
-					runningEnums.Remove(doneEnum);
-				}
-				doneEnums.Clear();
+				// continue test.
+				StartCoroutine(ContCor());
 			}
 		}
+		
+		private Func<IEnumerator>[] iEnumGens;
+		public void SequentialExecute (Func<IEnumerator>[] iEnumGens) {
+			this.iEnumGens = iEnumGens;
+        }
 
-		public void Commit (IEnumerator iEnum, Action onDone) {
-			lock (lockObj) {
-				readyEnums.Add(new EnumPair(iEnum, onDone));
+		private IEnumerator ContCor () {
+			while (index < iEnumGens.Length) {
+				yield return iEnumGens[index++]();
 			}
+
+			Debug.Log("maybe all tests passed.");
 		}
-	}
+
+		/**
+			this method will be called from jumber lib via SendMessage.
+		 */
+		public void AddLog (object[] logSource) {
+			var type = (int)logSource[0];
+			var message = logSource[1] as string;
+
+			// 受け取ることができたので、viewに足す。
+		}
+
+        void IUUebViewEventHandler.OnLoadStarted()
+        {
+            // throw new NotImplementedException();
+        }
+
+        void IUUebViewEventHandler.OnProgress(double progress)
+        {
+            // throw new NotImplementedException();
+        }
+
+        void IUUebViewEventHandler.OnLoaded()
+        {
+			Debug.LogWarning("load!");
+            // throw new NotImplementedException();
+        }
+
+        void IUUebViewEventHandler.OnUpdated()
+        {
+            // throw new NotImplementedException();
+        }
+
+        void IUUebViewEventHandler.OnLoadFailed(ContentType type, int code, string reason)
+        {
+			Debug.LogError("loadFailed:" + type + " code:" + code + " reason:" + reason);
+        }
+
+        void IUUebViewEventHandler.OnElementTapped(ContentType type, GameObject element, string param, string id)
+        {
+            // throw new NotImplementedException();
+        }
+
+        void IUUebViewEventHandler.OnElementLongTapped(ContentType type, string param, string id)
+        {
+            // throw new NotImplementedException();
+        }
+    }
 }

@@ -31,37 +31,26 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
 
 
 	[MSetup] public void Setup () {
+        rootObj = new GameObject();
+        var rectTrans = rootObj.AddComponent<RectTransform>();
+        rectTrans.anchorMin = new Vector2(0,1);
+        rectTrans.anchorMax = new Vector2(0,1);
+        rectTrans.pivot = new Vector2(0,1);
 
-		// GetTexture(url) runs only Play mode.
-		if (!IsTestRunningInPlayingMode()) {
-			SkipCurrentTest("Information feature should run on MainThread.");
-		};
+        view = rootObj.AddComponent<UUebViewComponent>();
+        core = new UUebView.UUebViewCore(view);
+        view.SetCore(core);
+        
+        var canvas = GameObject.Find("Canvas/MaterializeTestPlace");
+        rootObj.transform.SetParent(canvas.transform, false);
 
-        RunOnMainThread(
-            () => {
-                rootObj = new GameObject();
-                var rectTrans = rootObj.AddComponent<RectTransform>();
-                rectTrans.anchorMin = new Vector2(0,1);
-                rectTrans.anchorMax = new Vector2(0,1);
-                rectTrans.pivot = new Vector2(0,1);
-
-                view = rootObj.AddComponent<UUebViewComponent>();
-                core = new UUebView.UUebViewCore(view);
-                view.SetCore(core);
-                
-                var canvas = GameObject.Find("Canvas/MaterializeTestPlace");
-                rootObj.transform.SetParent(canvas.transform, false);
-
-                rectTrans.anchoredPosition = new Vector2(100 * index, 0);
-                index++;
-            }
-        );
-
+        rectTrans.anchoredPosition = new Vector2(100 * index, 0);
+        index++;
         
         parser = new HTMLParser(core.resLoader);
 	}
 
-    private TagTree CreateLayoutedTree (string sampleHtml, float width=100) {
+    private IEnumerator CreateLayoutedTree (string sampleHtml, Action<TagTree> onLayouted, float width=100) {
         ParsedTree parsedRoot = null;
         var cor = parser.ParseRoot(
             sampleHtml, 
@@ -70,10 +59,10 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
             }
         );
         
-        RunOnMainThread(() => view.Core.Internal_CoroutineExecutor(cor));
+        view.Core.Internal_CoroutineExecutor(cor);
         
-        WaitUntil(
-            () => parsedRoot != null, 1, "too late."
+        yield return WaitUntil(
+            () => parsedRoot != null, () => {throw new TimeoutException("too late.");}, 1
         );
         
         if (parsedRoot.errors.Any()) {
@@ -84,121 +73,127 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
         }
 
         TagTree layouted = null;
-        RunOnMainThread(() => {
-            var layoutMachine = new LayoutMachine(core.resLoader);
+        
+        var layoutMachine = new LayoutMachine(core.resLoader);
 
-            var cor2 = layoutMachine.Layout(
-                parsedRoot, 
-                new Vector2(width,100),
-                layoutedTree => {
-                    layouted = layoutedTree;
-                }
-            );
-            view.Core.Internal_CoroutineExecutor(cor2);
-        });
+        var cor2 = layoutMachine.Layout(
+            parsedRoot, 
+            new Vector2(width,100),
+            layoutedTree => {
+                layouted = layoutedTree;
+            }
+        );
+        view.Core.Internal_CoroutineExecutor(cor2);
 
-        WaitUntil(
-            () => layouted != null, 5, "layout timeout."
+        yield return WaitUntil(
+            () => layouted != null, () => {throw new TimeoutException("too late.");}, 5
         );
 
-        return layouted;
+        onLayouted(layouted);
     }
 
-    private int index;
-    private void Show (TagTree tree) {
+    private static int index;
+    private IEnumerator Show (TagTree tree) {
         var materializeMachine = new MaterializeMachine(core.resLoader);
 
         var materializeDone = false;
-        RunOnMainThread(
-            () => {
-                var cor = materializeMachine.Materialize(rootObj, core, tree, 0, () => {
-                    materializeDone = true;
-                });
-                view.Core.Internal_CoroutineExecutor(cor);
-            }
-        );
         
-        WaitUntil(
-            () => materializeDone && !view.Core.IsLoading(), 5, "slow materialize. materializeDone:" + materializeDone + " view.IsLoading():" + view.Core.IsLoading()
+        var cor = materializeMachine.Materialize(rootObj, core, tree, 0, () => {
+            materializeDone = true;
+        });
+        view.Core.Internal_CoroutineExecutor(cor);
+
+        yield return WaitUntil(
+            () => materializeDone && !view.Core.IsLoading(),
+            () => {throw new TimeoutException("slow materialize. materializeDone:" + materializeDone + " view.IsLoading():" + view.Core.IsLoading());}
         );
     }
 
-    [MTest] public void MaterializeHTML () {
+    [MTest] public IEnumerator MaterializeHTML () {
         var sample = @"
 <body>something</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLHasValidView () {
+    [MTest] public IEnumerator MaterializeHTMLHasValidView () {
         var sample = @"
 <body>something</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithSmallTextHasValidView () {
+    [MTest] public IEnumerator MaterializeHTMLWithSmallTextHasValidView () {
         var sample = @"
 <body>over 100px string should be multi lined text with good separation. need some length.</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithLink () {
+    [MTest] public IEnumerator MaterializeHTMLWithLink () {
         var sample = @"
 <body><a href='https://dummyimage.com/100.png/09f/fff'>link!</a></body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithLinkWithId () {
+    [MTest] public IEnumerator MaterializeHTMLWithLinkWithId () {
         var sample = @"
 <body><a href='https://dummyimage.com/100.png/09f/fff' id='linkId'>link!</a></body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithImage () {
+    [MTest] public IEnumerator MaterializeHTMLWithImage () {
         var sample = @"
 <body><img src='https://dummyimage.com/100.png/09f/fff'/></body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithImageAsButton () {
+    [MTest] public IEnumerator MaterializeHTMLWithImageAsButton () {
         var sample = @"
 <body><img src='https://dummyimage.com/100.png/09f/fff' button='true''/></body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithImageAsButtonWithId () {
+    [MTest] public IEnumerator MaterializeHTMLWithImageAsButtonWithId () {
         var sample = @"
 <body><img src='https://dummyimage.com/100.png/09f/fff' button='true' id='imageId'/></body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithImageAsButtonWithIdMakeChanges () {
+    [MTest] public IEnumerator MaterializeHTMLWithImageAsButtonWithIdMakeChanges () {
         var sample = @"
 <body>
 <p listen='imageId' hidden='true'>something</p>
 <img src='https://dummyimage.com/100.png/09f/fff' button='true' id='imageId'/>
 </body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithDoubleBoxedLayer () {
+    [MTest] public IEnumerator MaterializeHTMLWithDoubleBoxedLayer () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <textbox>
@@ -206,119 +201,133 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
     <updatetext>something.</updatetext>
     <updatetext>omake!</updatetext>
 </textbox>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithSmallImage () {
+    [MTest] public IEnumerator MaterializeHTMLWithSmallImage () {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/></body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithSmallImageAndText () {
+    [MTest] public IEnumerator MaterializeHTMLWithSmallImageAndText () {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>text</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithSmallImageAndSmallText () {
+    [MTest] public IEnumerator MaterializeHTMLWithSmallImageAndSmallText () {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithWideImageAndText () {
+    [MTest] public IEnumerator MaterializeHTMLWithWideImageAndText () {
         var sample = @"
 <body><img src='https://dummyimage.com/97x10/000/fff'/>something</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
-    [MTest] public void MaterializeHTMLWithTextAndWideImage () {
+    [MTest] public IEnumerator MaterializeHTMLWithTextAndWideImage () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/100x10/000/fff'/></body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
 
-    [MTest] public void MaterializeHTMLWithTextAndWideImageAndText () {
+    [MTest] public IEnumerator MaterializeHTMLWithTextAndWideImageAndText () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/100x10/000/fff'/>else</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText () {
+    [MTest] public IEnumerator MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithWideImageAndTextAndWideImageAndText () {
+    [MTest] public IEnumerator MaterializeHTMLWithWideImageAndTextAndWideImageAndText () {
         var sample = @"
 <body><img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
 
-    [MTest] public void MaterializeHTMLWithTextAndSmallImage () {
+    [MTest] public IEnumerator MaterializeHTMLWithTextAndSmallImage () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/></body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
 
-    [MTest] public void MaterializeHTMLWithTextAndSmallImageAndText () {
+    [MTest] public IEnumerator MaterializeHTMLWithTextAndSmallImageAndText () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/>b!</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText () {
+    [MTest] public IEnumerator MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/100x10/000/fff'/>other</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText () {
+    [MTest] public IEnumerator MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText () {
         var sample = @"
 <body><img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/10x20/000/fff'/>other</body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
         
-        Show(tree);
+        yield return Show(tree);
     }
 
 
-    [MTest] public void LoadHTMLWithCustomTagLink () {
+    [MTest] public IEnumerator LoadHTMLWithCustomTagLink () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithCustomTag () {
+    [MTest] public IEnumerator MaterializeHTMLWithCustomTag () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -326,12 +335,13 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
 else
 
 </body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithCustomTagSmallText () {
+    [MTest] public IEnumerator MaterializeHTMLWithCustomTagSmallText () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -339,12 +349,13 @@ else
 something you need is not time, money, but do things fast.</customtext></textbg></custombg></customtag>
 else
 </body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithCustomTagLargeText () {
+    [MTest] public IEnumerator MaterializeHTMLWithCustomTagLargeText () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -354,12 +365,13 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 else
 <customimg src='https://dummyimage.com/10x20/000/fff'/>
 </body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MultipleBoxConstraints () {
+    [MTest] public IEnumerator MultipleBoxConstraints () {
         
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/MultipleBoxConstraints/UUebTags'>
@@ -375,12 +387,13 @@ else
     <img src='https://dummyimage.com/100.png/07f/fff'/>
 </bottom>
 </itemlayout>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithCustomTagMultiple () {
+    [MTest] public IEnumerator MaterializeHTMLWithCustomTagMultiple () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -388,12 +401,13 @@ else
 <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>
 else
 </body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithCustomTagMultipleByInnerContent () {
+    [MTest] public IEnumerator MaterializeHTMLWithCustomTagMultipleByInnerContent () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -403,25 +417,27 @@ else
 </customtag>
 else
 </body>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer () {
+    [MTest] public IEnumerator LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <customtag>
     <custombg><textbg><customtext>something1</customtext></textbg></custombg>
     <custombg><textbg><customtext>something2</customtext></textbg></custombg>
 </customtag>";
-        var tree = CreateLayoutedTree(sample);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => {tree = treeSource;});
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout () {
-        var sample = @"
+    [MTest] public IEnumerator MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout () {
+        var sampleHtml = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
     <bg>
@@ -435,12 +451,13 @@ else
 	    </textbg>
     </bg>
 </body>";
-        var tree = CreateLayoutedTree(sample, 300);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;}, 300);
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeSampleView2_HiddenBreakView () {
+    [MTest] public IEnumerator MaterializeSampleView2_HiddenBreakView () {
         var sampleHtml = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
@@ -458,12 +475,13 @@ else
 	    </textbg>
     </bg>
 </body>";
-        var tree = CreateLayoutedTree(sampleHtml, 300);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;}, 300);
 
-        Show(tree);
+        yield return Show(tree);
     }
 
-    [MTest] public void LayoutSampleView2_HiddenBreakView () {
+    [MTest] public IEnumerator LayoutSampleView2_HiddenBreakView () {
         var sampleHtml = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
@@ -476,11 +494,12 @@ else
 	    </textbg>
     </bg>
 </body>";
-        var tree = CreateLayoutedTree(sampleHtml, 300);
-        Show(tree);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;}, 300);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeGroupHeightChanged () {
+    [MTest] public IEnumerator MaterializeGroupHeightChanged () {
         var sampleHtml = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
@@ -495,11 +514,12 @@ else
     </bg>
 </body>
 ";
-        var tree = CreateLayoutedTree(sampleHtml, 300);
-        Show(tree);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;}, 300);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeAfterLayer () {
+    [MTest] public IEnumerator MaterializeAfterLayer () {
         var sampleHtml = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
@@ -508,57 +528,62 @@ else
     <p>hey!</p>
 </body>
 ";
-        var tree = CreateLayoutedTree(sampleHtml, 300);
-        Show(tree);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;}, 300);
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeBrBrSupport () {
+    [MTest] public IEnumerator MaterializeBrBrSupport () {
         var sampleHtml = @"
 <p>
     something<br><br>
     else
 </p>";
-        var tree = CreateLayoutedTree(sampleHtml);
-        Show(tree);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;});
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeCenterAlignSupport () {
+    [MTest] public IEnumerator MaterializeCenterAlignSupport () {
         var sampleHtml = @"
 <p align='center'>aaa</p>";
-
-        var tree = CreateLayoutedTree(sampleHtml);
-        Show(tree);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;});
+        yield return Show(tree);
     }
 
-    [MTest] public void MaterializeRightAlignSupport () {
+    [MTest] public IEnumerator MaterializeRightAlignSupport () {
         var sampleHtml = @"
 <p align='right'>aaa</p>";
-
-        var tree = CreateLayoutedTree(sampleHtml);
-        Show(tree);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;});
+        yield return Show(tree);
     }
 
     
 
-    [MTest] public void PSupport () {
+    [MTest] public IEnumerator PSupport () {
         var sampleHtml = @"
 <p>
     p1<a href=''>a1</a>p2
 </p>";
-        var tree = CreateLayoutedTree(sampleHtml);
-        Show(tree);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;});
+        yield return Show(tree);
     }
 
-    [MTest] public void PSupport2 () {
+    [MTest] public IEnumerator PSupport2 () {
         Debug.LogWarning("保留");
-        return;
+        yield break;
+
         var sampleHtml = @"
 <p>
     p1<a href=''>a1</a>p2
 </p><p>
     p3
 </p>";
-        var tree = CreateLayoutedTree(sampleHtml);
-        Show(tree);
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => {tree = treeSource;});
+        yield return Show(tree);
     }
 }

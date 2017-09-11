@@ -1,7 +1,9 @@
 
 using System;
+using System.Collections;
 using Miyamasu;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UUebView;
 
 /**
@@ -11,41 +13,34 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
     GameObject eventReceiverGameObj;
     GameObject view;
     
-    private int index;
+    private static int index;
     private void Show (GameObject view, Action loaded=null) {
-        RunOnMainThread(
-            () => {
-                var canvas = GameObject.Find("Canvas/UUebViewCoreTestPlace");
-                var baseObj = new GameObject("base");
-                
+        var canvas = GameObject.Find("Canvas/UUebViewCoreTestPlace");
+        var baseObj = new GameObject("base");
+        
 
-                // ベースオブジェクトを見やすい位置に移動
-                var baseObjRect = baseObj.AddComponent<RectTransform>();
-                baseObjRect.anchoredPosition = new Vector2(100 * index, 0);
-                baseObjRect.anchorMin = new Vector2(0,1);
-                baseObjRect.anchorMax = new Vector2(0,1);
-                baseObjRect.pivot = new Vector2(0,1);
-                
+        // ベースオブジェクトを見やすい位置に移動
+        var baseObjRect = baseObj.AddComponent<RectTransform>();
+        baseObjRect.anchoredPosition = new Vector2(100 * index, 0);
+        baseObjRect.anchorMin = new Vector2(0,1);
+        baseObjRect.anchorMax = new Vector2(0,1);
+        baseObjRect.pivot = new Vector2(0,1);
+        
 
-                baseObj.transform.SetParent(canvas.transform, false);
+        baseObj.transform.SetParent(
+            canvas.transform, false);
 
-                view.transform.SetParent(baseObj.transform, false);
+        view.transform.SetParent(baseObj.transform, false);
 
-                index++;
-                if (loaded != null) {
-                    loaded();
-                }
-            }
-        );
+        index++;
+        if (loaded != null) {
+            loaded();
+        }
     }
 
     [MSetup] public void Setup () {
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj = new GameObject("controller");
-                eventReceiverGameObj.AddComponent<TestReceiver>();
-            }
-        );
+        eventReceiverGameObj = new GameObject("controller");
+        eventReceiverGameObj.AddComponent<TestReceiver>();
     }
 
     private void ShowLayoutRecursive (TagTree tree, ResourceLoader loader) {
@@ -55,50 +50,42 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
         }
     }
 
-    [MTest] public void GenerateSingleViewFromSource () {
+    [MTest] public IEnumerator GenerateSingleViewFromSource () {
         var source = @"
 <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
         
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void GenerateSingleViewFromUrl () {
+    [MTest] public IEnumerator GenerateSingleViewFromUrl () {
         var url = "resources://UUebViewTest/UUebViewTest.html";
 
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromUrl(eventReceiverGameObj, url, new Vector2(100,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromUrl(eventReceiverGameObj, url, new Vector2(100,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void LoadThenReload () {
+    [MTest] public IEnumerator LoadThenReload () {
         var source = @"
 <body>
     reload sample.
@@ -107,39 +94,31 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
-            }
-        );
-        
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+    
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
 
         var done2 = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done2 = true;
-                };
-                var core = view.GetComponent<UUebViewComponent>().Core;
-                core.Reload();
-            }
-        );
-
-        WaitUntil(
-            () => done2, 5, "too late."
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done2 = true;
+        };
+        var core = view.GetComponent<UUebViewComponent>().Core;
+        core.Reload();
+        
+        yield return WaitUntil(
+            () => done2, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void ShowAndHide () {
+    [MTest] public IEnumerator ShowAndHide () {
         var source = @"
 <body>
     something3.
@@ -149,23 +128,19 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void HideAndShow () {
+    [MTest] public IEnumerator HideAndShow () {
         var source = @"
 <body>
     something3.
@@ -175,23 +150,19 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void CascadeButton () {
+    [MTest] public IEnumerator CascadeButton () {
         var source = @"
 <body>
     <img src='https://dummyimage.com/100.png/09f/fff' id='button' button='true'/>
@@ -202,23 +173,19 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void CachedContent () {
+    [MTest] public IEnumerator CachedContent () {
         var source = @"
 <body>
     <img src='https://dummyimage.com/100.png/09f/fff' id='button' button='true'/>
@@ -229,23 +196,19 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void ShowLinkByButton () {
+    [MTest] public IEnumerator ShowLinkByButton () {
         var source = @"
 <body>
     something3.
@@ -255,23 +218,19 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void ManyImages () {
+    [MTest] public IEnumerator ManyImages () {
         var source = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -291,23 +250,19 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void Sample2 () {
+    [MTest] public IEnumerator Sample2 () {
         var source = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
@@ -327,23 +282,19 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 </body>";
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
     
-    [MTest] public void HideThenShow () {
+    [MTest] public IEnumerator HideThenShow () {
         var source = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <bg>
@@ -357,110 +308,95 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
         UUebView.UUebViewComponent uUebView = null;
 
         var done = false;
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    uUebView = view.GetComponent<UUebViewComponent>();
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
-            }
-        );
-
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            uUebView = view.GetComponent<UUebViewComponent>();
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+    
         var shown = false;
         Show(view, () => {shown = true;});
 
-        WaitUntil(
-            () => shown && done, 5, "too late."
+        yield return WaitUntil(
+            () => shown && done, 
+            () => {throw new TimeoutException("too late.");},
+            5
         );
         
         // show hidden contents.
         {
             var updated = false;
-            RunOnMainThread(
-                () => {
-                    eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
-                        updated = true;
-                    };
-                    uUebView.EmitButtonEventById(null, string.Empty, "readmore");
-                }
-            );
-
-            WaitUntil(
-                () => updated, 5, "too late."
+            eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
+                updated = true;
+            };
+            uUebView.EmitButtonEventById(null, string.Empty, "readmore");
+        
+            yield return WaitUntil(
+                () => updated, 
+                () => {throw new TimeoutException("too late.");},
+                5
             );
         }
         
         // hide hidden contents again.
         {
             var updated = false;
-            RunOnMainThread(
-                () => {
-                    eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
-                        updated = true;
-                    };
-                    uUebView.EmitButtonEventById(null, string.Empty, "readmore");
-                }
-            );
-
-            WaitUntil(
-                () => updated, 5, "too late."
+            eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
+                updated = true;
+            };
+            uUebView.EmitButtonEventById(null, string.Empty, "readmore");
+        
+            yield return WaitUntil(
+                () => updated,
+                () => {throw new TimeoutException("too late.");}
             );
         }
 
         var tree = uUebView.Core.layoutedTree;
         var targetTextBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[1];
-        Assert(targetTextBox.offsetY == 26f, "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
+        True(targetTextBox.offsetY == 26f, "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
         // ShowLayoutRecursive(tree, uUebView.Core.resLoader);
     }
 
-    [MTest] public void UnityRichTextColorSupport () {
+    [MTest] public IEnumerator UnityRichTextColorSupport () {
         var source = @"
 <body>
     <color=#ff0000ff>red</color> <color=#008000ff>green</color> <color=#0000ffff>blue</color>
 </body>";
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void UnityRichTextSizeSupport () {
+    [MTest] public IEnumerator UnityRichTextSizeSupport () {
         var source = @"
 <p>
     a<size=50>large string</size>b
 </p>";
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 
-    [MTest] public void SetViewName () {
+    [MTest] public IEnumerator SetViewName () {
         var viewName = "SetViewName";
         var source = @"
 <body>
@@ -468,19 +404,15 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
 </body>";
         var done = false;
         
-        RunOnMainThread(
-            () => {
-                eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
-                    done = true;
-                };
-                view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100), null,null, viewName);
-            }
-        );
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100), null,null, viewName);
         
         Show(view);
 
-        WaitUntil(
-            () => done, 5, "too late."
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
 

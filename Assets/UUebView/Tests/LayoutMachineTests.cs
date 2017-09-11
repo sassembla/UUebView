@@ -27,34 +27,21 @@ public class LayoutMachineTests : MiyamasuTestRunner {
 
 	[MSetup] public void Setup () {
 
-		// GetTexture(url) runs only Play mode.
-		if (!IsTestRunningInPlayingMode()) {
-			SkipCurrentTest("Information feature should run on MainThread.");
-		};
+        executor = new GameObject("layoutMachineTest").AddComponent<UUebViewComponent>();
+        var core = new UUebView.UUebViewCore(executor);
+        executor.SetCore(core);
 
-        RunOnMainThread(
-            () => {
-                executor = new GameObject("layoutMachineTest").AddComponent<UUebViewComponent>();
-                var core = new UUebView.UUebViewCore(executor);
-                executor.SetCore(core);
-
-                loader = new ResourceLoader(executor.Core.CoroutineExecutor);
-            }
-        );
+        loader = new ResourceLoader(executor.Core.CoroutineExecutor);
 
         parser = new HTMLParser(loader);
 	}
 
     [MTeardown] public void Teardown () {
-        RunOnMainThread(
-            () => {
-                GameObject.DestroyImmediate(executor);
-                GameObject.DestroyImmediate(loader.cacheBox);
-            }
-        );
+        GameObject.DestroyImmediate(executor);
+        GameObject.DestroyImmediate(loader.cacheBox);
     }
 
-    private TagTree CreateTagTree (string sampleHtml, float width=100) {
+    private IEnumerator CreateTagTree (string sampleHtml, Action<TagTree> onParsed, float width=100) {
         ParsedTree parsedRoot = null;
         TagTree layoutedRoot = null;
 
@@ -65,162 +52,161 @@ public class LayoutMachineTests : MiyamasuTestRunner {
             }
         );
 
-        RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
+        executor.Core.CoroutineExecutor(cor);
         
-        WaitUntil(
-            () => parsedRoot != null, 1, "too late."
+        yield return WaitUntil(
+            () => parsedRoot != null, () => {throw new TimeoutException("too late.");}, 1
         );
         
         if (parsedRoot.errors.Any()) {
             throw new Exception("failed to parse. error:" + parsedRoot.errors[0].reason);
         }
 
-        RunOnMainThread(() => {
-            var layoutMachine = new LayoutMachine(
-                loader
-            );
-            
-            var loaderCor = layoutMachine.Layout(
-                parsedRoot,
-                new Vector2(width,100),
-                layoutedTree => {
-                    layoutedRoot = layoutedTree;
-                }
-            );
-
-            executor.Core.CoroutineExecutor(loaderCor);
-        });
-
-        WaitUntil(
-            () => layoutedRoot != null, 5, "timeout."
+    
+        var layoutMachine = new LayoutMachine(
+            loader
+        );
+        
+        var loaderCor = layoutMachine.Layout(
+            parsedRoot,
+            new Vector2(width,100),
+            layoutedTree => {
+                layoutedRoot = layoutedTree;
+            }
         );
 
-        return layoutedRoot;
+        executor.Core.CoroutineExecutor(loaderCor);
+
+        yield return WaitUntil(
+            () => layoutedRoot != null, () => {throw new TimeoutException("too late.");}, 5
+        );
+
+        onParsed(layoutedRoot);
     }
 
-    [MTest] public void LayoutHTML () {
+    [MTest] public IEnumerator LayoutHTML () {
         var sample = @"
 <body>something</body>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
     }
 
-    [MTest] public void LayoutHTMLHasValidView () {
+    [MTest] public IEnumerator LayoutHTMLHasValidView () {
         var sample = @"
 <body>something</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 16, "not match.");
     }
 
-    [MTest] public void LayoutHTMLWithSmallTextHasValidView () {
+    [MTest] public IEnumerator LayoutHTMLWithSmallTextHasValidView () {
         var sample = @"
 <body>over 100px string should be multi lined text with good separation. need some length.</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 118, "not match. tree.viewHeight:" + tree.viewHeight);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 118, "not match. tree.viewHeight:" + tree.viewHeight);
     }
 
-    [MTest] public void LayoutHTMLWithImage () {
+    [MTest] public IEnumerator LayoutHTMLWithImage () {
         var sample = @"
 <body><img src='https://dummyimage.com/100.png/09f/fff'/></body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 100, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 100, "not match.");
     }
 
-    [MTest] public void LayoutHTMLWithSmallImage () {
+    [MTest] public IEnumerator LayoutHTMLWithSmallImage () {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/></body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 10, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 10, "not match.");
     }
 
-    [MTest] public void LayoutHTMLWithSmallImageAndText () {
+    [MTest] public IEnumerator LayoutHTMLWithSmallImageAndText () {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>text</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 16, "not match.");
     }
 
-    [MTest] public void LayoutHTMLWithSmallImageAndSmallText () {
+    [MTest] public IEnumerator LayoutHTMLWithSmallImageAndSmallText () {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 117, "not match. tree.viewHeight:" + tree.viewHeight);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 117, "not match. tree.viewHeight:" + tree.viewHeight);
     }
     
 
-    [MTest] public void LayoutHTMLWithWideImageAndText () {
+    [MTest] public IEnumerator LayoutHTMLWithWideImageAndText () {
         var sample = @"
 <body><img src='https://dummyimage.com/97x10/000/fff'/>something</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 26, "not match. tree.viewHeight:" + tree.viewHeight);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 26, "not match. tree.viewHeight:" + tree.viewHeight);
     }
 
-    [MTest] public void LayoutHTMLWithTextAndWideImage () {
+    [MTest] public IEnumerator LayoutHTMLWithTextAndWideImage () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/100x10/000/fff'/></body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 16, "not match.");
     }
 
 
-    [MTest] public void LayoutHTMLWithTextAndWideImageAndText () {
+    [MTest] public IEnumerator LayoutHTMLWithTextAndWideImageAndText () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/100x10/000/fff'/>else</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 16+16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 16+16, "not match.");
     }
 
-    [MTest] public void LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText () {
+    [MTest] public IEnumerator LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 16+16+16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 16+16+16, "not match.");
     }
 
-    [MTest] public void LayoutHTMLWithWideImageAndTextAndWideImageAndText () {
+    [MTest] public IEnumerator LayoutHTMLWithWideImageAndTextAndWideImageAndText () {
         var sample = @"
 <body><img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 10+16+16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 10+16+16, "not match.");
     }
 
 
-    [MTest] public void LayoutHTMLWithTextAndSmallImage () {
+    [MTest] public IEnumerator LayoutHTMLWithTextAndSmallImage () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/></body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 16, "not match.");
     }
 
 
-    [MTest] public void LayoutHTMLWithTextAndSmallImageAndText () {
+    [MTest] public IEnumerator LayoutHTMLWithTextAndSmallImageAndText () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/>b!</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 16, "not match.");
     }
 
-    [MTest] public void LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText () {
+    [MTest] public IEnumerator LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText () {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/100x10/000/fff'/>other</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 16+16+16, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 16+16+16, "not match.");
     }
 
-    [MTest] public void LayoutHTMLWithSmallImageAndTextAndSmallImageAndText () {
+    [MTest] public IEnumerator LayoutHTMLWithSmallImageAndTextAndSmallImageAndText () {
         var sample = @"
 <body><img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/10x20/000/fff'/>other</body>";
-        var tree = CreateTagTree(sample);
-        Assert(tree.viewHeight == 20, "not match.");
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(tree.viewHeight == 20, "not match.");
     }
 
 
-    [MTest] public void LoadHTMLWithCustomTagLink () {
+    [MTest] public IEnumerator LoadHTMLWithCustomTagLink () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
     }
 
-    [MTest] public void LayoutHTMLWithCustomTag () {
+    [MTest] public IEnumerator LayoutHTMLWithCustomTag () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -229,10 +215,10 @@ else
 <customimg src='https://dummyimage.com/10x20/000/fff'/>
 </body>
         ";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
     }
 
-    [MTest] public void LayoutHTMLWithCustomTagSmallText () {
+    [MTest] public IEnumerator LayoutHTMLWithCustomTagSmallText () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -241,10 +227,10 @@ something you need is not time, money, but do things fast.
 </customtext></textbg></custombg></customtag>
 else
 </body>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
     }
 
-    [MTest] public void LayoutHTMLWithCustomTagLargeText () {
+    [MTest] public IEnumerator LayoutHTMLWithCustomTagLargeText () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
@@ -253,12 +239,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 </customtext></textbg></custombg></customtag>
 else
 </body>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         while (true) {
             if (0 < tree.GetChildren().Count) {
                 tree = tree.GetChildren()[tree.GetChildren().Count-1];
                 if (tree.offsetY != 0) {
-                    Assert(tree.offsetY.ToString() == "799.95", "not match, offsetY:" + tree.offsetY);
+                    True(tree.offsetY.ToString() == "799.95", "not match, offsetY:" + tree.offsetY);
                 }
             } else {
                 break;
@@ -266,7 +252,7 @@ else
         }
     }
 
-    [MTest] public void RevertLayoutHTMLWithSmallImageAndSmallText () {
+    [MTest] public IEnumerator RevertLayoutHTMLWithSmallImageAndSmallText () {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
         
@@ -279,10 +265,10 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
+            executor.Core.CoroutineExecutor(cor);
             
-            WaitUntil(
-                () => parsedRoot != null, 1, "too late."
+            yield return WaitUntil(
+                () => parsedRoot != null, () => {throw new TimeoutException("too late.");}, 1
             );
         }
 
@@ -290,25 +276,24 @@ else
             var done = false;
             
             LayoutMachine layoutMachine = null;
-            RunOnMainThread(() => {
-                layoutMachine = new LayoutMachine(
-                    loader
-                );
+            
+            layoutMachine = new LayoutMachine(
+                loader
+            );
 
-                var cor = layoutMachine.Layout(
-                    parsedRoot,
-                    new Vector2(100,100),
-                    layoutedTree => {
-                        done = true;
-                        Assert(layoutedTree.viewHeight == 117, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
-                    }
-                );
-                executor.Core.CoroutineExecutor(cor);
-            });
+            var cor = layoutMachine.Layout(
+                parsedRoot,
+                new Vector2(100,100),
+                layoutedTree => {
+                    done = true;
+                    True(layoutedTree.viewHeight == 117, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
+                }
+            );
+            executor.Core.CoroutineExecutor(cor);
 
 
-            WaitUntil(
-                () => done, 5, "timeout."
+            yield return WaitUntil(
+                () => done, () => {throw new TimeoutException("too late.");}, 5
             );
 
             TagTree.CorrectTrees(parsedRoot);
@@ -323,20 +308,20 @@ else
                 new Vector2(100,100),
                 layoutedTree => {
                     done2 = true;
-                    Assert(layoutedTree.viewHeight == 117, "not match. actual:" + layoutedTree.viewHeight);
+                    True(layoutedTree.viewHeight == 117, "not match. actual:" + layoutedTree.viewHeight);
                 }
             );
 
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor2));
+            executor.Core.CoroutineExecutor(cor2);
 
 
-            WaitUntil(
-                () => done2, 5, "timeout."
+            yield return WaitUntil(
+                () => done2, () => {throw new TimeoutException("too late.");}, 5
             );
         }
     }
 
-    [MTest] public void RevertLayoutHTMLWithSmallImageAndSmallTextAndBr () {
+    [MTest] public IEnumerator RevertLayoutHTMLWithSmallImageAndSmallTextAndBr () {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation.
 <br>need some length.</body>";
@@ -350,10 +335,10 @@ else
                 }
             );
 
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor));
+            executor.Core.CoroutineExecutor(cor);
             
-            WaitUntil(
-                () => parsedRoot != null, 1, "too late."
+            yield return WaitUntil(
+                () => parsedRoot != null, () => {throw new TimeoutException("too late.");}, 1
             );
         }
 
@@ -361,25 +346,24 @@ else
             var done = false;
             
             LayoutMachine layoutMachine = null;
-            RunOnMainThread(() => {
-                layoutMachine = new LayoutMachine(
-                    loader
-                );
+        
+            layoutMachine = new LayoutMachine(
+                loader
+            );
 
-                var cor = layoutMachine.Layout(
-                    parsedRoot,
-                    new Vector2(100,100),
-                    layoutedTree => {
-                        done = true;
-                        Assert(layoutedTree.viewHeight == 116, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
-                    }
-                );
-                executor.Core.CoroutineExecutor(cor);
-            });
+            var cor = layoutMachine.Layout(
+                parsedRoot,
+                new Vector2(100,100),
+                layoutedTree => {
+                    done = true;
+                    True(layoutedTree.viewHeight == 116, "not match. layoutedTree.viewHeight:" + layoutedTree.viewHeight);
+                }
+            );
+            executor.Core.CoroutineExecutor(cor);
 
 
-            WaitUntil(
-                () => done, 5, "timeout."
+            yield return WaitUntil(
+                () => done, () => {throw new TimeoutException("too late.");}, 5
             );
 
             TagTree.CorrectTrees(parsedRoot);
@@ -394,46 +378,46 @@ else
                 new Vector2(100,100),
                 layoutedTree => {
                     done2 = true;
-                    Assert(layoutedTree.viewHeight == 116, "not match. actual:" + layoutedTree.viewHeight);
+                    True(layoutedTree.viewHeight == 116, "not match. actual:" + layoutedTree.viewHeight);
                 }
             );
 
-            RunOnMainThread(() => executor.Core.CoroutineExecutor(cor2));
+            executor.Core.CoroutineExecutor(cor2);
 
 
-            WaitUntil(
-                () => done2, 5, "timeout."
+            yield return WaitUntil(
+                () => done2, () => {throw new TimeoutException("too late.");}, 5
             );
         }
     }
 
-    [MTest] public void Order () {
+    [MTest] public IEnumerator Order () {
         var sample = @"
 <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
-        var tree = CreateTagTree(sample);
-        Assert(
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(
             tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[0]/*text of body*/.treeType == TreeType.Content_Text, "not match, type:" + tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[0]/*text of body*/.treeType
         );
 
-        Assert(
+        True(
             tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[1]/*img*/.treeType == TreeType.Content_Img, "not match, type:" + tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[1]/*img*/.treeType
         );
     }
 
-    [MTest] public void Position () {
+    [MTest] public IEnumerator Position () {
         var sample = @"
 <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
-        var tree = CreateTagTree(sample);
-        Assert(
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(
             tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[0]/*text of body*/.offsetY == 6f, "not match, offsetY:" + tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[0]/*text of body*/.offsetY
         );
 
-        Assert(
+        True(
             tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[1]/*img*/.offsetY == 0, "not match, offsetY:" + tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[1]/*img*/.offsetY
         );
     }
 
-    [MTest] public void MultipleBoxConstraints () {
+    [MTest] public IEnumerator MultipleBoxConstraints () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/MultipleBoxConstraints/UUebTags'>
 <itemlayout>
@@ -448,41 +432,41 @@ else
     <img src='https://dummyimage.com/100.png/07f/fff'/>
 </bottom>
 </itemlayout>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var itemLayout = tree.GetChildren()[0];
         var topleft = itemLayout.GetChildren()[0];
         var topright = itemLayout.GetChildren()[1];
-        Assert(topleft.offsetY == 0, "not match, topleft.offsetY:" + topleft.offsetY);
-        Assert(topright.offsetY == 0, "not match, topright.offsetY:" + topright.offsetY);
+        True(topleft.offsetY == 0, "not match, topleft.offsetY:" + topleft.offsetY);
+        True(topright.offsetY == 0, "not match, topright.offsetY:" + topright.offsetY);
     }
 
 
-    [MTest] public void LayoutHTMLWithCustomTagMultiple () {
-        var sampleHtml = @"
+    [MTest] public IEnumerator LayoutHTMLWithCustomTagMultiple () {
+        var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
 <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>";
-        var tree = CreateTagTree(sampleHtml);
-        Assert(0 < tree.GetChildren().Count, "not match, actual:" + tree.GetChildren().Count);
-        Assert(tree.GetChildren()[0].offsetY.ToString() == "0.04999924", "not match of 1. actual:" + tree.GetChildren()[0].offsetY);
-        Assert(tree.GetChildren()[1].offsetY == 60.8f, "not match of 2. actual:" + tree.GetChildren()[1].offsetY);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(0 < tree.GetChildren().Count, "not match, actual:" + tree.GetChildren().Count);
+        True(tree.GetChildren()[0].offsetY.ToString() == "0.04999924", "not match of 1. actual:" + tree.GetChildren()[0].offsetY);
+        True(tree.GetChildren()[1].offsetY == 60.8f, "not match of 2. actual:" + tree.GetChildren()[1].offsetY);
     }
 
-    [MTest] public void LayoutHTMLWithCustomTagMultipleInBody () {
-        var sampleHtml = @"
+    [MTest] public IEnumerator LayoutHTMLWithCustomTagMultipleInBody () {
+        var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <body>
 <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
 <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>
 </body>";
-        var tree = CreateTagTree(sampleHtml);
-        Assert(0 < tree.GetChildren().Count, "not match, actual:" + tree.GetChildren().Count);
-        Assert(tree.GetChildren()[0].GetChildren()[0].offsetY.ToString() == "0.04999924", "not match of 1. actual:" + tree.GetChildren()[0].GetChildren()[0].offsetY);
-        Assert(tree.GetChildren()[0].GetChildren()[1].offsetY == 60.8f, "not match of 2. actual:" + tree.GetChildren()[0].GetChildren()[1].offsetY);        
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
+        True(0 < tree.GetChildren().Count, "not match, actual:" + tree.GetChildren().Count);
+        True(tree.GetChildren()[0].GetChildren()[0].offsetY.ToString() == "0.04999924", "not match of 1. actual:" + tree.GetChildren()[0].GetChildren()[0].offsetY);
+        True(tree.GetChildren()[0].GetChildren()[1].offsetY == 60.8f, "not match of 2. actual:" + tree.GetChildren()[0].GetChildren()[1].offsetY);        
     }
 
-    [MTest] public void LayoutSampleView2_HiddenBreakView () {
-        var sampleHtml = @"
+    [MTest] public IEnumerator LayoutSampleView2_HiddenBreakView () {
+        var sample = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
     <bg>
@@ -494,15 +478,15 @@ else
 	    </textbg>
     </bg>
 </body>";
-        var tree = CreateTagTree(sampleHtml);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var textBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0];
         var updatetextBox = textBox.GetChildren()[0];
         // Debug.LogError("updatetextBox:" + updatetextBox.viewHeight);
-        Assert(textBox.viewHeight == 2023, "not match, textBox.viewHeight:" + textBox.viewHeight);
+        True(textBox.viewHeight == 2023, "not match, textBox.viewHeight:" + textBox.viewHeight);
     }
 
-    [MTest] public void SampleView2 () {
-        var sampleHtml = @"
+    [MTest] public IEnumerator SampleView2 () {
+        var sample = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
     <bg>
@@ -520,23 +504,23 @@ else
 	    </textbg>
     </bg>
 </body>";
-        var tree = CreateTagTree(sampleHtml);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
     }
 
-    [MTest] public void LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer () {
+    [MTest] public IEnumerator LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <customtag>
     <custombg><textbg><customtext>something1</customtext></textbg></custombg>
     <custombg><textbg><customtext>something2</customtext></textbg></custombg>
 </customtag>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var custombgs = tree.GetChildren()[0]/*customtag*/.GetChildren()[0]/*box*/.GetChildren();
-        Assert(custombgs[0].offsetY == 0, "not match. custombgs[0].offsetY:" + custombgs[0].offsetY);
-        Assert(custombgs[1].offsetY == 60.7f, "not match. custombgs[1].offsetY:" + custombgs[1].offsetY);
+        True(custombgs[0].offsetY == 0, "not match. custombgs[0].offsetY:" + custombgs[0].offsetY);
+        True(custombgs[1].offsetY == 60.7f, "not match. custombgs[1].offsetY:" + custombgs[1].offsetY);
     }
 
-    [MTest] public void LayoutHTMLWithDoubleBoxedLayerNeverOverLayout () {
+    [MTest] public IEnumerator LayoutHTMLWithDoubleBoxedLayerNeverOverLayout () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
@@ -551,7 +535,7 @@ else
 	    </textbg>
     </bg>
 </body>";
-        var tree = CreateTagTree(sample, 300);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;}, 300);
 
         var pAndUpdateText = tree.GetChildren()[0]/*body*/.GetChildren()[0]/*bg*/.GetChildren()[0]/*textbg*/.GetChildren()[0]/*textbox*/.GetChildren()[0]/*textbox_box*/.GetChildren()[0].GetChildren();
         // foreach (var s in pAndUpdateText) {
@@ -559,31 +543,31 @@ else
         // }
         
         var pContainer = pAndUpdateText[0];
-        Assert(pContainer.viewWidth.ToString() == "208.9", "not match. pContainer.viewWidth:" + pContainer.viewWidth);
+        True(pContainer.viewWidth.ToString() == "208.9", "not match. pContainer.viewWidth:" + pContainer.viewWidth);
 
         var lastPContents = pContainer.GetChildren().Last();
-        Assert(lastPContents.offsetY.ToString() == "100", "not match. lastPContents.offsetY:" + lastPContents.offsetY);
+        True(lastPContents.offsetY.ToString() == "100", "not match. lastPContents.offsetY:" + lastPContents.offsetY);
 
         var updateTextContainer = pAndUpdateText[1];
-        Assert(updateTextContainer.offsetX == 51f, "not match. updateTextContainer.offsetX:" + updateTextContainer.offsetX);
-        Assert(updateTextContainer.offsetY == 100f, "not match. updateTextContainer.offsetY:" + updateTextContainer.offsetY);
+        True(updateTextContainer.offsetX == 51f, "not match. updateTextContainer.offsetX:" + updateTextContainer.offsetX);
+        True(updateTextContainer.offsetY == 100f, "not match. updateTextContainer.offsetY:" + updateTextContainer.offsetY);
 
         var updateTextContainer2 = pAndUpdateText[2];
-        Assert(updateTextContainer2.offsetY == 100f, "not match. updateTextContainer2.offsetY:" + updateTextContainer2.offsetY);
+        True(updateTextContainer2.offsetY == 100f, "not match. updateTextContainer2.offsetY:" + updateTextContainer2.offsetY);
         
         var pContainer2 = pAndUpdateText[3];
-        Assert(pContainer2.offsetY == 125, "not match. pContainer2.offsetY:" + pContainer2.offsetY);
+        True(pContainer2.offsetY == 125, "not match. pContainer2.offsetY:" + pContainer2.offsetY);
         
         var pContainer2FirstLine = pContainer2.GetChildren()[0];
-        Assert(pContainer2FirstLine.offsetX == 44f, "not match. pContainer2FirstLine.offsetX:" + pContainer2FirstLine.offsetX);
-        Assert(pContainer2FirstLine.offsetY == 0f, "not match. pContainer2FirstLine.offsetY:" + pContainer2FirstLine.offsetY);
+        True(pContainer2FirstLine.offsetX == 44f, "not match. pContainer2FirstLine.offsetX:" + pContainer2FirstLine.offsetX);
+        True(pContainer2FirstLine.offsetY == 0f, "not match. pContainer2FirstLine.offsetY:" + pContainer2FirstLine.offsetY);
 
         var pContainer2SecondLine = pContainer2.GetChildren()[1];
-        Assert(pContainer2SecondLine.offsetX == 0f, "not match. pContainer2SecondLine.offsetX:" + pContainer2SecondLine.offsetX);
-        Assert(pContainer2SecondLine.offsetY.ToString() == "25", "not match. pContainer2SecondLine.offsetY:" + pContainer2SecondLine.offsetY);
+        True(pContainer2SecondLine.offsetX == 0f, "not match. pContainer2SecondLine.offsetX:" + pContainer2SecondLine.offsetX);
+        True(pContainer2SecondLine.offsetY.ToString() == "25", "not match. pContainer2SecondLine.offsetY:" + pContainer2SecondLine.offsetY);
     }
 
-    [MTest] public void LayoutGroupHeightChanged () {
+    [MTest] public IEnumerator LayoutGroupHeightChanged () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
@@ -598,12 +582,12 @@ else
     </bg>
 </body>
 ";
-        var tree = CreateTagTree(sample, 300);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;}, 300);
         var textBg = tree.GetChildren()[0].GetChildren()[0].GetChildren()[2];
-        Assert(textBg.offsetY.ToString() == "56.97501", "not match, textBg.offsetY:" + textBg.offsetY);
+        True(textBg.offsetY.ToString() == "56.97501", "not match, textBg.offsetY:" + textBg.offsetY);
     }
 
-    [MTest] public void LayoutAfterLayer () {
+    [MTest] public IEnumerator LayoutAfterLayer () {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
 <body>
@@ -612,87 +596,87 @@ else
     <p>hey!</p>
 </body>
 ";
-        var tree = CreateTagTree(sample, 300);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;}, 300);
         var p = tree.GetChildren()[0].GetChildren()[1];
         
-        Assert(p.offsetX == 0 && p.offsetY == 100, "not match. p.offsetY:" + p.offsetY);
+        True(p.offsetX == 0 && p.offsetY == 100, "not match. p.offsetY:" + p.offsetY);
     }
 
-    [MTest] public void BrSupport () {
+    [MTest] public IEnumerator BrSupport () {
         var sample = @"
 <p>
     something<br>
     else
 </p>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
         
-        Assert(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
-        Assert(p[2].offsetY == 16f, "not match. custombgs[2].offsetY:" + p[2].offsetY);
+        True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+        True(p[2].offsetY == 16f, "not match. custombgs[2].offsetY:" + p[2].offsetY);
     }
 
-    [MTest] public void BrBrSupport () {
+    [MTest] public IEnumerator BrBrSupport () {
         var sample = @"
 <p>
     something<br><br>
     else
 </p>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
         
-        Assert(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
-        Assert(p[3].offsetY == 32f, "not match. custombgs[3].offsetY:" + p[3].offsetY);
+        True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+        True(p[3].offsetY == 32f, "not match. custombgs[3].offsetY:" + p[3].offsetY);
     }
 
-    [MTest] public void LayoutCenterAlignSupport () {
+    [MTest] public IEnumerator LayoutCenterAlignSupport () {
         var sample = @"
 <p align='center'>aaa</p>";
 
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
         
-        Assert(p[0].offsetX == 38, "not match. custombgs[0].offsetX:" + p[0].offsetX);
-        Assert(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+        True(p[0].offsetX == 38, "not match. custombgs[0].offsetX:" + p[0].offsetX);
+        True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
     }
     
-    [MTest] public void LayoutRightAlignSupport () {
+    [MTest] public IEnumerator LayoutRightAlignSupport () {
         var sample = @"
 <p align='right'>aaa</p>";
 
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
         
-        Assert(p[0].offsetX == 76, "not match. custombgs[0].offsetX:" + p[0].offsetX);
-        Assert(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+        True(p[0].offsetX == 76, "not match. custombgs[0].offsetX:" + p[0].offsetX);
+        True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
     }
 
-    [MTest] public void PSupport () {
+    [MTest] public IEnumerator PSupport () {
         var sample = @"
 <p>
     p1<a href=''>a1</a>p2
 </p>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var p1 = tree.GetChildren()[0];
         
-        Assert(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
+        True(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
     }
 
-    [MTest] public void PSupport2 () {
+    [MTest] public IEnumerator PSupport2 () {
         Debug.LogWarning("保留。");
-        return;
+        yield break;
         var sample = @"
 <p>
     p1<a href=''>a1</a>p2
 </p><p>
     p3
 </p>";
-        var tree = CreateTagTree(sample);
+        TagTree tree = null; yield return  CreateTagTree(sample, tagTreeSource => {tree = tagTreeSource;});
         var p1 = tree.GetChildren()[0];
         var p2 = tree.GetChildren()[1];
         
-        Assert(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
+        True(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
 
-        Assert(p1.offsetY == 0, "not match. p1.offsetY:" + p1.offsetY);
-        Assert(p2.offsetY == 16f, "not match. p2.offsetY:" + p2.offsetY);
+        True(p1.offsetY == 0, "not match. p1.offsetY:" + p1.offsetY);
+        True(p2.offsetY == 16f, "not match. p2.offsetY:" + p2.offsetY);
     }
 }

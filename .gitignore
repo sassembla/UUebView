@@ -9,3 +9,7 @@ obj/*
 Temp/*
 miyamasu_test.log
 .vscode/launch.json
+Assets/MiyamasuTestRunner/Runtime/Generated/GeneratedTestEntryPoints.cs
+Assets/MiyamasuTestRunner/Runtime/Generated/GeneratedTestEntryPoints.cs.meta
+Assets/MiyamasuTestRunner/Runtime/Generated.meta
+miyamasu.log
