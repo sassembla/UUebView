@@ -26,6 +26,22 @@ namespace UUebView {
         void StartCoroutine(IEnumerator iEnum);
     }
 
+    // public struct TreePoint {
+    //     public readonly string point;
+    //     private readonly UUebViewCore core;
+    //     private readonly TagTree pointedTree;
+    //     public TreePoint (string point, UUebViewCore core, TagTree pointedTree) {
+    //         this.point = point;
+    //         this.core = core;
+    //         this.pointedTree = pointedTree;
+    //     }
+
+    //     public void AppendContentToLast (string htmlContent) {
+    //         pointedTree.AddChildren();
+    //         core.Update();
+    //     }
+    // }
+
     public class UUebViewCore {
         private Dictionary<string, List<TagTree>> listenerDict = new Dictionary<string, List<TagTree>>();
         public readonly IUUebView view;
@@ -448,6 +464,85 @@ namespace UUebView {
 
         public class LoadingCoroutineObj {
             public bool isDone = false;
+        }
+
+
+        // public TreePoint TreePointOf (string query) {
+        //     Debug.LogError("query:" + query);// /で分解していって、数字が出てきたらインデックスとして解いて、、みたいな感じ。
+        //     // あれ、もしかして必要ないか？と思ったけどポインタがあると楽だよね。
+        //     return new TreePoint(query, this, pointedTree);
+        // }
+
+        public void AppendContentToLast (string htmlContent) {
+            // これ単体でparseを通して、出てきたツリーを現在のツリーと合成する。
+            var parser = new HTMLParser(resLoader);
+            var parse = parser.ParseRoot(
+                htmlContent,
+                parsedTagTree => {
+                    if (parsedTagTree.errors.Any()) {
+                        Debug.LogError("parse errors:" + parsedTagTree.errors.Count);
+                        
+                        foreach (var error in parsedTagTree.errors) {
+                            Debug.LogError("code:" + error.code + " reason:" + error.reason);
+                        }
+                        return;
+                    }
+                    
+                    // parse succeeded.
+
+                    var children = parsedTagTree.GetChildren();
+                    layoutedTree.AddChildren(children.ToArray());
+
+                    // relayout.
+                    Update();
+                }
+            );
+
+            CoroutineExecutor(parse);
+        }
+
+        public void DeleteByPoint (string query) {
+            // この時点でrevertが必須な気がする
+            if (query.StartsWith("/")) {
+                query = query.TrimStart('/');
+            }
+
+            var queryArray = query.Split('/');
+            
+            var targetTreeFamily = GetTreePoint(new List<TagTree>{layoutedTree}, queryArray);
+            if (targetTreeFamily.Any()) {
+                var deleteTargetTree = targetTreeFamily.Last();
+                targetTreeFamily[targetTreeFamily.Length-2].GetChildren().Remove(deleteTargetTree);
+            }
+        }
+
+        private TagTree[] GetTreePoint (List<TagTree> family, string[] query) {
+            var tagValueAndIndex = query[0].Split(':');
+            var headStr = tagValueAndIndex[0];
+            var head = resLoader.FindTag(headStr);
+
+            var count = 0;
+            if (1 < tagValueAndIndex.Length) {
+                count = Convert.ToInt32(tagValueAndIndex[1]);
+            }
+
+            var candidates = family.Last().GetChildren().Where(t => t.tagValue == head).ToArray();
+            
+            if (count < candidates.Length) {
+                var target = candidates[count];
+                family.Add(target);
+                
+                if (query.Length == 1) {
+                    return family.ToArray();
+                }
+
+                var newQuery = query.ToList();
+                newQuery.RemoveAt(0);
+                return GetTreePoint(family, newQuery.ToArray());
+            }
+
+            // not found. return empty tag tree.
+            throw new ArgumentException("requested tag not found.");
         }
     }
 

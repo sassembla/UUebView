@@ -917,5 +917,19 @@ namespace UUebView {
             undefinedTagDict[tagCandidateStr] = count;
             return count;
         }
+
+        public int FindTag (string tagCandidateStr) {
+            if (defaultTagStrIntPair.ContainsKey(tagCandidateStr)) {
+				return defaultTagStrIntPair[tagCandidateStr];
+			}
+            // collect undefined tag.
+            // Debug.LogError("tagCandidateStr:" + tagCandidateStr);
+
+            if (undefinedTagDict.ContainsKey(tagCandidateStr)) {
+                return undefinedTagDict[tagCandidateStr];
+            }
+
+            return -1;
+        }
     }
 }

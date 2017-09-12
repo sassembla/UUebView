@@ -57,7 +57,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         }
     }
 
-    [MTest] public IEnumerator GenerateSingleViewFromSource () {
+    [MTest] public IEnumerator GetComponent () {
         var source = @"
 <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
         
@@ -73,5 +73,97 @@ public class TreeQLTests : MiyamasuTestRunner {
         yield return WaitUntil(
             () => done, () => {throw new TimeoutException("too late.");}, 5
         );
+
+        var comp = view.GetComponent<UUebViewComponent>();
+        NotNull(comp);
+    }
+
+//     [MTest] public IEnumerator GetTree () {
+//         var source = @"
+// <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
+        
+//         var done = false;
+        
+//         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+//             done = true;
+//         };
+//         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+        
+//         Show(view);
+
+//         yield return WaitUntil(
+//             () => done, () => {throw new TimeoutException("too late.");}, 5
+//         );
+
+//         var comp = view.GetComponent<UUebViewComponent>();
+//         var treePoint = comp.TreePointOf("/body");
+//         NotNull(treePoint);
+//     }
+
+    [MTest] public IEnumerator AppendContent () {
+        var source = @"
+<body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
+        
+        var done = false;
+        
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+        
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
+        );
+
+        var comp = view.GetComponent<UUebViewComponent>();
+        comp.AppendContentToLast("<p>test</p>");
+    }
+
+//     [MTest] public IEnumerator AppendContentToLast () {
+//         var source = @"
+// <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
+        
+//         var done = false;
+        
+//         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+//             done = true;
+//         };
+//         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+        
+//         Show(view);
+
+//         yield return WaitUntil(
+//             () => done, () => {throw new TimeoutException("too late.");}, 5
+//         );
+
+//         var comp = view.GetComponent<UUebViewComponent>();
+//         var treePoint = comp.TreePointOf("/body");
+//         treePoint.AppendContentToLast("<p>last<p>");
+//     }
+
+    [MTest] public IEnumerator Delete () {
+        var source = @"
+<body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
+        
+        var done = false;
+        
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+        
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
+        );
+
+        var comp = view.GetComponent<UUebViewComponent>();
+        comp.DeleteByPoint("/body");
+
+        var layoutedTree = comp.Core.layoutedTree;
+        True(layoutedTree.GetChildren().Count == 0);
     }
 }
