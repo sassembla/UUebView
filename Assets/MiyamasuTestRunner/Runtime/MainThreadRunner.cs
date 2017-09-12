@@ -11,7 +11,7 @@ namespace Miyamasu {
 		private bool started;
 
 		private string htmlContent = @"
-<h1>Miyamasu Runtime Console</h1>
+<h1 align='center'>MRConsole</h1><br>
 <p>
 	ddd<br>
 </p>";
@@ -30,7 +30,7 @@ namespace Miyamasu {
 				yield break;
 			}
 
-			var canvasCor = Resources.LoadAsync<GameObject>("Prefabs/MiyamasuCanvas");
+			var canvasCor = Resources.LoadAsync<GameObject>("MiyamasuPrefabs/MiyamasuCanvas");
 
 			while (!canvasCor.isDone) {
 				yield return null;
@@ -48,7 +48,7 @@ namespace Miyamasu {
 				}
 			}
 
-			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(600,100));			
+			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(728,100));			
 			view.transform.SetParent(attachTargetView.transform);
 
 

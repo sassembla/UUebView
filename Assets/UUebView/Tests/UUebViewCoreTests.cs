@@ -416,11 +416,89 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
         );
     }
 
+    [MTest] public IEnumerator BrOnHeadOfContents () {
+        var source = @"
+<body>
+    <p>
+        <br>
+        aaa
+    </p>
+</body>";
+        var done = false;
+        
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+        
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
+        );
+    }
+    
+    [MTest] public IEnumerator BrOnHeadOfContents2 () {
+        var source = @"
+<body>
+    <h1>Miyamasu Runtime Console</h1><br>
+</body>";
+        var done = false;
+        
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+        
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
+        );
+    }
+
+    [MTest] public IEnumerator BrOnHeadOfContents3 () {
+        var source = @"
+<h1>Miyamasu Runtime Console</h1><br>";
+        var done = false;
+        
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+        
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
+        );
+    }
+
+    [MTest] public IEnumerator BrOnHeadOfContents4 () {
+        var source = @"
+<h1>Miyamasu Runtime Console</h1><br>
+<p>
+	ddd<br>
+</p>";
+        var done = false;
+        
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+        
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
+        );
+    }
+    
     /*
         なんでかこれがエラーになる。
 @"
 <body>
-    <h1>Miyamasu Runtime Console</h1>
+    <h1>Miyamasu Runtime Console</h1><br>
     <p>
         <br>
         aaa

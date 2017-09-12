@@ -161,6 +161,10 @@ namespace UUebView {
         public IEnumerator<GameObject> LoadPrefab (int tagValue, TreeType treeType) {
             GameObject prefab = null;
             
+            if (tagValue == (int)HTMLTag._ROOT) {
+                tagValue = (int)HTMLTag.body;
+            }
+
             var prefabName = GetTagFromValue(tagValue);
             
             while (loadingPrefabNames.Contains(prefabName)) {
@@ -176,38 +180,28 @@ namespace UUebView {
                 {
                     switch (IsDefaultTag(tagValue)) {
                         case true: {
+                            // デフォルトコンテンツがここにくる。
+                            var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
 
-                            switch (treeType) {
-                                case TreeType.Container: {
-                                    throw new Exception("unexpected loading.");
-                                }
-                                default: {
-                                    // コンテナ以外、いろんなデフォルトコンテンツがここにくる。
-                                    
-                                    var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
-
-                                    var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
-                                    while (cor.MoveNext()) {
-                                        if (cor.Current != null) {
-                                            break;
-                                        }                           
-                                        yield return null;
-                                    }
-                                    var loadedPrefab = cor.Current;
-                                    
-                                    prefab = loadedPrefab;
+                            var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
+                            while (cor.MoveNext()) {
+                                if (cor.Current != null) {
                                     break;
-                                }
+                                }                           
+                                yield return null;
                             }
+                            var loadedPrefab = cor.Current;
+                            
+                            prefab = loadedPrefab;
                             break;
                         }
 
-                        // 非デフォルトタグ、customBox以外はloadpathが存在する。
+                        // 非デフォルトタグでは、コンテナとcustomBox以外のtypeにはloadpathが存在する。
                         default: {
                             switch (treeType) {
                                 case TreeType.Container: 
                                 case TreeType.CustomBox: {
-                                    throw new Exception("unexpected loading.");
+                                    throw new Exception("unexpected loading. tag:" + GetTagFromValue(tagValue) + " is not contents.");
                                 }
                                 default: {
                                     var loadPath = GetCustomTagLoadPath(tagValue, treeType);
