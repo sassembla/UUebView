@@ -16,6 +16,12 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
     private static int index;
     private void Show (GameObject view, Action loaded=null) {
         var canvas = GameObject.Find("Canvas/UUebViewCoreTestPlace");
+        if (canvas == null) {
+            var prefab = Resources.Load<GameObject>("TestPrefabs/Canvas");
+            var canvasBase = GameObject.Instantiate(prefab);
+            canvasBase.name = "Canvas";
+            canvas = GameObject.Find("Canvas/MaterializeTestPlace");
+        }
         var baseObj = new GameObject("base");
         
 
@@ -478,7 +484,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
         var source = @"
 <h1>Miyamasu Runtime Console</h1><br>
 <p>
-	ddd<br>
+	<br>ddd<br>
 </p>";
         var done = false;
         
@@ -493,47 +499,4 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
             () => done, () => {throw new TimeoutException("too late.");}, 5
         );
     }
-    
-    /*
-        なんでかこれがエラーになる。
-@"
-<body>
-    <h1>Miyamasu Runtime Console</h1><br>
-    <p>
-        <br>
-        aaa
-        <br>
-        bbb
-        <br>
-        ccc
-        <br>
-        ddd
-        <br>
-        aaa
-        <br>
-        bbb
-        <br>
-        ccc
-        <br>
-        ddd
-        <br>
-        aaa
-        <br>
-        bbb
-        <br>
-        ccc
-        <br>
-        ddd
-    </p>
-</body>";
-
-
-
-@"
-<h1>Miyamasu Runtime Console</h1>
-<p>
-    <br>ddd<br>
-</p>"
-
-    */
 }

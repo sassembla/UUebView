@@ -42,6 +42,14 @@ public class MaterializeMachineTests : MiyamasuTestRunner {
         view.SetCore(core);
         
         var canvas = GameObject.Find("Canvas/MaterializeTestPlace");
+        if (canvas == null) {
+            var prefab = Resources.Load<GameObject>("TestPrefabs/Canvas");
+            var canvasBase = GameObject.Instantiate(prefab);
+            canvasBase.name = "Canvas";
+            canvas = GameObject.Find("Canvas/MaterializeTestPlace");
+        }
+
+
         rootObj.transform.SetParent(canvas.transform, false);
 
         rectTrans.anchoredPosition = new Vector2(100 * index, 0);
