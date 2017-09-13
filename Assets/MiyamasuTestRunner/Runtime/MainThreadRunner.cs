@@ -14,10 +14,9 @@ namespace Miyamasu {
 		private UUebViewComponent targetComponent;
 
 		private string htmlContent = @"
-<h1 align='center'>MRConsole</h1><br>
-<p>
-	ddd<br>
-</p>";
+<!DOCTYPE uuebview href='resources://Views/Console/UUebTags'>
+<h1 align='center'>MRC</h1><br>
+";
 
 		IEnumerator Start () {
 			while (iEnumGens == null) {
@@ -103,8 +102,24 @@ namespace Miyamasu {
 		public void AddLogAAAAAAAAAAAA (object[] logSource) {
 			var type = (int)logSource[0];
 			var message = logSource[1] as string;
-			
-			logList.Add("<p>" + message + "</p><br>");
+			// switch (type) {
+				// case (int)LogType.Log: {
+					logList.Add("<bg><righttextbg><p>" + message + "</p></righttextbg><iconbg><warning/></iconbg></bg><br>");
+				// 	break;
+				// }
+				// case (int)LogType.Warning: {
+				// 	logList.Add("<bg><textbg><p>" + message + "</p></textbg></bg><br>");
+				// 	break;
+				// }
+				// case (int)LogType.Error: {
+				// 	logList.Add("<bg><textbg><p>" + message + "</p></textbg></bg><br>");
+				// 	break;
+				// }
+				// default: {
+				// 	logList.Add("<bg><textbg><p>" + message + "</p></textbg></bg><br>");
+				// 	break;
+				// }
+			// }
 		}
 
         void IUUebViewEventHandler.OnLoadStarted()
