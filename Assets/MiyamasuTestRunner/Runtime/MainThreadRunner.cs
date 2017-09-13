@@ -50,6 +50,8 @@ namespace Miyamasu {
 				}
 			}
 
+			Recorder.logAct = this.AddLog;
+
 			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(728,100));
 			view.name = "MiyamasuRuntimeConsole";
 			view.transform.SetParent(attachTargetView.transform);
@@ -99,9 +101,7 @@ namespace Miyamasu {
 		/**
 			this method will be called from jumper lib via SendMessage.
 		 */
-		public void AddLogAAAAAAAAAAAA (object[] logSource) {
-			var type = (int)logSource[0];
-			var message = logSource[1] as string;
+		public void AddLog (string message, Recorder.ReportType type, Exception e) {
 			// switch (type) {
 				// case (int)LogType.Log: {
 					logList.Add("<bg><righttextbg><p>" + message + "</p></righttextbg><iconbg><warning/></iconbg></bg><br>");

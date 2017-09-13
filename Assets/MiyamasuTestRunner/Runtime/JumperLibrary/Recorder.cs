@@ -110,11 +110,11 @@ namespace Miyamasu {
             TeardownFailed,
         }
 
-        private GameObject mainThreadRunner;
+        public static Action<string, ReportType, Exception> logAct;
 
         public void WriteReport (string message, ReportType type, Exception e=null) {
-            if (mainThreadRunner == null) {
-                mainThreadRunner = GameObject.Find("MiyamasuTestMainThreadRunner");
+            if (logAct == null) {
+                throw new ArgumentException("should add action.");
             }
 
             if (Application.isEditor) {
@@ -127,8 +127,8 @@ namespace Miyamasu {
                 }
             }
             
-            if (mainThreadRunner != null) {
-                mainThreadRunner.SendMessage("AddLogAAAAAAAAAAAA", new object[]{(int)type, message});
+            if (logAct != null) {
+                logAct(message, type, e);
             }
         }
     }

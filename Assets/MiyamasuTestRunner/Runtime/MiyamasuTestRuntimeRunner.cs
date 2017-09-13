@@ -28,8 +28,7 @@ namespace Miyamasu {
 			// ready running.
 			
 			var go = new GameObject("MiyamasuTestMainThreadRunner");
-			Debug.LogError("go:" + go.GetInstanceID());
-			// go.hideFlags = go.hideFlags | HideFlags.HideAndDontSave;
+			go.hideFlags = go.hideFlags | HideFlags.HideAndDontSave;
 			
 			var mb = go.AddComponent<MainThreadRunner>();
 			var s = new MiyamasuRuntimeRunnerGenerator();
