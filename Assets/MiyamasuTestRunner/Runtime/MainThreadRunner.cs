@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UUebView;
@@ -9,6 +10,8 @@ namespace Miyamasu {
 	public class MainThreadRunner : MonoBehaviour, IUUebViewEventHandler {
 		private int index = 0;
 		private bool started;
+
+		private UUebViewComponent targetComponent;
 
 		private string htmlContent = @"
 <h1 align='center'>MRConsole</h1><br>
@@ -48,13 +51,16 @@ namespace Miyamasu {
 				}
 			}
 
-			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(728,100));			
+			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(728,100));
+			view.name = "MiyamasuRuntimeConsole";
 			view.transform.SetParent(attachTargetView.transform);
 
+			targetComponent = view.GetComponent<UUebViewComponent>();
 
 			started = true;
 			yield return ContCor();
 		}
+
 
 		void Update () {
 			if (started && Recorder.isStoppedByFail) {
@@ -62,6 +68,17 @@ namespace Miyamasu {
 
 				// continue test.
 				StartCoroutine(ContCor());
+			}
+
+			if (loaded) {
+				if (logList.Any()) {
+					loaded = false;
+
+					var message = string.Join("", logList.ToArray());
+					logList.Clear();
+
+					targetComponent.AppendContentToLast(message);
+				}
 			}
 		}
 		
@@ -77,20 +94,22 @@ namespace Miyamasu {
 
 			Debug.Log("maybe all tests passed.");
 		}
-
+		
+		private bool loaded;
+		private List<string> logList = new List<string>();
 		/**
-			this method will be called from jumber lib via SendMessage.
+			this method will be called from jumper lib via SendMessage.
 		 */
-		public void AddLog (object[] logSource) {
+		public void AddLogAAAAAAAAAAAA (object[] logSource) {
 			var type = (int)logSource[0];
 			var message = logSource[1] as string;
-
-			// 受け取ることができたので、viewに足す。
+			
+			logList.Add("<p>" + message + "</p><br>");
 		}
 
         void IUUebViewEventHandler.OnLoadStarted()
         {
-            // throw new NotImplementedException();
+			// throw new NotImplementedException();
         }
 
         void IUUebViewEventHandler.OnProgress(double progress)
@@ -100,12 +119,35 @@ namespace Miyamasu {
 
         void IUUebViewEventHandler.OnLoaded()
         {
-			Debug.LogWarning("load!");
+			loaded = true;
+
+			if (logList.Any()) {
+				loaded = false;
+
+				var message = string.Join("", logList.ToArray());
+				logList.Clear();
+
+				targetComponent.AppendContentToLast(message);
+			}
+
             // throw new NotImplementedException();
         }
 
+
         void IUUebViewEventHandler.OnUpdated()
         {
+			loaded = true;
+			if (logList.Any()) {
+				loaded = false;
+
+				var message = string.Join("", logList.ToArray());
+				logList.Clear();
+
+				targetComponent.AppendContentToLast(message);
+			}
+
+			// Debug.LogWarning("updated:" + logList.Count);
+			// loaded = true;
             // throw new NotImplementedException();
         }
 

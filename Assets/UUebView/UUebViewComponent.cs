@@ -121,9 +121,9 @@ namespace UUebView {
             this.StartCoroutine(iEnum);
         }
 
-        // public TreePoint TreePointOf (string query) {
-        //     return this.Core.TreePointOf(query);
-        // }
+        public void AppendContentToTree (string htmlContent, string query) {
+            this.Core.AppendContentToLast(htmlContent, query);
+        }
 
         public void AppendContentToLast (string htmlContent) {
             this.Core.AppendContentToLast(htmlContent);

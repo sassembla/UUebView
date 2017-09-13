@@ -203,8 +203,19 @@ namespace UUebView {
             this._children.Add(newTree);
         }
 
-        public string ShowContent() {
-            return this.treeType.ToString();
+        public static string ShowContent (TagTree tree) {
+            return "val:" + tree.tagValue + " type:" + tree.treeType.ToString();
+        }
+
+        public static string ShowWholeContent(TagTree tree) {
+            var builder = new StringBuilder();
+            builder.AppendLine(ShowContent(tree));
+
+            foreach (var child in tree.GetChildren()) {
+                var childInf = "    " + ShowWholeContent(child);
+                builder.AppendLine(childInf);
+            }
+            return builder.ToString();
         }
 
 

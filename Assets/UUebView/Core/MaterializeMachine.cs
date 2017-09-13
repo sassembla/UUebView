@@ -19,6 +19,8 @@ namespace UUebView {
 		public readonly Dictionary<string, KeyValuePair<GameObject, string>> eventObjectCache = new Dictionary<string, KeyValuePair<GameObject, string>>();
 
 		public IEnumerator Materialize (GameObject root, UUebViewCore core, TagTree tree, float yOffset, Action onLoaded) {
+
+			var materializeId = Guid.NewGuid().ToString();
 			// Debug.LogWarning("yOffsetで、viewの範囲にあるものだけを表示する、とかができそう。TableViewとかにコンテンツ足して云々とか。まあそこまで必要かっていうと微妙。");
 
 			{
@@ -33,32 +35,41 @@ namespace UUebView {
 				rootRectTrans.sizeDelta = new Vector2(tree.viewWidth, tree.viewHeight);
 			}
 			
-
-			// materialize root's children in parallel.
-			var children = tree.GetChildren();
-
-			var cors = children.Select(child => MaterializeRecursive(child, root)).ToArray();
-			var done = 0;
-			while (true) {
-				for (var i = 0; i < cors.Length; i++) {
-					var cor = cors[i];
-					if (cor == null) {
-						continue;
-					}
-
-					var cont = cor.MoveNext();
-
-					if (!cont) {
-						cor = null;
-						done++;
-					}
-				}
-
-				if (done == cors.Length) {
-					break;
-				}
+			var cor = MaterializeRecursive(tree, root);
+			while (cor.MoveNext()) {
 				yield return null;
 			}
+
+			// 一旦並列化を諦める。
+
+			// // materialize root's children in parallel.
+			// var children = tree.GetChildren();
+			
+			// var cors = children.Select(child => MaterializeRecursive(child, root)).ToArray();
+			// var done = 0;
+			
+			// while (true) {
+			// 	for (var i = 0; i < cors.Length; i++) {
+			// 		var cor = cors[i];
+			// 		if (cor == null) {
+			// 			continue;
+			// 		}
+
+			// 		var cont = cor.MoveNext();
+
+			// 		if (!cont) {
+			// 			cor = null;
+			// 			done = done + 1;
+			// 		}
+			// 	}
+
+			// 	// Debug.Log("materializeId:" + materializeId + " done:" + done);
+
+			// 	if (done == cors.Length) {
+			// 		break;
+			// 	}
+			// 	yield return null;
+			// }
 
 			onLoaded();
         }
