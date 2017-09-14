@@ -9,17 +9,17 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1687904624561554}
+  m_RootGameObject: {fileID: 1204006604484124}
   m_IsPrefabParent: 1
---- !u!1 &1687904624561554
+--- !u!1 &1204006604484124
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224337187114286196}
-  - component: {fileID: 222068523566207698}
+  - component: {fileID: 224228968408722088}
+  - component: {fileID: 222609876929586558}
   m_Layer: 5
   m_Name: TEXTBG
   m_TagString: Untagged
@@ -27,19 +27,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!222 &222068523566207698
+--- !u!222 &222609876929586558
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1687904624561554}
---- !u!224 &224337187114286196
+  m_GameObject: {fileID: 1204006604484124}
+--- !u!224 &224228968408722088
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1687904624561554}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_GameObject: {fileID: 1204006604484124}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -49,5 +49,5 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -30.399994, y: -14.5}
+  m_SizeDelta: {x: -92.1, y: -31}
   m_Pivot: {x: 0, y: 1}

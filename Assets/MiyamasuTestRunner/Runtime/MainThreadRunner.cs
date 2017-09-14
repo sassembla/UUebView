@@ -15,7 +15,6 @@ namespace Miyamasu {
 
 		private string htmlContent = @"
 <!DOCTYPE uuebview href='resources://Views/Console/UUebTags'>
-<h1 align='center'>MRC</h1><br>
 ";
 
 		IEnumerator Start () {
@@ -104,7 +103,7 @@ namespace Miyamasu {
 		public void AddLog (string message, Recorder.ReportType type, Exception e) {
 			// switch (type) {
 				// case (int)LogType.Log: {
-					logList.Add("<bg><righttextbg><p>" + message + "</p></righttextbg><iconbg><warning/></iconbg></bg><br>");
+					logList.Add("<bg><textbg><contenttext>" + message + "</contenttext></textbg><iconbg><warning/></iconbg></bg><br>");
 				// 	break;
 				// }
 				// case (int)LogType.Warning: {
