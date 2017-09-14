@@ -16,7 +16,7 @@ namespace Miyamasu {
 		private UUebViewComponent currentUUebViewComponent;
 
 		private string htmlContent = @"
-<!DOCTYPE uuebview href='resources://Views/Console/UUebTags'>
+<!DOCTYPE uuebview href='resources://Views/ConsoleTag/UUebTags'>
 ";
 
 		IEnumerator Start () {
@@ -221,13 +221,13 @@ namespace Miyamasu {
 			Debug.LogError("loadFailed:" + type + " code:" + code + " reason:" + reason);
         }
 
-		private Text detailText;
+		private InputField detailText;
         void IUUebViewEventHandler.OnElementTapped(ContentType type, GameObject element, string param, string id)
         {
 			var e = Base64Decode(param);
 			// で、エラー詳細を表示する。
 			if (detailText == null) {
-				detailText = GameObject.Find("MiyamasuCanvas/DetailBG/DetailText").GetComponent<Text>();
+				detailText = GameObject.Find("MiyamasuCanvas/DetailBG/InputField").GetComponent<InputField>();
 			}
 			detailText.text = e;
         }
