@@ -45,13 +45,17 @@ namespace UUebView {
         }
 
         private void StartCalculateProgress () {
+            // ローディングするものが一切ない場合、ここで完了。
             if (!IsLoading()) {
+                viewState = ViewState.Ready;
+
                 if (eventReceiverGameObj != null) {
                     ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnProgress(1));
                     ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnLoaded());
                 }
                 return;
             }
+
 
             var progressCor = CreateProgressCoroutine();
             Internal_CoroutineExecutor(progressCor);
@@ -95,6 +99,8 @@ namespace UUebView {
             }
 
             // loaded.
+            viewState = ViewState.Ready;
+
             if (eventReceiverGameObj != null) {
                 ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnLoaded());
             }
@@ -109,6 +115,8 @@ namespace UUebView {
         private GameObject eventReceiverGameObj;
         
         public void LoadHtml (string source, Vector2 viewRect, GameObject eventReceiverGameObj=null) {
+            viewState = ViewState.Loading;
+
             if (this.viewRect != viewRect) {
                 if (eventReceiverGameObj != null) {
                     ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnLoadStarted());
@@ -123,6 +131,8 @@ namespace UUebView {
         }
 
         public void DownloadHtml (string url, Vector2 viewRect, GameObject eventReceiverGameObj=null) {
+            viewState = ViewState.Loading;
+
             if (eventReceiverGameObj != null) {
                 ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnLoadStarted());
             }
@@ -135,6 +145,8 @@ namespace UUebView {
         }
 
         private IEnumerator DownloadHTML (string url) {
+            viewState = ViewState.Loading;
+
             var uri = new Uri(url);
             var scheme = uri.Scheme;
             
@@ -272,7 +284,7 @@ namespace UUebView {
         /**
             update contents.
          */
-        private IEnumerator Update (TagTree tree, Vector2 viewRect, GameObject eventReceiverGameObj=null) {
+        private IEnumerator Update (TagTree tree, Vector2 viewRect, GameObject eventReceiverGameObj=null, Action onAfterUpdate=null) {
             var usingIds = TagTree.CorrectTrees(tree);
             
             IEnumerator materialize = null;
@@ -292,6 +304,13 @@ namespace UUebView {
                         this.layoutedTree, 
                         0f, 
                         () => {
+                            // done updating.
+                            viewState = ViewState.Ready;
+                            
+                            if (onAfterUpdate != null) {
+                                onAfterUpdate();
+                            }
+
                             if (eventReceiverGameObj != null) {
                                 ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnUpdated());
                             }
@@ -326,40 +345,59 @@ namespace UUebView {
             TagTree.ResetHideFlags(layoutedTree);
         }
 
-        public void Update () {
-            CoroutineExecutor(Update(layoutedTree, viewRect, eventReceiverGameObj));
+        public void Update (Action onAfterUpdate) {
+            viewState = ViewState.Updating;
+            CoroutineExecutor(Update(layoutedTree, viewRect, eventReceiverGameObj, onAfterUpdate));
         }
 
         public void OnImageTapped (GameObject element, string src, string buttonId="") {
             // Debug.LogError("image. element:" + element + " key:" + key + " buttonId:" + buttonId);
-
-            if (!string.IsNullOrEmpty(buttonId)) {
-                if (listenerDict.ContainsKey(buttonId)) {
-                    listenerDict[buttonId].ForEach(t => t.ShowOrHide());
-                    Update();
+            
+            if (!string.IsNullOrEmpty(buttonId) && listenerDict.ContainsKey(buttonId)) {
+                listenerDict[buttonId].ForEach(t => t.ShowOrHide());
+                Update(
+                    () => {
+                        if (eventReceiverGameObj != null) {
+                            ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.IMAGE, element, src, buttonId));
+                        }
+                    }
+                );
+            } else {
+                if (eventReceiverGameObj != null) {
+                    ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.IMAGE, element, src, buttonId));
                 }
-            }
-
-            if (eventReceiverGameObj != null) {
-                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.IMAGE, element, src, buttonId));
             }
         }
 
 
         public void OnLinkTapped (GameObject element, string href, string linkId="") {
-            // Debug.LogError("link. element:" + element + " key:" + key + " linkId:" + linkId);
+        // Debug.LogError("link. element:" + element + " key:" + key + " linkId:" + linkId);
 
-            if (!string.IsNullOrEmpty(linkId)) {
-                if (listenerDict.ContainsKey(linkId)) {
-                    listenerDict[linkId].ForEach(t => t.ShowOrHide());
-                    Update();
+            if (!string.IsNullOrEmpty(linkId) && listenerDict.ContainsKey(linkId)) {
+                listenerDict[linkId].ForEach(t => t.ShowOrHide());
+                Update(
+                    () => {
+                        if (eventReceiverGameObj != null) {
+                            ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.LINK, element, href, linkId));
+                        }
+                    }
+                );
+            } else {
+                if (eventReceiverGameObj != null) {
+                    ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.LINK, element, href, linkId));
                 }
             }
 
-            if (eventReceiverGameObj != null) {
-                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.LINK, element, href, linkId));
-            }
+            
         }
+
+        private enum ViewState {
+            Loading,
+            Updating,
+            Ready
+        }
+
+        private ViewState viewState;
         
         public void AddListener(TagTree tree, string listenTargetId) {
             if (!listenerDict.ContainsKey(listenTargetId)) {
@@ -452,7 +490,16 @@ namespace UUebView {
         }
 
 
+        /*
+            TreeQL関連、実際に操作できるタイミングは非アップデート中とかそんな感じなので、
+            stateに関する制約が必要。
+         */
+
         public void AppendContentToLast (string htmlContent, string query="") {
+            if (viewState != ViewState.Ready) {
+                return;
+            }
+
             TagTree.CorrectTrees(layoutedTree);
 
             var parser = new HTMLParser(resLoader);
@@ -480,7 +527,7 @@ namespace UUebView {
                         targetTreeFamily.Last().AddChildren(children.ToArray());
                     }
                     // relayout.
-                    Update();
+                    Update(() => {});
                 }
             );
 
@@ -488,6 +535,10 @@ namespace UUebView {
         }
 
         public void DeleteByPoint (string query) {
+            if (viewState != ViewState.Ready) {
+                return;
+            }
+            
             TagTree.CorrectTrees(layoutedTree);
 
             var queryArray = GetQuery(query);
@@ -498,7 +549,7 @@ namespace UUebView {
                 targetTreeFamily[targetTreeFamily.Length-2].GetChildren().Remove(deleteTargetTree);
             }
 
-            Update();
+            Update(() => {});
         }
 
         private string[] GetQuery (string queryStr) {

@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 using UUebView;
 
 namespace Miyamasu {
@@ -39,6 +41,7 @@ namespace Miyamasu {
 
 			var canvasPrefab = canvasCor.asset as GameObject;
 			var canvas = Instantiate(canvasPrefab);
+			canvas.name = "MiyamasuCanvas";
 
 			var scrollViewRectCandidates = canvas.transform.GetComponentsInChildren<RectTransform>();
 			GameObject attachTargetView = null;
@@ -99,14 +102,22 @@ namespace Miyamasu {
 		private bool loaded;
 		private List<string> logList = new List<string>();
 		/**
-			this method will be called from jumper lib via SendMessage.
+			this method will be called from jumper lib.
 		 */
-		public void AddLog (string message, Recorder.ReportType type, Exception e) {
+		public void AddLog (string[] message, Recorder.ReportType type, Exception e) {
 			var icon = "pass";
 
 			switch (type) {
 				case Recorder.ReportType.AssertionFailed: {
 					icon = "fail";
+					break;
+				}
+				case Recorder.ReportType.FailedByTimeout: {
+					icon = "timeout";
+					break;
+				}
+				case Recorder.ReportType.Error: {
+					icon = "error";
 					break;
 				}
 				default: {
@@ -126,17 +137,37 @@ namespace Miyamasu {
 				// 	break;
 				// }
 			}
-
+			
 			var guid = Guid.NewGuid().ToString();
 
+			var messageBlock = message[0] + " / " + message[1];
+			if (2 < message.Length) {
+				messageBlock += " line:" + message[2];
+			}
+
+			var error = string.Empty;
+			if (e != null) {
+				error =  @" button='true' src='" + Base64Encode(e.ToString()) + @"'";
+			}
+			
 			logList.Add(@"
-				<bg button='true' id='" + guid + @"'>
+				<bg" + error + @">
 					<textbg>
-						<contenttext>" + message + @"</contenttext>
+						<contenttext>" + messageBlock + @"</contenttext>
 					</textbg>
 					<iconbg><" + icon + @"/></iconbg>
 					<checkmark hidden='true' listen='" + guid + @"'/>
 				</bg><br>");
+		}
+
+		private static string Base64Encode(string plainText) {
+			var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+			return Convert.ToBase64String(plainTextBytes);
+		}
+
+		private static string Base64Decode(string base64EncodedData) {
+			var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+			return Encoding.UTF8.GetString(base64EncodedBytes);
 		}
 
         void IUUebViewEventHandler.OnLoadStarted()
@@ -186,9 +217,15 @@ namespace Miyamasu {
 			Debug.LogError("loadFailed:" + type + " code:" + code + " reason:" + reason);
         }
 
+		private Text detailText;
         void IUUebViewEventHandler.OnElementTapped(ContentType type, GameObject element, string param, string id)
         {
-            // throw new NotImplementedException();
+			var e = Base64Decode(param);
+			// で、エラー詳細を表示する。
+			if (detailText == null) {
+				detailText = GameObject.Find("MiyamasuCanvas/DetailBG/DetailText").GetComponent<Text>();
+			}
+			detailText.text = e;
         }
 
         void IUUebViewEventHandler.OnElementLongTapped(ContentType type, string param, string id)

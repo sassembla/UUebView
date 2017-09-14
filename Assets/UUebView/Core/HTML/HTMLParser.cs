@@ -85,7 +85,7 @@ namespace UUebView {
 						var nextChr = data.IndexOf(chr, charIndex+1);
 
 						if (nextChr == -1) {// close chr not found.
-							throw new Exception("failed to find close chr:" + chr);
+							throw new Exception("failed to find close chr:" + chr + " in data:" + data);
 						}
 						charIndex = nextChr;
 						break;

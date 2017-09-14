@@ -18,12 +18,12 @@ namespace Miyamasu {
         }
 
         public void SetupFailed (Exception e) {
-            WriteReport("setup failed. class:" + className + " method:" + methodName, ReportType.AssertionFailed, e);
+            WriteReport(new string[]{className, methodName}, ReportType.AssertionFailed, e);
             isStoppedByFail = true;
         }
 
         public void TeardownFailed (Exception e) {
-            WriteReport("teardown failed. class:" + className + " method:" + methodName, ReportType.AssertionFailed, e);
+            WriteReport(new string[]{className, methodName}, ReportType.AssertionFailed, e);
             isStoppedByFail = true;
         }
 
@@ -40,7 +40,7 @@ namespace Miyamasu {
                 var lineNumber = GetLineNumber(methodName);
                 Debug.LogError("    class:" + className + " method:" + methodName + " line:" + lineNumber + " e:" + e);
 
-                WriteReport("class:" + className + " method:" + methodName + " line:" + lineNumber, ReportType.AssertionFailed, e);
+                WriteReport(new string[]{className, methodName, lineNumber}, ReportType.AssertionFailed, e);
 
                 isStoppedByFail = true;
                 throw;
@@ -61,7 +61,7 @@ namespace Miyamasu {
 
                 if (Application.platform == RuntimePlatform.WindowsEditor) {
                     logPath = "C:/Users/" + Environment.UserName + "/AppData/Local/Unity/Editor/Editor.log";
-                } else {
+                } else if (Application.platform == RuntimePlatform.OSXEditor) {
                     logPath = "/Users/" + Environment.UserName + "/Library/Logs/Unity/Editor.log";
                 }
 
@@ -90,14 +90,14 @@ namespace Miyamasu {
         }
 
         public void MarkAsTimeout (Exception e) {
-            WriteReport("class:" + className + " method:" + methodName, ReportType.FailedByTimeout, e);
+            WriteReport(new string[]{className, methodName}, ReportType.FailedByTimeout, e);
             isStoppedByFail = true;
         }
         
         public void MarkAsPassed () {
             // このへんでレポート書く
             // Debug.Log("passed. class:" + className + " method:" + methodName);
-            WriteReport("class:" + className + " method:" + methodName, ReportType.Passed);
+            WriteReport(new string[]{className, methodName}, ReportType.Passed);
         }
 
         public enum ReportType {
@@ -106,13 +106,15 @@ namespace Miyamasu {
             FailedByTimeout,
             AssertionFailed,
 
+            Error,
+
             SetupFailed,
             TeardownFailed,
         }
 
-        public static Action<string, ReportType, Exception> logAct;
+        public static Action<string[], ReportType, Exception> logAct;
 
-        public void WriteReport (string message, ReportType type, Exception e=null) {
+        public void WriteReport (string[] message, ReportType type, Exception e=null) {
             if (logAct == null) {
                 throw new ArgumentException("should add action.");
             }

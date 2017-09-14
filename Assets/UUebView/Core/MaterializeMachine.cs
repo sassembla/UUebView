@@ -109,6 +109,11 @@ namespace UUebView {
 
 			// set parameters and events by container type. button, link.
 			var src = string.Empty;
+
+			if (tree.keyValueStore.ContainsKey(HTMLAttribute.SRC)) {
+				src = tree.keyValueStore[HTMLAttribute.SRC] as string;
+			}
+
 			switch (tree.treeType) {
 				case TreeType.Content_Img: {
 					if (tree.viewHeight == 0) {
@@ -118,8 +123,7 @@ namespace UUebView {
 					// 画像コンテンツはキャッシュ済みの場合再度画像取得を行わない。
 					if (!cached) {
 						// 画像指定がある場合のみ読み込む
-						if (tree.keyValueStore.ContainsKey(HTMLAttribute.SRC)) {		
-							src = tree.keyValueStore[HTMLAttribute.SRC] as string;
+						if (!string.IsNullOrEmpty(src)) {
 							var imageLoadCor = resLoader.LoadImageAsync(src);
 
 							// combine coroutine.
