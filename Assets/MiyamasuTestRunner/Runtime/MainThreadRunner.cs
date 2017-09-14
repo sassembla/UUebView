@@ -56,7 +56,7 @@ namespace Miyamasu {
 
 			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(scrollViewWidth, 100));
 			view.name = "MiyamasuRuntimeConsole";
-			view.transform.SetParent(attachTargetView.transform);
+			view.transform.SetParent(attachTargetView.transform, false);
 
 			targetComponent = view.GetComponent<UUebViewComponent>();
 
