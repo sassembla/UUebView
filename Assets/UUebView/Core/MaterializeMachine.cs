@@ -108,13 +108,12 @@ namespace UUebView {
 			rectTrans.sizeDelta = TagTree.SizeDeltaOf(tree);
 
 			// set parameters and events by container type. button, link.
+			var src = string.Empty;
 			switch (tree.treeType) {
 				case TreeType.Content_Img: {
 					if (tree.viewHeight == 0) {
 						break;
 					}
-					
-					var src = string.Empty;
 
 					// 画像コンテンツはキャッシュ済みの場合再度画像取得を行わない。
 					if (!cached) {
@@ -127,22 +126,6 @@ namespace UUebView {
 							var setImageCor = SetImageCor(newGameObject, imageLoadCor);
 							resLoader.LoadParallel(setImageCor);
 						}
-					}
-					
-					if (tree.keyValueStore.ContainsKey(HTMLAttribute.BUTTON)) {
-						var enable = tree.keyValueStore[HTMLAttribute.BUTTON] as string == "true";
-						if (enable) {
-							var buttonId = string.Empty;
-							if (tree.keyValueStore.ContainsKey(HTMLAttribute.ID)) {
-								buttonId = tree.keyValueStore[HTMLAttribute.ID] as string;
-							}
-
-							eventObjectCache[buttonId] = new KeyValuePair<GameObject, string>(newGameObject, src);
-
-							// add button component.
-							AddButton(newGameObject, () => core.OnImageTapped(newGameObject, src, buttonId));
-						}
-					
 					}
 					break;
 				}
@@ -157,6 +140,7 @@ namespace UUebView {
 						}
 					}
 
+					// 文字コンテンツのリンク化(hrefがついてるとリンクになる。実態はボタン。)
 					if (tree.keyValueStore.ContainsKey(HTMLAttribute.HREF)) {
 						var href = tree.keyValueStore[HTMLAttribute.HREF] as string;
 						
@@ -180,10 +164,27 @@ namespace UUebView {
 			
 			}
 
+			// button attrに応じたボタン化
+			if (tree.keyValueStore.ContainsKey(HTMLAttribute.BUTTON)) {
+				var isButton = tree.keyValueStore[HTMLAttribute.BUTTON] as string == "true";
+				if (isButton) {
+					var buttonId = string.Empty;
+					if (tree.keyValueStore.ContainsKey(HTMLAttribute.ID)) {
+						buttonId = tree.keyValueStore[HTMLAttribute.ID] as string;
+					}
+
+					eventObjectCache[buttonId] = new KeyValuePair<GameObject, string>(newGameObject, src);
+
+					// add button component.
+					AddButton(newGameObject, () => core.OnImageTapped(newGameObject, src, buttonId));
+				}
+			}
+
 			var children = tree.GetChildren();
 
 			// Debug.LogWarning("レイアウトが終わってるので、このへんはまだフルに分散できそう。内部的に分散する手法がいい感じになったらやろう。まあ2017で。");
-			foreach (var child in children) {
+			for (var i = 0; i < children.Count; i++) {
+				var child = children[i];
 				var cor = MaterializeRecursive(child, newGameObject);
 				while (cor.MoveNext()) {
 					if (cor.Current != null) {

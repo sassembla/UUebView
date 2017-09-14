@@ -50,8 +50,6 @@ namespace Miyamasu {
 			}
 
 			var scrollViewWidth = canvas.GetComponent<RectTransform>().sizeDelta.x;
-			Debug.Log("fmm:" + scrollViewWidth);
-
 			Recorder.logAct = this.AddLog;
 
 			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(scrollViewWidth, 100));
@@ -129,7 +127,16 @@ namespace Miyamasu {
 				// }
 			}
 
-			logList.Add("<bg><textbg><contenttext>" + message + "</contenttext></textbg><iconbg><" + icon + "/></iconbg></bg><br>");
+			var guid = Guid.NewGuid().ToString();
+
+			logList.Add(@"
+				<bg button='true' id='" + guid + @"'>
+					<textbg>
+						<contenttext>" + message + @"</contenttext>
+					</textbg>
+					<iconbg><" + icon + @"/></iconbg>
+					<checkmark hidden='true' listen='" + guid + @"'/>
+				</bg><br>");
 		}
 
         void IUUebViewEventHandler.OnLoadStarted()
@@ -171,9 +178,7 @@ namespace Miyamasu {
 				targetComponent.AppendContentToLast(message);
 			}
 
-			// Debug.LogWarning("updated:" + logList.Count);
-			// loaded = true;
-            // throw new NotImplementedException();
+			Debug.LogWarning("もし今の画面下が画面下だったら画面下までスクロールさせたい");
         }
 
         void IUUebViewEventHandler.OnLoadFailed(ContentType type, int code, string reason)
