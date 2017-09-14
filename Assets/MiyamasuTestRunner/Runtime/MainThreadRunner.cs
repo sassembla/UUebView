@@ -49,9 +49,12 @@ namespace Miyamasu {
 				}
 			}
 
+			var scrollViewWidth = canvas.GetComponent<RectTransform>().sizeDelta.x;
+			Debug.Log("fmm:" + scrollViewWidth);
+
 			Recorder.logAct = this.AddLog;
 
-			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(728,100));
+			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(scrollViewWidth, 100));
 			view.name = "MiyamasuRuntimeConsole";
 			view.transform.SetParent(attachTargetView.transform);
 
@@ -101,11 +104,17 @@ namespace Miyamasu {
 			this method will be called from jumper lib via SendMessage.
 		 */
 		public void AddLog (string message, Recorder.ReportType type, Exception e) {
-			// switch (type) {
-				// case (int)LogType.Log: {
-					logList.Add("<bg><textbg><contenttext>" + message + "</contenttext></textbg><iconbg><warning/></iconbg></bg><br>");
-				// 	break;
-				// }
+			var icon = "pass";
+
+			switch (type) {
+				case Recorder.ReportType.AssertionFailed: {
+					icon = "fail";
+					break;
+				}
+				default: {
+					icon = "pass";
+					break;
+				}
 				// case (int)LogType.Warning: {
 				// 	logList.Add("<bg><textbg><p>" + message + "</p></textbg></bg><br>");
 				// 	break;
@@ -118,7 +127,9 @@ namespace Miyamasu {
 				// 	logList.Add("<bg><textbg><p>" + message + "</p></textbg></bg><br>");
 				// 	break;
 				// }
-			// }
+			}
+
+			logList.Add("<bg><textbg><contenttext>" + message + "</contenttext></textbg><iconbg><" + icon + "/></iconbg></bg><br>");
 		}
 
         void IUUebViewEventHandler.OnLoadStarted()
