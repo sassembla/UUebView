@@ -63,7 +63,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         
         var done = false;
         
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids => {
             done = true;
         };
         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
@@ -84,7 +84,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         
         var done = false;
         
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids => {
             done = true;
         };
         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
@@ -96,7 +96,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         );
 
         var done2 = false;
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = ids => {
             done2 = true;
         };
 
@@ -117,7 +117,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         
         var done = false;
         
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids => {
             done = true;
         };
         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
@@ -136,7 +136,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         }
 
         var done2 = false;
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = ids => {
             done2 = true;
         };
 
@@ -159,7 +159,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         
         var done = false;
         
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids => {
             done = true;
         };
         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
@@ -183,7 +183,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         
         var done = false;
         
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = () => {
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids => {
             done = true;
         };
         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
@@ -203,7 +203,7 @@ public class TreeQLTests : MiyamasuTestRunner {
         }
 
         var done2 = false;
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = () => {
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = ids => {
             done2 = true;
         };
 
@@ -221,8 +221,66 @@ public class TreeQLTests : MiyamasuTestRunner {
         }
     }
 
+
+    [MTest] public IEnumerator GetNewContentIds () {
+        var source = @"
+<h1 id='test'>Miyamasu Runtime Console</h1>";
+        var done = false;
+        
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids => {
+            True(ids.Length == 1);
+            AreEqual(ids[0], "test");
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300,100));
+        
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
+        );
+    }
+
+    [MTest] public IEnumerator AddNewContentIds () {
+        var source = @"
+<body>something1.<img src='https://dummyimage.com/100.png/09f/fff' id='test'/></body>";
+        
+        var done = false;
+        var currentIds = new string[0];
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids => {
+            currentIds = ids;
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
+        
+        Show(view);
+        yield return WaitUntil(
+            () => done, () => {throw new TimeoutException("too late.");}, 5
+        );
+
+        var comp = view.GetComponent<UUebViewComponent>();
+
+        var done2 = false;
+        var appendedIds = new string[0];
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = ids => {
+            appendedIds = ids;
+            True(appendedIds.Length == 1);
+            AreEqual(appendedIds[0], "appended");
+            done2 = true;
+        };
+
+        comp.AppendContentToTree("<p id='appended'>last</p>", "/body");
+
+        yield return WaitUntil(
+            () => done2, () => {throw new TimeoutException("too late.");}, 5
+        );
+    }
+
     // 何件目、っていうテストしたい。
 
 
     // boxをスキップしたりしないといけない
+
+
+
 }

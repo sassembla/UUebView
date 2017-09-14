@@ -9,8 +9,8 @@ using UUebView;
 public class TestReceiver : MonoBehaviour, IUUebViewEventHandler {
     public Action OnLoadStarted;
     public Action OnProgress;
-    public Action OnLoaded;
-    public Action OnUpdated;
+    public Action<string[]> OnLoaded;
+    public Action<string[]> OnUpdated;
     public Action OnContentLoadFailed;
     public Action OnElementTapped;
     public Action OnElementLongTapped;
@@ -29,17 +29,17 @@ public class TestReceiver : MonoBehaviour, IUUebViewEventHandler {
         }
     }
 
-    void IUUebViewEventHandler.OnLoaded() {
+    void IUUebViewEventHandler.OnLoaded(string[] treeIds) {
         Debug.Log("OnLoaded");
         if (OnLoaded != null) {
-            OnLoaded();
+            OnLoaded(treeIds);
         }
     }
 
-    void IUUebViewEventHandler.OnUpdated() {
+    void IUUebViewEventHandler.OnUpdated(string[] treeIds) {
         Debug.Log("OnUpdated");
         if (OnUpdated != null) {
-            OnUpdated();
+            OnUpdated(treeIds);
         }
     }
 

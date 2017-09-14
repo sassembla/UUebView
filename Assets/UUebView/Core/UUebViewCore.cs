@@ -44,20 +44,20 @@ namespace UUebView {
             materializeMachine = new MaterializeMachine(resLoader);
         }
 
-        private void StartCalculateProgress () {
+        private void StartCalculateProgress (string[] treeIds) {
             // ローディングするものが一切ない場合、ここで完了。
             if (!IsLoading()) {
                 viewState = ViewState.Ready;
 
                 if (eventReceiverGameObj != null) {
                     ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnProgress(1));
-                    ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnLoaded());
+                    ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnLoaded(treeIds));
                 }
                 return;
             }
 
 
-            var progressCor = CreateProgressCoroutine();
+            var progressCor = CreateProgressCoroutine(treeIds);
             Internal_CoroutineExecutor(progressCor);
         }
 
@@ -69,7 +69,7 @@ namespace UUebView {
             return loadingCoroutines.Where(r => !r.isDone).ToArray();
         }
 
-        private IEnumerator CreateProgressCoroutine () {            
+        private IEnumerator CreateProgressCoroutine (string[] treeIds) {            
             while (IsWaitStartLoading()) {
                 yield return null;
             }
@@ -102,7 +102,7 @@ namespace UUebView {
             viewState = ViewState.Ready;
 
             if (eventReceiverGameObj != null) {
-                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnLoaded());
+                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnLoaded(treeIds));
             }
         }
         
@@ -253,6 +253,8 @@ namespace UUebView {
                     // update layouted tree.
                     this.layoutedTree = layoutedTree;
                     
+                    var newIds = TagTree.CollectTreeIds(this.layoutedTree);
+
                     UpdateParentViewSizeIfExist();
 
                     resLoader.BackGameObjects(usingIds);
@@ -262,7 +264,7 @@ namespace UUebView {
                         this.layoutedTree, 
                         0f, 
                         () => {
-                            StartCalculateProgress();
+                            StartCalculateProgress(newIds);
                         }
                     );
                 }
@@ -284,17 +286,17 @@ namespace UUebView {
         /**
             update contents.
          */
-        private IEnumerator Update (TagTree tree, Vector2 viewRect, GameObject eventReceiverGameObj=null, Action onAfterUpdate=null) {
+        private IEnumerator Update (TagTree tree, Vector2 viewRect, string[]appendedTreeIds, GameObject eventReceiverGameObj=null, Action onAfterUpdate=null) {
             var usingIds = TagTree.CorrectTrees(tree);
-            
+
             IEnumerator materialize = null;
             var layout = layoutMachine.Layout(
                 tree, 
                 viewRect, 
-                layoutedTree => {
+                newLayoutedTree => {
                     // update layouted tree.
-                    this.layoutedTree = layoutedTree;
-                    
+                    this.layoutedTree = newLayoutedTree;
+
                     UpdateParentViewSizeIfExist();
 
                     resLoader.BackGameObjects(usingIds);
@@ -312,7 +314,7 @@ namespace UUebView {
                             }
 
                             if (eventReceiverGameObj != null) {
-                                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnUpdated());
+                                ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnUpdated(appendedTreeIds));
                             }
                         }
                     );
@@ -345,9 +347,9 @@ namespace UUebView {
             TagTree.ResetHideFlags(layoutedTree);
         }
 
-        public void Update (Action onAfterUpdate) {
+        public void Update (string[] appendedTreeIds, Action onAfterUpdate) {
             viewState = ViewState.Updating;
-            CoroutineExecutor(Update(layoutedTree, viewRect, eventReceiverGameObj, onAfterUpdate));
+            CoroutineExecutor(Update(layoutedTree, viewRect, appendedTreeIds, eventReceiverGameObj, onAfterUpdate));
         }
 
         public void OnImageTapped (GameObject element, string src, string buttonId="") {
@@ -356,6 +358,8 @@ namespace UUebView {
             if (!string.IsNullOrEmpty(buttonId) && listenerDict.ContainsKey(buttonId)) {
                 listenerDict[buttonId].ForEach(t => t.ShowOrHide());
                 Update(
+                    new string[0],
+
                     () => {
                         if (eventReceiverGameObj != null) {
                             ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.IMAGE, element, src, buttonId));
@@ -376,6 +380,7 @@ namespace UUebView {
             if (!string.IsNullOrEmpty(linkId) && listenerDict.ContainsKey(linkId)) {
                 listenerDict[linkId].ForEach(t => t.ShowOrHide());
                 Update(
+                    new string[0],
                     () => {
                         if (eventReceiverGameObj != null) {
                             ExecuteEvents.Execute<IUUebViewEventHandler>(eventReceiverGameObj, null, (handler, data)=>handler.OnElementTapped(ContentType.LINK, element, href, linkId));
@@ -516,18 +521,23 @@ namespace UUebView {
                     }
                     
                     // parse succeeded.
-                    // add to content.
-                    
-                    var children = parsedTagTree.GetChildren();
+                    var newTreeIds = TagTree.CollectTreeIds(parsedTagTree);
+                    var currentTreeIds = TagTree.CollectTreeIds(layoutedTree);
 
+                    var appendedTreeIds = newTreeIds.Except(currentTreeIds).ToArray();
+
+                    var children = parsedTagTree.GetChildren();
+                    
+                    // add to content.
                     if (string.IsNullOrEmpty(query)) {
                         layoutedTree.AddChildren(children.ToArray());
                     } else {
                         var targetTreeFamily = GetTreeFamily(new List<TagTree>{layoutedTree}, GetQuery(query)); 
                         targetTreeFamily.Last().AddChildren(children.ToArray());
                     }
+
                     // relayout.
-                    Update(() => {});
+                    Update(appendedTreeIds, () => {});
                 }
             );
 
@@ -549,7 +559,7 @@ namespace UUebView {
                 targetTreeFamily[targetTreeFamily.Length-2].GetChildren().Remove(deleteTargetTree);
             }
 
-            Update(() => {});
+            Update(new string[0], () => {});
         }
 
         private string[] GetQuery (string queryStr) {
@@ -597,6 +607,10 @@ namespace UUebView {
             // not found. return empty tag tree.
             throw new ArgumentException("requested tag not found. tag:" + headStr);
         }
+
+        public TagTree[] GetTreeById (string id) {
+            return TagTree.GetTreeById(layoutedTree, id);
+        }
     }
 
     public enum ContentType {
@@ -609,8 +623,8 @@ namespace UUebView {
     public interface IUUebViewEventHandler : IEventSystemHandler {
         void OnLoadStarted ();
         void OnProgress (double progress);
-        void OnLoaded ();
-        void OnUpdated ();
+        void OnLoaded (string[] treeIds);
+        void OnUpdated (string[] newTreeIds);
         void OnLoadFailed (ContentType type, int code, string reason);
         void OnElementTapped (ContentType type, GameObject element, string param, string id);
         void OnElementLongTapped (ContentType type, string param, string id);

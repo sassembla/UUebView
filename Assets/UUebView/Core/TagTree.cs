@@ -305,6 +305,7 @@ namespace UUebView {
                 tree.RemoveChild(removeTarget);
             }
         }
+        
 
         public static void ResetHideFlags(TagTree layoutedTree) {
             ResetRecursive(layoutedTree);
@@ -313,6 +314,42 @@ namespace UUebView {
             tree.hidden = tree.hiddenDefault;
             foreach (var child in tree.GetChildren()) {
                 ResetRecursive(child);
+            }
+        }
+
+
+        public static string[] CollectTreeIds(TagTree layoutedTree) {
+            var treeIds = new List<string>();
+            CollectTreeIdsRecursive(layoutedTree, treeIds);
+            return treeIds.ToArray();
+        }
+        private static void CollectTreeIdsRecursive (TagTree tree, List<string> treeIds) {
+            if (tree.keyValueStore.ContainsKey(HTMLAttribute.ID)) {
+                treeIds.Add(tree.keyValueStore[HTMLAttribute.ID] as string);
+            }
+
+            foreach (var child in tree.GetChildren()) {
+                CollectTreeIdsRecursive(child, treeIds);
+            }
+        }
+
+
+        public static TagTree[] GetTreeById (TagTree root, string id) {
+            var targetTree = new List<TagTree>();
+            FindTreeByIdRecursively(root, id, targetTree);
+            return targetTree.ToArray();
+        }
+
+        private static void FindTreeByIdRecursively (TagTree tree, string id, List<TagTree> collectingTrees) {
+            if (tree.keyValueStore.ContainsKey(HTMLAttribute.ID)) {
+                var idCandidate = tree.keyValueStore[HTMLAttribute.ID] as string;
+                if (idCandidate == id) {
+                    collectingTrees.Add(tree);
+                }
+            }
+
+            foreach (var child in tree.GetChildren()) {
+                FindTreeByIdRecursively(child, id, collectingTrees);
             }
         }
     }

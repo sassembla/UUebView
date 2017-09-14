@@ -116,7 +116,7 @@ namespace Miyamasu {
 
         public void WriteReport (string[] message, ReportType type, Exception e=null) {
             if (logAct == null) {
-                throw new ArgumentException("should add action.");
+                return;
             }
 
             if (Application.isEditor) {

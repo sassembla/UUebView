@@ -13,7 +13,7 @@ namespace Miyamasu {
 		private int index = 0;
 		private bool started;
 
-		private UUebViewComponent targetComponent;
+		private UUebViewComponent currentUUebViewComponent;
 
 		private string htmlContent = @"
 <!DOCTYPE uuebview href='resources://Views/Console/UUebTags'>
@@ -24,6 +24,9 @@ namespace Miyamasu {
 				// wait to set enumGens;
 				yield return null;
 			}
+
+			this.index = 0;
+			var totalCount = iEnumGens.Length;
 			
 			// wait for check UnityTest is running or not.
 			yield return new WaitForSeconds(1);
@@ -59,7 +62,7 @@ namespace Miyamasu {
 			view.name = "MiyamasuRuntimeConsole";
 			view.transform.SetParent(attachTargetView.transform, false);
 
-			targetComponent = view.GetComponent<UUebViewComponent>();
+			currentUUebViewComponent = view.GetComponent<UUebViewComponent>();
 
 			started = true;
 			yield return ContCor();
@@ -81,13 +84,13 @@ namespace Miyamasu {
 					var message = string.Join("", logList.ToArray());
 					logList.Clear();
 
-					targetComponent.AppendContentToLast(message);
+					currentUUebViewComponent.AppendContentToLast(message);
 				}
 			}
 		}
 		
 		private Func<IEnumerator>[] iEnumGens;
-		public void SequentialExecute (Func<IEnumerator>[] iEnumGens) {
+		public void SetTests (Func<IEnumerator>[] iEnumGens) {
 			this.iEnumGens = iEnumGens;
         }
 
@@ -120,25 +123,15 @@ namespace Miyamasu {
 					icon = "error";
 					break;
 				}
-				default: {
+				case Recorder.ReportType.Passed: {
 					icon = "pass";
 					break;
 				}
-				// case (int)LogType.Warning: {
-				// 	logList.Add("<bg><textbg><p>" + message + "</p></textbg></bg><br>");
-				// 	break;
-				// }
-				// case (int)LogType.Error: {
-				// 	logList.Add("<bg><textbg><p>" + message + "</p></textbg></bg><br>");
-				// 	break;
-				// }
-				// default: {
-				// 	logList.Add("<bg><textbg><p>" + message + "</p></textbg></bg><br>");
-				// 	break;
-				// }
+				default: {
+					throw new Exception("まだ解決してないsetupとteardownエラー");
+					break;
+				}
 			}
-			
-			var guid = Guid.NewGuid().ToString();
 
 			var messageBlock = message[0] + " / " + message[1];
 			if (2 < message.Length) {
@@ -147,7 +140,8 @@ namespace Miyamasu {
 
 			var error = string.Empty;
 			if (e != null) {
-				error =  @" button='true' src='" + Base64Encode(e.ToString()) + @"'";
+				var id = Guid.NewGuid().ToString();
+				error =  @" button='true' src='" + Base64Encode(e.ToString()) + @"' id='" + id + @"'";
 			}
 			
 			logList.Add(@"
@@ -156,8 +150,8 @@ namespace Miyamasu {
 						<contenttext>" + messageBlock + @"</contenttext>
 					</textbg>
 					<iconbg><" + icon + @"/></iconbg>
-					<checkmark hidden='true' listen='" + guid + @"'/>
 				</bg><br>");
+
 		}
 
 		private static string Base64Encode(string plainText) {
@@ -180,7 +174,7 @@ namespace Miyamasu {
             // throw new NotImplementedException();
         }
 
-        void IUUebViewEventHandler.OnLoaded()
+        void IUUebViewEventHandler.OnLoaded(string[] treeIds)
         {
 			loaded = true;
 
@@ -190,14 +184,19 @@ namespace Miyamasu {
 				var message = string.Join("", logList.ToArray());
 				logList.Clear();
 
-				targetComponent.AppendContentToLast(message);
+				currentUUebViewComponent.AppendContentToLast(message);
 			}
 
-            // throw new NotImplementedException();
+			// ここで、idが入っているのはエラーのtreeで、idからy位置を取得し、スクロールバーの位置に表示する。あ、スクロールバー消したな。。
+			// idは一意なので、idに対して最初の一つのみを扱う。
+			foreach (var contentId in treeIds) {
+				var yPos = currentUUebViewComponent.GetTreeById(contentId)[0].offsetY;
+				Debug.Log("error yPos:" + yPos);
+			}
         }
 
 
-        void IUUebViewEventHandler.OnUpdated()
+        void IUUebViewEventHandler.OnUpdated(string[] newTreeIds)
         {
 			loaded = true;
 			if (logList.Any()) {
@@ -206,10 +205,15 @@ namespace Miyamasu {
 				var message = string.Join("", logList.ToArray());
 				logList.Clear();
 
-				targetComponent.AppendContentToLast(message);
+				currentUUebViewComponent.AppendContentToLast(message);
 			}
 
-			Debug.LogWarning("もし今の画面下が画面下だったら画面下までスクロールさせたい");
+			// ここで、idが入っているのはエラーのtreeで、idからy位置を取得し、スクロールバーの位置に表示する。あ、スクロールバー消したな。。
+			// idは一意なので、idに対して最初の一つのみを扱う。
+			foreach (var contentId in newTreeIds) {
+				var yPos = currentUUebViewComponent.GetTreeById(contentId)[0].offsetY;
+				Debug.Log("error yPos:" + yPos);
+			}
         }
 
         void IUUebViewEventHandler.OnLoadFailed(ContentType type, int code, string reason)
