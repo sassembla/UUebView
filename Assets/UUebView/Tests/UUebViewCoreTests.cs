@@ -498,5 +498,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner {
         yield return WaitUntil(
             () => done, () => {throw new TimeoutException("too late.");}, 5
         );
+
+        Fail();
     }
 }

@@ -61,9 +61,7 @@ namespace Miyamasu {
 				}
 			}
 
-			
-
-			var scrollViewWidth = canvas.GetComponent<RectTransform>().sizeDelta.x;
+			var scrollViewWidth = contentRect.rect.width;
 			Recorder.logAct = this.AddLog;
 
 			var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(scrollViewWidth, 100));
@@ -137,7 +135,7 @@ namespace Miyamasu {
 					break;
 				}
 				default: {
-					throw new Exception("まだ表現してないsetupとteardownエラー");
+					icon = "error";
 					break;
 				}
 			}
@@ -225,16 +223,16 @@ namespace Miyamasu {
 			var beforePos = 0f;
 			var markIndex = 0;
 			foreach (var pos in onVerticalBarErrorPos) {
-				// 位置差が小さかったら無視する
-				if (pos - beforePos < 100) {
+				// 位置差が一画面内より小さかったら無視する
+				if (pos - beforePos < scrollViewRect.rect.height) {
 					continue;
 				}
 
 				beforePos = pos;
 				
 				// 最大でこの数だけ、verticalScrollBar上に赤いマークを出す。
-				var ratio = (pos / contentRect.sizeDelta.y) * (768-(165+38));//scrollViewRect.sizeDelta.y;
-
+				var ratio = (pos / contentRect.rect.height) * scrollViewRect.rect.height;
+				
 				if (goPool.Count <= markIndex) {
 					var cursorObj = new GameObject();
 					var rectTrans = cursorObj.AddComponent<RectTransform>();
@@ -251,8 +249,8 @@ namespace Miyamasu {
 
 				var go = goPool[markIndex++];
 				var cursorObjRect = go.GetComponent<RectTransform>();
-				cursorObjRect.anchoredPosition = new Vector2(0, -ratio);
-				cursorObjRect.sizeDelta = new Vector2(50, 2);
+				cursorObjRect.anchoredPosition = new Vector2(32, -ratio);
+				cursorObjRect.sizeDelta = new Vector2(30, 4);
 
 				go.transform.SetParent(scrollViewRect.transform, false);
 			}

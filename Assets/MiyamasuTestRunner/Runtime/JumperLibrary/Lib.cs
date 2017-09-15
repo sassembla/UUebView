@@ -96,15 +96,16 @@ namespace Miyamasu {
             });
             return result;
         }
-        // public new void Fail(string message, params object[] args) {
-        //     Fail(string message, params object[] args)
-        // }
-        // public new void Fail(string message) {
-        //     Fail(string message)
-        // }
-        // public new void Fail() {
-        //     Fail()
-        // }
+        public new void Fail(string message, params object[] args) {
+            rec.MarkAsAssertionFailed(() => Assert.Fail(message, args));
+            
+        }
+        public new void Fail(string message) {
+            rec.MarkAsAssertionFailed(() => Assert.Fail(message));
+        }
+        public new void Fail() {
+            rec.MarkAsAssertionFailed(() => Assert.Fail());
+        }
         // public new void False(bool? condition, string message, params object[] args) {
         //     False(bool? condition, string message, params object[] args)
         // }

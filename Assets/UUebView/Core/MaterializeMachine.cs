@@ -35,18 +35,10 @@ namespace UUebView {
 				rootRectTrans.sizeDelta = new Vector2(tree.viewWidth, tree.viewHeight);
 			}
 			
-			// var cor = MaterializeRecursive(tree, root);
-			// while (cor.MoveNext()) {
-			// 	yield return null;
-			// }
-
-			// 一旦並列化を諦める。
-
 			// materialize root's children in parallel.
 			var children = tree.GetChildren();
 			
 			var cors = children.Select(child => MaterializeRecursive(child, root)).ToArray();
-			var done = 0;
 			
 			while (true) {
 				for (var i = 0; i < cors.Length; i++) {
@@ -56,21 +48,21 @@ namespace UUebView {
 					}
 
 					var cont = cor.MoveNext();
-
+					
 					if (!cont) {
-						cor = null;
-						done = done + 1;
+						cors[i] = null;
 					}
 				}
 
-				// Debug.Log("materializeId:" + materializeId + " done:" + done);
-
-				if (done == cors.Length) {
+				var running = cors.Where(c => c != null).Any();
+				
+				// wait all coroutine's end.
+				if (!running) {
 					break;
 				}
+
 				yield return null;
 			}
-
 			onLoaded();
         }
 
@@ -190,6 +182,7 @@ namespace UUebView {
 			for (var i = 0; i < children.Count; i++) {
 				var child = children[i];
 				var cor = MaterializeRecursive(child, newGameObject);
+
 				while (cor.MoveNext()) {
 					if (cor.Current != null) {
 						break;

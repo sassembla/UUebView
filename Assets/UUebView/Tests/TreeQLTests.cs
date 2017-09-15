@@ -90,19 +90,20 @@ public class TreeQLTests : MiyamasuTestRunner {
         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100,100));
         
         Show(view);
-
+        Debug.LogWarning("-----1st loading.");
         yield return WaitUntil(
             () => done, () => {throw new TimeoutException("too late.");}, 5
         );
-
+        
         var done2 = false;
         eventReceiverGameObj.GetComponent<TestReceiver>().OnUpdated = ids => {
             done2 = true;
         };
 
         var comp = view.GetComponent<UUebViewComponent>();
+        Debug.LogWarning("-----appending.");
         comp.AppendContentToLast("<p>test</p>");
-
+        Debug.LogWarning("-----2nd loading.");
         yield return WaitUntil(
             () => done2, () => {throw new TimeoutException("too late.");}, 5
         );
