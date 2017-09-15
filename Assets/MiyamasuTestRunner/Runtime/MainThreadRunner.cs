@@ -14,10 +14,10 @@ namespace Miyamasu {
 		private bool started;
 
 		private UUebViewComponent currentUUebViewComponent;
+		private RectTransform scrollViewRect;
 
-		private string htmlContent = @"
-<!DOCTYPE uuebview href='resources://Views/ConsoleTag/UUebTags'>
-";
+		private RectTransform contentRect;
+		private string htmlContent = @"<!DOCTYPE uuebview href='resources://Views/ConsoleTag/UUebTags'>";
 
 		IEnumerator Start () {
 			while (iEnumGens == null) {
@@ -48,12 +48,20 @@ namespace Miyamasu {
 
 			var scrollViewRectCandidates = canvas.transform.GetComponentsInChildren<RectTransform>();
 			GameObject attachTargetView = null;
+			
+
+			// get Content of ScrollView.
 			foreach (var rect in scrollViewRectCandidates) {
+				if (rect.name == "Scroll View") {
+					scrollViewRect = rect.gameObject.GetComponent<RectTransform>();
+				}
 				if (rect.name == "Content") {
 					attachTargetView = rect.gameObject;
-					break;
+					contentRect = attachTargetView.GetComponent<RectTransform>();
 				}
 			}
+
+			
 
 			var scrollViewWidth = canvas.GetComponent<RectTransform>().sizeDelta.x;
 			Recorder.logAct = this.AddLog;
@@ -68,6 +76,7 @@ namespace Miyamasu {
 			yield return ContCor();
 		}
 
+		private List<GameObject> errorMarkOnVerticalBar;
 
 		void Update () {
 			if (started && Recorder.isStoppedByFail) {
@@ -128,7 +137,7 @@ namespace Miyamasu {
 					break;
 				}
 				default: {
-					throw new Exception("まだ解決してないsetupとteardownエラー");
+					throw new Exception("まだ表現してないsetupとteardownエラー");
 					break;
 				}
 			}
@@ -174,6 +183,7 @@ namespace Miyamasu {
             // throw new NotImplementedException();
         }
 
+		private List<float> onVerticalBarErrorPos = new List<float>();
         void IUUebViewEventHandler.OnLoaded(string[] treeIds)
         {
 			loaded = true;
@@ -187,15 +197,10 @@ namespace Miyamasu {
 				currentUUebViewComponent.AppendContentToLast(message);
 			}
 
-			// ここで、idが入っているのはエラーのtreeで、idからy位置を取得し、スクロールバーの位置に表示する。あ、スクロールバー消したな。。
-			// idは一意なので、idに対して最初の一つのみを扱う。
-			foreach (var contentId in treeIds) {
-				var yPos = currentUUebViewComponent.GetTreeById(contentId)[0].offsetY;
-				Debug.Log("error yPos:" + yPos);
-			}
+			ShowErrorMark(treeIds);
         }
 
-
+		private List<GameObject> goPool = new List<GameObject>();
         void IUUebViewEventHandler.OnUpdated(string[] newTreeIds)
         {
 			loaded = true;
@@ -208,13 +213,50 @@ namespace Miyamasu {
 				currentUUebViewComponent.AppendContentToLast(message);
 			}
 
-			// ここで、idが入っているのはエラーのtreeで、idからy位置を取得し、スクロールバーの位置に表示する。あ、スクロールバー消したな。。
-			// idは一意なので、idに対して最初の一つのみを扱う。
+			ShowErrorMark(newTreeIds);
+        }
+		
+		private void ShowErrorMark (string[] newTreeIds) {
 			foreach (var contentId in newTreeIds) {
 				var yPos = currentUUebViewComponent.GetTreeById(contentId)[0].offsetY;
-				Debug.Log("error yPos:" + yPos);
+				onVerticalBarErrorPos.Add(yPos);
 			}
-        }
+
+			var beforePos = 0f;
+			var markIndex = 0;
+			foreach (var pos in onVerticalBarErrorPos) {
+				// 位置差が小さかったら無視する
+				if (pos - beforePos < 100) {
+					continue;
+				}
+
+				beforePos = pos;
+				
+				// 最大でこの数だけ、verticalScrollBar上に赤いマークを出す。
+				var ratio = (pos / contentRect.sizeDelta.y) * (768-(165+38));//scrollViewRect.sizeDelta.y;
+
+				if (goPool.Count <= markIndex) {
+					var cursorObj = new GameObject();
+					var rectTrans = cursorObj.AddComponent<RectTransform>();
+					
+					rectTrans.anchorMin = Vector2.one;
+					rectTrans.anchorMax = Vector2.one;
+					rectTrans.pivot = Vector2.one;
+
+					var image = cursorObj.AddComponent<Image>();
+					image.color = Color.red;
+
+					goPool.Add(cursorObj);
+				}
+
+				var go = goPool[markIndex++];
+				var cursorObjRect = go.GetComponent<RectTransform>();
+				cursorObjRect.anchoredPosition = new Vector2(0, -ratio);
+				cursorObjRect.sizeDelta = new Vector2(50, 2);
+
+				go.transform.SetParent(scrollViewRect.transform, false);
+			}
+		}
 
         void IUUebViewEventHandler.OnLoadFailed(ContentType type, int code, string reason)
         {
