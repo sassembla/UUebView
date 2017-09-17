@@ -106,7 +106,7 @@ namespace Miyamasu {
 				yield return iEnumGens[index++]();
 			}
 
-			Debug.Log("maybe all tests passed.");
+			Debug.Log("all tests finished.");
 		}
 		
 		private bool loaded;
@@ -220,7 +220,7 @@ namespace Miyamasu {
 				onVerticalBarErrorPos.Add(yPos);
 			}
 
-			var beforePos = 0f;
+			var beforePos = -scrollViewRect.rect.height;
 			var markIndex = 0;
 			foreach (var pos in onVerticalBarErrorPos) {
 				// 位置差が一画面内より小さかったら無視する

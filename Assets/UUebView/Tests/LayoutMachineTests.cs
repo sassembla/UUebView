@@ -244,7 +244,7 @@ else
             if (0 < tree.GetChildren().Count) {
                 tree = tree.GetChildren()[tree.GetChildren().Count-1];
                 if (tree.offsetY != 0) {
-                    True(tree.offsetY.ToString() == "1799.95", "not match, offsetY:" + tree.offsetY);
+                    True(tree.offsetY.ToString() == "799.95", "not match, offsetY:" + tree.offsetY);
                 }
             } else {
                 break;
@@ -293,7 +293,7 @@ else
 
 
             yield return WaitUntil(
-                () => done, () => {throw new TimeoutException("too late.");}, 0.0001
+                () => done, () => {throw new TimeoutException("too late.");}, 5.0001
             );
 
             TagTree.CorrectTrees(parsedRoot);
