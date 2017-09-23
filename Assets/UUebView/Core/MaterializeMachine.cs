@@ -132,7 +132,13 @@ namespace UUebView {
 						var text = tree.keyValueStore[HTMLAttribute._CONTENT] as string;
 						if (!string.IsNullOrEmpty(text)) {
 							var textComponent = newGameObject.GetComponent<Text>();
-							textComponent.text = text;
+							if (textComponent != null) {
+								textComponent.text = text;
+							} else {
+								var tmTextComponent = newGameObject.GetComponent<TMPro.TextMeshProUGUI>();
+								tmTextComponent.text = text;
+							}
+							
 						}
 					}
 

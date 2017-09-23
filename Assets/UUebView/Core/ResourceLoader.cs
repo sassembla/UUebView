@@ -158,9 +158,19 @@ namespace UUebView {
             }
         }
 
+        /**
+            プレファブをロードする
+
+            外部からのプレファブ取得の経路はここだけで、この部分でプレファブを取得して返す。
+            取得元はtagValueに依存する。
+            
+            デフォルトのタグであればresourcesに入っているはずで、
+            それ以外のタグであればuuebTagsに記載してある各タグのloadPathを元に取得する。
+         */
         public IEnumerator<GameObject> LoadPrefab (int tagValue, TreeType treeType) {
             GameObject prefab = null;
             
+            // rootで来たものは基本タグが存在しないので、body相当として読み換える
             if (tagValue == (int)HTMLTag._ROOT) {
                 tagValue = (int)HTMLTag.body;
             }
@@ -180,7 +190,7 @@ namespace UUebView {
                 {
                     switch (IsDefaultTag(tagValue)) {
                         case true: {
-                            // デフォルトコンテンツがここにくる。
+                            // デフォルトコンテンツはResourcesからの読み出しを行う。
                             var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
 
                             var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
