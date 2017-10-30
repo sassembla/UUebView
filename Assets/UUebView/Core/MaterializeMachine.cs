@@ -94,7 +94,7 @@ namespace UUebView {
 				cached = true;
 			}
 			
-			newGameObject.transform.SetParent(parent.transform);
+			newGameObject.transform.SetParent(parent.transform, false);
 			var rectTrans = newGameObject.GetComponent<RectTransform>();
 			rectTrans.anchoredPosition = TagTree.AnchoredPositionOf(tree);
 			rectTrans.sizeDelta = TagTree.SizeDeltaOf(tree);
