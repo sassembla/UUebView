@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: bfda282aba25a4c25b1e58ebce8ba234
+timeCreated: 1516956565
+licenseType: Pro
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: FOT-Slump Std
+  fontNames:
+  - FOT-Slump Std
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
