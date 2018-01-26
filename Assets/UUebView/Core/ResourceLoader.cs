@@ -119,7 +119,7 @@ namespace UUebView {
                 var responseCode = (int)request.responseCode;
 				var responseHeaders = request.GetResponseHeaders();
 
-                if (request.isError) {
+                if (request.isNetworkError) {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,
@@ -535,7 +535,7 @@ namespace UUebView {
             var reqHeaders = httpRequestHeaderDelegate("GET", url, new Dictionary<string, string>(), string.Empty);
 
             // start download tex from url.
-            using (var request = UnityWebRequest.GetTexture(url)) {
+            using (var request = UnityWebRequestTexture.GetTexture(url)) {
                 foreach (var reqHeader in reqHeaders) {
                     request.SetRequestHeader(reqHeader.Key, reqHeader.Value);
                 }
@@ -560,7 +560,7 @@ namespace UUebView {
                 var responseHeaders = request.GetResponseHeaders();
                 
                 
-                if (request.isError) {
+                if (request.isNetworkError) {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,
@@ -839,7 +839,7 @@ namespace UUebView {
                 var responseCode = (int)request.responseCode;
                 var responseHeaders = request.GetResponseHeaders();
                 
-                if (request.isError) {
+                if (request.isNetworkError) {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,
