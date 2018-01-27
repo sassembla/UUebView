@@ -805,6 +805,7 @@ namespace UUebView
             {
                 Debug.LogWarning("固定でTMProの内容だけを扱う。まだこのコードは適当。どうやって最適化しようかな、、どんなコンポーネントがあるかが判断できればいいんだよな。");
                 Debug.LogWarning("とりあえず動かそう。");
+
                 var go = GameObject.Instantiate(prefab);// 必須
                 go.transform.SetParent(GameObject.Find("Canvas").transform);// 必須
 
