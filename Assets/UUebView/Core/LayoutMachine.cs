@@ -1108,7 +1108,6 @@ namespace UUebView
 
 
                         var charHeight = GetCharHeight(bodyContent, textComponent);
-                        Debug.LogWarning("charHeight:" + charHeight);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
                     }
 
