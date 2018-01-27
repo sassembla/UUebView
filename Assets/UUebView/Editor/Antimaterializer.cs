@@ -232,8 +232,12 @@ namespace UUebView {
                         type = TreeType.Container;// not Content_Text.
                         break;
                     }
+                    case "TextMeshProUGUI": {
+                        type = TreeType.Container;
+                        break;
+                    }
                     default: {
-                        throw new Exception("unsupported second component on content. found component type:" + currentFirstComponent);
+                        throw new Exception("unsupported second component on content. found component type:" + currentFirstComponent.GetType().Name);
                     }
                 }
             }

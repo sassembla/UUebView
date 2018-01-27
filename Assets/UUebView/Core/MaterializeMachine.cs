@@ -25,7 +25,6 @@ namespace UUebView
         {
 
             var materializeId = Guid.NewGuid().ToString();
-            // Debug.LogWarning("yOffsetで、viewの範囲にあるものだけを表示する、とかができそう。TableViewとかにコンテンツ足して云々とか。まあそこまで必要かっていうと微妙。");
 
             {
                 var rootRectTrans = root.GetComponent<RectTransform>();
@@ -75,8 +74,18 @@ namespace UUebView
             onLoaded();
         }
         /**
-			IEnumを返すっていう性質を、Enumerator自体を返す -> 束ねる、みたいな方向に向けられるといいんだけど、
-			
+			現状は全ての子について1f内で各1度は実行する、という処理になっている。
+            n-m-o
+             \p-q
+               \r
+
+            みたいな数のツリーがある場合、
+            nのツリーを処理する段階で、毎フレームm,qが1度ずつ展開される。
+            mの展開時にはoが毎フレーム1度ずつ展開される。
+            pの展開時には、qとrが毎フレーム1度ずつ展開される。
+
+            なので、全てのツリーが1fに1度は初期化されるようになる。
+
 		 */
         private IEnumerator MaterializeRecursive(TagTree tree, GameObject parent)
         {
