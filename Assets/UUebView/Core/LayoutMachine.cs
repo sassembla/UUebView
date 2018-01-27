@@ -771,6 +771,7 @@ namespace UUebView
 
 
         }
+        private GameObject tmGo;
 
         /**
             列挙されたコンポーネント型をプレファブから取得試行してあったものを返す。
@@ -805,11 +806,21 @@ namespace UUebView
             {
                 Debug.LogWarning("固定でTMProの内容だけを扱う。まだこのコードは適当。どうやって最適化しようかな、、どんなコンポーネントがあるかが判断できればいいんだよな。");
                 Debug.LogWarning("とりあえず動かそう。");
+                if (tmGo == null)
+                {
+                    tmGo = GameObject.Instantiate(prefab);// 必須 これでTMProGUIを持ったGOが一個出来上がる。
+                    tmGo.transform.SetParent(GameObject.Find("Canvas").transform);// 必須
+                }
+                else
+                {
+                    // もうtmGoがある状態で来た。ので、コンポーネントだけをprefabと入れ替えられないかな、、
+                    // GameObject.DestroyImmediate(tmGo.GetComponent<TMPro.TextMeshProUGUI>());
+                    var s = tmGo.GetComponent<TMPro.TextMeshProUGUI>();
+                    s = prefab.GetComponent<TMPro.TextMeshProUGUI>();
+                }
 
-                var go = GameObject.Instantiate(prefab);// 必須
-                go.transform.SetParent(GameObject.Find("Canvas").transform);// 必須
 
-                var tmComponent = go.GetComponent<TMPro.TextMeshProUGUI>();
+                var tmComponent = tmGo.GetComponent<TMPro.TextMeshProUGUI>();
                 if (tmComponent != null)
                 {
                     if (tmComponent.font == null)
@@ -1045,6 +1056,7 @@ namespace UUebView
 
             // 行数まで出たので、各行の要素が出せるといい。generator.linesをどうにかして実現する。
             var tmGeneratorLines = textInfos.lineInfo;
+            var lineSpacing = textComponent.lineSpacing;
 
             using (new TMProTextComponentUsing(textComponent))
             {
@@ -1096,6 +1108,7 @@ namespace UUebView
 
 
                         var charHeight = GetCharHeight(bodyContent, textComponent);
+                        Debug.LogWarning("charHeight:" + charHeight);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
                     }
 
@@ -1125,11 +1138,11 @@ namespace UUebView
 
                         // 最終行以外はハコ型に収まった状態なので、ハコとして出力する。
                         // 最終一つ前までの高さを出して、このコンテンツの高さとして扱う。
-                        var totalHeight = 0f + tmLineCount - 1;// lineの高さだけを足すと、必ずlineCount-1ぶんだけ不足する。この挙動は謎。
+                        var totalHeight = 0f;
                         for (var i = 0; i < tmLineCount - 1; i++)
                         {
                             var line = tmGeneratorLines[i];
-                            totalHeight += (line.lineHeight * textComponent.lineSpacing);
+                            totalHeight += (line.lineHeight + lineSpacing);
                         }
 
                         // このビューのポジションをセット
@@ -1139,7 +1152,7 @@ namespace UUebView
                     {
                         // Debug.LogError("行頭の単一行 text:" + text);
                         var width = textComponent.preferredWidth;
-                        var height = (tmGeneratorLines[0].lineHeight * textComponent.lineSpacing);
+                        var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
                         // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                         insertion(InsertType.TailInsertedToLine, textTree);
@@ -1155,7 +1168,7 @@ namespace UUebView
                     if (isMultilined)
                     {
                         // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
-                        var currentLineHeight = (tmGeneratorLines[0].lineHeight * textComponent.lineSpacing);
+                        var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
                         // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
                         var currentLineContent = text.Substring(0, tmGeneratorLines[1].firstCharacterIndex);
@@ -1179,7 +1192,7 @@ namespace UUebView
                     {
                         // Debug.LogError("行中追加の単一行 text:" + text);
                         var width = textComponent.preferredWidth;
-                        var height = (tmGeneratorLines[0].lineHeight * textComponent.lineSpacing);
+                        var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
                         // Debug.LogError("行中の単一行 text:" + text + " textViewCursor:" + textViewCursor);
                         // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
@@ -1238,12 +1251,9 @@ namespace UUebView
 
         private float GetCharHeight(string headChara, TMPro.TextMeshProUGUI textComponent)
         {
-            Debug.LogWarning("tm版、カンで作ったので正しい高さが帰ってくるかは不明。");
-
             // set text for getting preferred height.
             var info = textComponent.GetTextInfo(headChara);
-
-            return info.lineInfo[0].lineHeight * textComponent.lineSpacing;
+            return info.lineInfo[0].lineHeight + textComponent.lineSpacing;
         }
 
         /**
@@ -1444,7 +1454,6 @@ namespace UUebView
                     {
                         // dispose.
                         textComponent.text = string.Empty;
-                        GameObject.Destroy(textComponent.gameObject);
                     }
                     disposedValue = true;
                 }

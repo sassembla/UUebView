@@ -51,26 +51,26 @@ public class ExtensionTests : MiyamasuTestRunner
         eventReceiverGameObj.AddComponent<TestReceiver>();
     }
 
-    //     [MTest]
-    //     public IEnumerator DefaultText()
-    //     {
-    //         var source = @"
-    // <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
-    // <body>Miyamasu Runtime Console</body>";
-    //         var done = false;
+    [MTest]
+    public IEnumerator DefaultText()
+    {
+        var source = @"
+    <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+    <body>Miyamasu Runtime Console</body>";
+        var done = false;
 
-    //         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
-    //         {
-    //             done = true;
-    //         };
-    //         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
 
-    //         Show(view);
+        Show(view);
 
-    //         yield return WaitUntil(
-    //             () => done, () => { throw new TimeoutException("too late."); }, 50
-    //         );
-    //     }
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
 
     [MTest]
     public IEnumerator UseTextMeshPro()
@@ -84,7 +84,51 @@ public class ExtensionTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator UseText2()
+    {
+        var source = @"
+    <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+    <body>Miyamasu Runtime Console</body>
+    <body>Miyamasu Runtime Console2</body>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator UseTextMeshPro2()
+    {
+        var source = @"
+    <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+    <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+    <textmeshtxt>Miyamasu Runtime Console2</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
 
         Show(view);
 
