@@ -168,7 +168,15 @@ namespace UUebView
                             if (!string.IsNullOrEmpty(text))
                             {
                                 var textComponent = newGameObject.GetComponent<Text>();
-                                textComponent.text = text;
+                                if (textComponent != null)
+                                {
+                                    textComponent.text = text;
+                                }
+                                else
+                                {
+                                    var textComponentPro = newGameObject.GetComponent<TMPro.TextMeshProUGUI>();
+                                    textComponentPro.text = text;
+                                }
                             }
                         }
 
