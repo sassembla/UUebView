@@ -554,14 +554,13 @@ namespace UUebView
                                     // 処理の開始時にラインにいれていたものを削除
                                     linedElements.Remove(child);
 
-                                    // 含まれているものの整列処理をし、列の高さを受け取る
+                                    // 含まれているものの整列処理をし、最終的な列の高さを受け取る
                                     var newLineOffsetY = DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
 
-                                    // 整列と高さ取得が完了したのでリセット
+                                    // ここまでの列の整列と高さ取得が完了したのでリセット
                                     linedElements.Clear();
 
                                     // ここまでの行の高さがcurrentHeightに出ているので、currentHeightから次の行を開始する。
-                                    // Debug.LogError("リトライでの改行");
                                     nextChildViewCursor = ViewCursor.NextLine(newLineOffsetY, containerViewCursor.viewWidth, containerViewCursor.viewHeight);
 
                                     // もう一度この行を処理する。
@@ -904,6 +903,7 @@ namespace UUebView
                 // 0行だったら、入らなかったということなので、改行をしてもらってリトライを行う。
                 if (lineCount == 0 && !string.IsNullOrEmpty(textComponent.text))
                 {
+                    // このケースってもう無いっぽい。uGUIが0行を返さなくなったのかな。
                     insertion(InsertType.RetryWithNextLine, null);
                     yield break;
                 }
@@ -928,17 +928,19 @@ namespace UUebView
                 // 複数行存在するんだけど、2行目のスタートが0文字目の場合、1行目に1文字も入っていない。
                 if (isMultilined && generator.lines[1].startCharIdx == 0)
                 {
-                    // 行頭でこれが起きる場合、コンテンツ幅が圧倒的に不足していて、一文字も入らないということが起きている。
-                    // 1文字ずつ切り分けて表示する。
+                    /*
+                        行頭でこれが起きる場合、コンテンツ幅が圧倒的に不足していて、一文字も入らないということが起きている。
+                        が、ここで文字を一切消費しないとなると後続の処理でも無限に処理が終わらない可能性があるため、最低でも1文字を消費する。
+                    */
                     if (isStartAtZeroOffset)
                     {
                         // 最初の1文字目を強制的にセットする
                         var bodyContent = text.Substring(0, 1);
 
-                        // 内容の反映
+                        // 1文字目だけをこの文字列の内容としてセットし直す。
                         textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
 
-                        // 最終行
+                        // 最終行として1文字目以降を取得、
                         var lastLineContent = text.Substring(1);
 
                         // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
@@ -950,7 +952,6 @@ namespace UUebView
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
                     }
 
-                    // コンテンツ全体を次の行で開始させる。
                     insertion(InsertType.RetryWithNextLine, null);
                     yield break;
                 }
@@ -1054,7 +1055,7 @@ namespace UUebView
             // このメソッドは、コンポーネントがgoにアタッチされてcanvasに乗っている場合のみ動作する。
             var textInfos = textComponent.GetTextInfo(text);
 
-            // 行数まで出たので、各行の要素が出せるといい。generator.linesをどうにかして実現する。
+            // 各行の要素とパラメータを取得する。
             var tmGeneratorLines = textInfos.lineInfo;
             var lineSpacing = textComponent.lineSpacing;
 
@@ -1063,13 +1064,38 @@ namespace UUebView
                 var tmLineCount = textInfos.lineCount;
 
                 // 0行だったら、入らなかったということなので、改行をしてもらってリトライを行う。
-                if (tmLineCount == 0 && !string.IsNullOrEmpty(textComponent.text))
+                /*
+                    訂正、TMProは行の数が3になるところまでは同じで、ただし文字の非単語単位の分解を行わない。
+                    よって、行数は出るのだけれど、すでに文字が飛び出している状態、というのが発生する。
+                    つまり新ケースだ。入りきってないので改行させるんだけど、幅としては親の幅を使う、というやつ。
+
+                    今までの場合、行数が0だと、そも入らないのでその行へのインプットを先送りにすることで対処していた。
+                    RetryWithNextLineで画面幅がリセットされる、、はずだった。
+
+                    現在の状態の通常テキスト側で起こっているのは、単語を勝手に分割して3行入るよって宣言してくる、というやつで、
+                    行頭がこの状態の場合は通すしかないが、そうで無い場合は行ごと全体を先送りにする。
+                 */
+
+                var onLayoutPresetX = (float)textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X];
+
+                var firstLineEndpoint = onLayoutPresetX + tmGeneratorLines[0].length;
+                if (textViewCursor.viewWidth < firstLineEndpoint && !string.IsNullOrEmpty(textComponent.text))
                 {
-                    insertion(InsertType.RetryWithNextLine, null);
+                    var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
+                    textTree.keyValueStore[HTMLAttribute._CONTENT] = string.Empty;
+
+                    // このコンテンツの文字列は空ということにして、全てのコンテンツを次に送る。
+                    var nextLineContent = new InsertedTree(textTree, text, textTree.tagValue);
+
+                    insertion(InsertType.InsertContentToNextLine, nextLineContent);
+
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
                     yield break;
                 }
 
-                // 1行以上のラインがある。
+                // Debug.Log("text:" + text + " textViewCursor.viewWidth:" + textViewCursor.viewWidth);
+
+                // 1行以上のラインが画面内にある。
 
                 /*
                     ここで、このtreeに対するカーソルのoffsetXが0ではない場合、行の中間から行を書き出していることになる。
@@ -1082,7 +1108,7 @@ namespace UUebView
 
                     コンテンツを分離し、それを叶える。
                 */
-                var onLayoutPresetX = (float)textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X];
+
                 var isStartAtZeroOffset = onLayoutPresetX == 0 && textViewCursor.offsetX == 0;
                 var isMultilined = 1 < tmLineCount;
 
@@ -1107,7 +1133,7 @@ namespace UUebView
                         insertion(InsertType.InsertContentToNextLine, nextLineContent);
 
 
-                        var charHeight = GetCharHeight(bodyContent, textComponent);
+                        var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
                     }
 
@@ -1246,13 +1272,6 @@ namespace UUebView
             generator.Populate(headChara, setting);
 
             return generator.lines[0].height * textComponent.lineSpacing;
-        }
-
-        private float GetCharHeight(string headChara, TMPro.TextMeshProUGUI textComponent)
-        {
-            // set text for getting preferred height.
-            var info = textComponent.GetTextInfo(headChara);
-            return info.lineInfo[0].lineHeight + textComponent.lineSpacing;
         }
 
         /**
