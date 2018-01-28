@@ -8,36 +8,41 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace UUebView {
+namespace UUebView
+{
 
     // キャッシュ保持と各種coroutineの生成を行う。
 
-    public class ResourceLoader {
+    public class ResourceLoader
+    {
         //  外部に公開する関数ポインタの型定義
-        public delegate Dictionary<string, string> MyHttpRequestHeaderDelegate (string method, string url, Dictionary<string, string> requestHeader, string data);
-        
-        private MyHttpRequestHeaderDelegate httpRequestHeaderDelegate; 
-        private Dictionary<string, string> BasicRequestHeaderDelegate(string method, string url, Dictionary<string, string> requestHeader, string data) {
+        public delegate Dictionary<string, string> MyHttpRequestHeaderDelegate(string method, string url, Dictionary<string, string> requestHeader, string data);
+
+        private MyHttpRequestHeaderDelegate httpRequestHeaderDelegate;
+        private Dictionary<string, string> BasicRequestHeaderDelegate(string method, string url, Dictionary<string, string> requestHeader, string data)
+        {
             return requestHeader;
         }
 
 
-        public delegate void MyHttpResponseHandlingDelegate (string connectionId, Dictionary<string, string> responseHeader, int httpCode, object data, string errorReason, Action<string, object> succeeded, Action<string, int, string> failed);
+        public delegate void MyHttpResponseHandlingDelegate(string connectionId, Dictionary<string, string> responseHeader, int httpCode, object data, string errorReason, Action<string, object> succeeded, Action<string, int, string> failed);
 
-        private MyHttpResponseHandlingDelegate httpResponseHandlingDelegate; 
-        private void BasicResponseHandlingDelegate(string connectionId, Dictionary<string, string> responseHeader, int httpCode, object data, string errorReason, Action<string, object> succeeded, Action<string, int, string> failed) {
-            if (200 <= httpCode && httpCode < 299) {
-				succeeded(connectionId, data);
-				return;
-			}
-			failed(connectionId, httpCode, errorReason);
+        private MyHttpResponseHandlingDelegate httpResponseHandlingDelegate;
+        private void BasicResponseHandlingDelegate(string connectionId, Dictionary<string, string> responseHeader, int httpCode, object data, string errorReason, Action<string, object> succeeded, Action<string, int, string> failed)
+        {
+            if (200 <= httpCode && httpCode < 299)
+            {
+                succeeded(connectionId, data);
+                return;
+            }
+            failed(connectionId, httpCode, errorReason);
         }
 
-        private class SpriteCache : Dictionary<string, Sprite> {};
-        private class PrefabCache : Dictionary<string, GameObject> {};
-        private class GameObjCache : Dictionary<string, GameObject> {};
+        private class SpriteCache : Dictionary<string, Sprite> { };
+        private class PrefabCache : Dictionary<string, GameObject> { };
+        private class GameObjCache : Dictionary<string, GameObject> { };
 
-        
+
 
         /*
             global cache.
@@ -55,11 +60,12 @@ namespace UUebView {
 
 
 
-    
+
         public readonly GameObject cacheBox;
         public readonly Action<IEnumerator> LoadParallel;
 
-        public ResourceLoader (Action<IEnumerator> LoadParallel, MyHttpRequestHeaderDelegate requestHeader=null, MyHttpResponseHandlingDelegate httpResponseHandlingDelegate=null) {
+        public ResourceLoader(Action<IEnumerator> LoadParallel, MyHttpRequestHeaderDelegate requestHeader = null, MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null)
+        {
             this.LoadParallel = LoadParallel;
 
             cacheBox = new GameObject("UUebViewGOPool");
@@ -67,8 +73,9 @@ namespace UUebView {
 
             defaultTagStrIntPair = new Dictionary<string, int>();
             defaultTagIntStrPair = new Dictionary<int, string>();
-           
-            foreach (var tag in Enum.GetValues(typeof(HTMLTag))) {
+
+            foreach (var tag in Enum.GetValues(typeof(HTMLTag)))
+            {
                 var tagStr = tag.ToString();
                 var index = (int)tag;
 
@@ -79,57 +86,71 @@ namespace UUebView {
             /*
                 set request header generation func and response validation delegate.
              */
-            if (requestHeader != null) {
-				// reqHeaderがなんか存在してるので、
+            if (requestHeader != null)
+            {
+                // reqHeaderがなんか存在してるので、
                 this.httpRequestHeaderDelegate = requestHeader;
-			} else {
-				this.httpRequestHeaderDelegate = BasicRequestHeaderDelegate;
-			}
-			
-			if (httpResponseHandlingDelegate != null) {
-				this.httpResponseHandlingDelegate = httpResponseHandlingDelegate;
-			} else {
-				this.httpResponseHandlingDelegate = BasicResponseHandlingDelegate;
-			}
+            }
+            else
+            {
+                this.httpRequestHeaderDelegate = BasicRequestHeaderDelegate;
+            }
+
+            if (httpResponseHandlingDelegate != null)
+            {
+                this.httpResponseHandlingDelegate = httpResponseHandlingDelegate;
+            }
+            else
+            {
+                this.httpResponseHandlingDelegate = BasicResponseHandlingDelegate;
+            }
         }
 
-        public IEnumerator<string> DownloadHTMLFromWeb (string url, Action<ContentType, int, string> failed) {
+        public IEnumerator<string> DownloadHTMLFromWeb(string url, Action<ContentType, int, string> failed)
+        {
             var timeoutSec = ConstSettings.TIMEOUT_SEC;
             var timeoutTick = (DateTime.UtcNow + TimeSpan.FromSeconds(timeoutSec)).Ticks;
             var connectionId = ConstSettings.CONNECTIONID_DOWNLOAD_HTML_PREFIX + Guid.NewGuid().ToString();
-            using(var request = UnityWebRequest.Get(url)) {
+            using (var request = UnityWebRequest.Get(url))
+            {
                 var reqHeader = httpRequestHeaderDelegate("GET", url, new Dictionary<string, string>(), string.Empty);
-                foreach (var item in reqHeader) {
+                foreach (var item in reqHeader)
+                {
                     request.SetRequestHeader(item.Key, item.Value);
                 }
 
-                var p = request.Send();
-				
-				while (!p.isDone) {
-					yield return null;
+                var p = request.SendWebRequest();
 
-					// check timeout.
-					if (timeoutSec != 0 && timeoutTick < DateTime.UtcNow.Ticks) {
-						request.Abort();
-						failed(ContentType.HTML, -1, "failed to download html:" + url + " by timeout.");
-						yield break;
-					}
-				}
+                while (!p.isDone)
+                {
+                    yield return null;
+
+                    // check timeout.
+                    if (timeoutSec != 0 && timeoutTick < DateTime.UtcNow.Ticks)
+                    {
+                        request.Abort();
+                        failed(ContentType.HTML, -1, "failed to download html:" + url + " by timeout.");
+                        yield break;
+                    }
+                }
 
                 var responseCode = (int)request.responseCode;
-				var responseHeaders = request.GetResponseHeaders();
+                var responseHeaders = request.GetResponseHeaders();
 
-                if (request.isNetworkError) {
+                if (request.isNetworkError)
+                {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,
                         responseCode,
-                        null, 
-                        request.error, 
-                        (conId, data) => {
+                        null,
+                        request.error,
+                        (conId, data) =>
+                        {
                             throw new Exception("request encountered some kind of error.");
-                        }, 
-                        (conId, code, reason) => {
+                        },
+                        (conId, code, reason) =>
+                        {
                             failed(ContentType.HTML, code, "failed to download html:" + url + " reason:" + reason);
                         }
                     );
@@ -137,22 +158,25 @@ namespace UUebView {
                 }
 
                 var htmlStr = string.Empty;
-                
+
                 httpResponseHandlingDelegate(
                     connectionId,
                     responseHeaders,
                     responseCode,
-                    request, 
+                    request,
                     request.error,
-                    (conId, data) => {
+                    (conId, data) =>
+                    {
                         htmlStr = Encoding.UTF8.GetString(request.downloadHandler.data);
-                    }, 
-                    (conId, code, reason) => {
+                    },
+                    (conId, code, reason) =>
+                    {
                         failed(ContentType.HTML, code, "failed to download html:" + url + " reason:" + reason);
                     }
                 );
 
-                if (!string.IsNullOrEmpty(htmlStr)) {
+                if (!string.IsNullOrEmpty(htmlStr))
+                {
                     yield return htmlStr;
                 }
             }
@@ -167,71 +191,87 @@ namespace UUebView {
             デフォルトのタグであればresourcesに入っているはずで、
             それ以外のタグであればuuebTagsに記載してある各タグのloadPathを元に取得する。
          */
-        public IEnumerator<GameObject> LoadPrefab (int tagValue, TreeType treeType) {
+        public IEnumerator<GameObject> LoadPrefab(int tagValue, TreeType treeType)
+        {
             GameObject prefab = null;
-            
+
             // rootで来たものは基本タグが存在しないので、body相当として読み換える
-            if (tagValue == (int)HTMLTag._ROOT) {
+            if (tagValue == (int)HTMLTag._ROOT)
+            {
                 tagValue = (int)HTMLTag.body;
             }
 
             var prefabName = GetTagFromValue(tagValue);
-            
-            while (loadingPrefabNames.Contains(prefabName)) {
+
+            while (loadingPrefabNames.Contains(prefabName))
+            {
                 yield return null;
             }
-            
-            if (prefabCache.ContainsKey(prefabName)) {
+
+            if (prefabCache.ContainsKey(prefabName))
+            {
                 // Debug.LogError("return cached loadingPrefabName:" + loadingPrefabName);
                 yield return prefabCache[prefabName];
-            } else {
+            }
+            else
+            {
                 loadingPrefabNames.Add(prefabName);
 
                 {
-                    switch (IsDefaultTag(tagValue)) {
-                        case true: {
-                            // デフォルトコンテンツはResourcesからの読み出しを行う。
-                            var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
+                    switch (IsDefaultTag(tagValue))
+                    {
+                        case true:
+                            {
+                                // デフォルトコンテンツはResourcesからの読み出しを行う。
+                                var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
 
-                            var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
-                            while (cor.MoveNext()) {
-                                if (cor.Current != null) {
-                                    break;
-                                }                           
-                                yield return null;
+                                var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
+                                while (cor.MoveNext())
+                                {
+                                    if (cor.Current != null)
+                                    {
+                                        break;
+                                    }
+                                    yield return null;
+                                }
+                                var loadedPrefab = cor.Current;
+
+                                prefab = loadedPrefab;
+                                break;
                             }
-                            var loadedPrefab = cor.Current;
-                            
-                            prefab = loadedPrefab;
-                            break;
-                        }
 
                         // 非デフォルトタグでは、コンテナとcustomBox以外のtypeにはloadpathが存在する。
-                        default: {
-                            switch (treeType) {
-                                case TreeType.Container: 
-                                case TreeType.CustomBox: {
-                                    throw new Exception("unexpected loading. tag:" + GetTagFromValue(tagValue) + " is not contents.");
-                                }
-                                default: {
-                                    var loadPath = GetCustomTagLoadPath(tagValue, treeType);
+                        default:
+                            {
+                                switch (treeType)
+                                {
+                                    case TreeType.Container:
+                                    case TreeType.CustomBox:
+                                        {
+                                            throw new Exception("unexpected loading. tag:" + GetTagFromValue(tagValue) + " is not contents.");
+                                        }
+                                    default:
+                                        {
+                                            var loadPath = GetCustomTagLoadPath(tagValue, treeType);
 
-                                    var cor = LoadCustomPrefabFromLoadPathOrCache(loadPath);
-                                    while (cor.MoveNext()) {
-                                        if (cor.Current != null) {
+                                            var cor = LoadCustomPrefabFromLoadPathOrCache(loadPath);
+                                            while (cor.MoveNext())
+                                            {
+                                                if (cor.Current != null)
+                                                {
+                                                    break;
+                                                }
+                                                yield return null;
+                                            }
+
+                                            var loadedPrefab = cor.Current;
+
+                                            prefab = loadedPrefab;
                                             break;
                                         }
-                                        yield return null;
-                                    }
-
-                                    var loadedPrefab = cor.Current;
-                                    
-                                    prefab = loadedPrefab;
-                                    break;
                                 }
+                                break;
                             }
-                            break;
-                        }
                     }
 
                     // cache.
@@ -243,96 +283,114 @@ namespace UUebView {
             }
         }
 
-        public IEnumerator<GameObject> LoadGameObjectFromPrefab (string id, int tagValue, TreeType treeType) {
+        public IEnumerator<GameObject> LoadGameObjectFromPrefab(string id, int tagValue, TreeType treeType)
+        {
             GameObject gameObj = null;
             var tagName = GetTagFromValue(tagValue);
 
-            if (goCache.ContainsKey(id)) {
+            if (goCache.ContainsKey(id))
+            {
                 gameObj = goCache[id];
-            } else {
-                switch (IsDefaultTag(tagValue)) {
-                    case true: {
-                        switch (treeType) {
-                            case TreeType.Container: {
-                                var containerObj = new GameObject(tagName);
-                                var trans = containerObj.AddComponent<RectTransform>();
-                                trans.anchorMin = Vector2.up;
-                                trans.anchorMax = Vector2.up;
-                                trans.offsetMin = Vector2.up;
-                                trans.offsetMax = Vector2.up;
-                                trans.pivot = Vector2.up;
+            }
+            else
+            {
+                switch (IsDefaultTag(tagValue))
+                {
+                    case true:
+                        {
+                            switch (treeType)
+                            {
+                                case TreeType.Container:
+                                    {
+                                        var containerObj = new GameObject(tagName);
+                                        var trans = containerObj.AddComponent<RectTransform>();
+                                        trans.anchorMin = Vector2.up;
+                                        trans.anchorMax = Vector2.up;
+                                        trans.offsetMin = Vector2.up;
+                                        trans.offsetMax = Vector2.up;
+                                        trans.pivot = Vector2.up;
 
-                                gameObj = containerObj;
-                                break;
-                            }
-                            default: {
-                                // コンテナ以外、いろんなデフォルトコンテンツがここにくる。
-                                var prefabName = GetTagFromValue(tagValue);
-                                var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
-
-                                var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
-                                while (cor.MoveNext()) {
-                                    if (cor.Current != null) {
-                                        break;
-                                    }                           
-                                    yield return null;
-                                }
-
-                                var loadedPrefab = cor.Current;
-                                
-                                gameObj = GameObject.Instantiate(loadedPrefab);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-
-                    // 非デフォルトタグ、customBox以外はloadpathが存在する。
-                    default: {
-                        switch (treeType) {
-                            case TreeType.Container: {
-                                var containerObj = new GameObject(tagName);
-                                var trans = containerObj.AddComponent<RectTransform>();
-                                trans.anchorMin = Vector2.up;
-                                trans.anchorMax = Vector2.up;
-                                trans.offsetMin = Vector2.up;
-                                trans.offsetMax = Vector2.up;
-                                trans.pivot = Vector2.up;
-
-                                gameObj = containerObj;
-                                break;
-                            }
-                            case TreeType.CustomBox: {
-                                var customBoxObj = new GameObject(tagName);
-                                var trans = customBoxObj.AddComponent<RectTransform>();
-                                trans.anchorMin = Vector2.up;
-                                trans.anchorMax = Vector2.up;
-                                trans.offsetMin = Vector2.up;
-                                trans.offsetMax = Vector2.up;
-                                trans.pivot = Vector2.up;
-
-                                gameObj = customBoxObj;
-                                break;
-                            }
-                            default: {
-                                var loadPath = GetCustomTagLoadPath(tagValue, treeType);
-
-                                var cor = LoadCustomPrefabFromLoadPathOrCache(loadPath);
-                                while (cor.MoveNext()) {
-                                    if (cor.Current != null) {
+                                        gameObj = containerObj;
                                         break;
                                     }
-                                    yield return null;
-                                }
+                                default:
+                                    {
+                                        // コンテナ以外、いろんなデフォルトコンテンツがここにくる。
+                                        var prefabName = GetTagFromValue(tagValue);
+                                        var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
 
-                                var loadedPrefab = cor.Current;
-                                
-                                gameObj = GameObject.Instantiate(loadedPrefab);
-                                break;
+                                        var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
+                                        while (cor.MoveNext())
+                                        {
+                                            if (cor.Current != null)
+                                            {
+                                                break;
+                                            }
+                                            yield return null;
+                                        }
+
+                                        var loadedPrefab = cor.Current;
+
+                                        gameObj = GameObject.Instantiate(loadedPrefab);
+                                        break;
+                                    }
                             }
+                            break;
                         }
-                        break;
-                    }
+
+                    // 非デフォルトタグ、customBox以外はloadpathが存在する。
+                    default:
+                        {
+                            switch (treeType)
+                            {
+                                case TreeType.Container:
+                                    {
+                                        var containerObj = new GameObject(tagName);
+                                        var trans = containerObj.AddComponent<RectTransform>();
+                                        trans.anchorMin = Vector2.up;
+                                        trans.anchorMax = Vector2.up;
+                                        trans.offsetMin = Vector2.up;
+                                        trans.offsetMax = Vector2.up;
+                                        trans.pivot = Vector2.up;
+
+                                        gameObj = containerObj;
+                                        break;
+                                    }
+                                case TreeType.CustomBox:
+                                    {
+                                        var customBoxObj = new GameObject(tagName);
+                                        var trans = customBoxObj.AddComponent<RectTransform>();
+                                        trans.anchorMin = Vector2.up;
+                                        trans.anchorMax = Vector2.up;
+                                        trans.offsetMin = Vector2.up;
+                                        trans.offsetMax = Vector2.up;
+                                        trans.pivot = Vector2.up;
+
+                                        gameObj = customBoxObj;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        var loadPath = GetCustomTagLoadPath(tagValue, treeType);
+
+                                        var cor = LoadCustomPrefabFromLoadPathOrCache(loadPath);
+                                        while (cor.MoveNext())
+                                        {
+                                            if (cor.Current != null)
+                                            {
+                                                break;
+                                            }
+                                            yield return null;
+                                        }
+
+                                        var loadedPrefab = cor.Current;
+
+                                        gameObj = GameObject.Instantiate(loadedPrefab);
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
                 }
 
                 // set name.
@@ -351,36 +409,44 @@ namespace UUebView {
         /**
             loadPathからcustomTag = レイヤーのprefabを返す。
          */
-        public IEnumerator<GameObject> LoadCustomPrefabFromLoadPathOrCache (string loadPath) {
+        public IEnumerator<GameObject> LoadCustomPrefabFromLoadPathOrCache(string loadPath)
+        {
             // Debug.LogError("loadPath:" + loadPath);
-            var schemeAndPath = loadPath.Split(new char[]{'/'}, 2);
+            var schemeAndPath = loadPath.Split(new char[] { '/' }, 2);
             var scheme = schemeAndPath[0];
 
             var extLen = Path.GetExtension(loadPath).Length;
             var uri = loadPath.Substring(0, loadPath.Length - extLen);
-            
+
             IEnumerator<GameObject> cor = null;
 
-            switch (scheme) {
-                case "assetbundle:": {
-                    cor = LoadPrefabFromAssetBundle(uri);
-                    break;
-                }
+            switch (scheme)
+            {
+                case "assetbundle:":
+                    {
+                        cor = LoadPrefabFromAssetBundle(uri);
+                        break;
+                    }
                 case "https:":
-                case "http:": {
-                    throw new Exception("http|https are not supported scheme for downloading prefab. use assetbundle:// instead.");
-                }
-                case "resources:": {
-                    cor = LoadPrefabFromResourcesOrCache(uri.Substring("resources://".Length));
-                    break;
-                }
-                default: {// other.
-                    throw new Exception("unsupported scheme:" + scheme + " found when loading custom tag prefab:" + loadPath);
-                }
+                case "http:":
+                    {
+                        throw new Exception("http|https are not supported scheme for downloading prefab. use assetbundle:// instead.");
+                    }
+                case "resources:":
+                    {
+                        cor = LoadPrefabFromResourcesOrCache(uri.Substring("resources://".Length));
+                        break;
+                    }
+                default:
+                    {// other.
+                        throw new Exception("unsupported scheme:" + scheme + " found when loading custom tag prefab:" + loadPath);
+                    }
             }
 
-            while (cor.MoveNext()) {
-                if (cor.Current != null) {
+            while (cor.MoveNext())
+            {
+                if (cor.Current != null)
+                {
                     break;
                 }
                 yield return null;
@@ -393,21 +459,26 @@ namespace UUebView {
             resourcesからprefabを返す。
             キャッシュヒット処理込み。
          */
-        private IEnumerator<GameObject> LoadPrefabFromResourcesOrCache (string loadingPrefabName) {
+        private IEnumerator<GameObject> LoadPrefabFromResourcesOrCache(string loadingPrefabName)
+        {
             // Debug.LogError("start loadingPrefabName:" + loadingPrefabName);
 
             var cor = Resources.LoadAsync(loadingPrefabName);
-        
-            while (!cor.isDone) {
+
+            while (!cor.isDone)
+            {
                 yield return null;
             }
             var obj = cor.asset as GameObject;
 
-            if (obj == null) {
+            if (obj == null)
+            {
                 var failedObj = new GameObject("failed to load element:" + loadingPrefabName);
                 loadingPrefabNames.Remove(loadingPrefabName);
                 yield return failedObj;
-            } else {
+            }
+            else
+            {
                 // cache.
                 prefabCache[loadingPrefabName] = obj;
                 loadingPrefabNames.Remove(loadingPrefabName);
@@ -415,16 +486,21 @@ namespace UUebView {
             }
         }
 
-        private IEnumerator<GameObject> LoadPrefabFromAssetBundle (string loadingPrefabName) {
-            while (loadingPrefabNames.Contains(loadingPrefabName)) {
+        private IEnumerator<GameObject> LoadPrefabFromAssetBundle(string loadingPrefabName)
+        {
+            while (loadingPrefabNames.Contains(loadingPrefabName))
+            {
                 yield return null;
             }
 
-            if (prefabCache.ContainsKey(loadingPrefabName)) {
+            if (prefabCache.ContainsKey(loadingPrefabName))
+            {
                 // Debug.LogError("キャッシュから読み出す");
                 var cachedPrefab = prefabCache[loadingPrefabName];
                 yield return cachedPrefab;
-            } else {
+            }
+            else
+            {
                 // アセット名が書いてあると思うんで、assetBundleListとかから取り寄せる
                 Debug.LogError("まだ実装してないassetBundleからprefabを読む仕掛け");
                 yield return null;
@@ -435,14 +511,19 @@ namespace UUebView {
             layout, materialize時に画像を読み込む。
             キャッシュヒット処理込み。
          */
-        public IEnumerator<Sprite> LoadImageAsync (string uriSource) {
-            while (spriteDownloadingUris.Contains(uriSource)) {
+        public IEnumerator<Sprite> LoadImageAsync(string uriSource)
+        {
+            while (spriteDownloadingUris.Contains(uriSource))
+            {
                 yield return null;
             }
-            
-            if (spriteCache.ContainsKey(uriSource)) {
+
+            if (spriteCache.ContainsKey(uriSource))
+            {
                 yield return spriteCache[uriSource];
-            } else {
+            }
+            else
+            {
                 // start downloading.
                 spriteDownloadingUris.Add(uriSource);
                 {
@@ -455,40 +536,48 @@ namespace UUebView {
                             ^resources://   resources scheme => (Resources/)somewhere/resource path.
                             ^./				relative path => (Resources/)somewhere/resource path.
                     */
-                    var schemeAndPath = uriSource.Split(new char[]{'/'}, 2);
+                    var schemeAndPath = uriSource.Split(new char[] { '/' }, 2);
                     var scheme = schemeAndPath[0];
 
                     IEnumerator<Sprite> cor = null;
-                    switch (scheme) {
-                        case "assetbundle:": {
-                            cor = LoadImageFromAssetBundle(uriSource);
-                            break;
-                        }
+                    switch (scheme)
+                    {
+                        case "assetbundle:":
+                            {
+                                cor = LoadImageFromAssetBundle(uriSource);
+                                break;
+                            }
                         case "https:":
-                        case "http:": {
-                            cor = LoadImageFromWeb(uriSource);
-                            break;
-                        }
-                        case "resources:": {
-                            var resourcePath = uriSource.Substring("resources:".Length + 2);
-                            cor = LoadImageFromResources(resourcePath);
-                            break;
-                        }
-                        default: {// other.
-                            throw new Exception("unsupported scheme:" + scheme);
-                        }
+                        case "http:":
+                            {
+                                cor = LoadImageFromWeb(uriSource);
+                                break;
+                            }
+                        case "resources:":
+                            {
+                                var resourcePath = uriSource.Substring("resources:".Length + 2);
+                                cor = LoadImageFromResources(resourcePath);
+                                break;
+                            }
+                        default:
+                            {// other.
+                                throw new Exception("unsupported scheme:" + scheme);
+                            }
                     }
 
-                    while (cor.MoveNext()) {
-                        if (cor.Current != null) {
+                    while (cor.MoveNext())
+                    {
+                        if (cor.Current != null)
+                        {
                             // set cache.
                             spriteCache[uriSource] = cor.Current;
                             break;
                         }
                         yield return null;
                     }
-                    
-                    if (cor.Current == null) {
+
+                    if (cor.Current == null)
+                    {
                         // failed to get image.
                         spriteDownloadingUris.Remove(uriSource);
                         yield break;
@@ -505,51 +594,60 @@ namespace UUebView {
             return imageLoad iEnum functions.   
          */
 
-        private IEnumerator<Sprite> LoadImageFromAssetBundle (string assetName) {
+        private IEnumerator<Sprite> LoadImageFromAssetBundle(string assetName)
+        {
             yield return null;
             Debug.LogError("LoadImageFromAssetBundle bundleName:" + assetName);
         }
 
-        private IEnumerator<Sprite> LoadImageFromResources (string uriSource) {
+        private IEnumerator<Sprite> LoadImageFromResources(string uriSource)
+        {
             var extLen = Path.GetExtension(uriSource).Length;
             var uri = uriSource.Substring(0, uriSource.Length - extLen);
 
             var resourceLoadingCor = Resources.LoadAsync(uri);
-            while (!resourceLoadingCor.isDone) {
+            while (!resourceLoadingCor.isDone)
+            {
                 yield return null;
             }
-            
-            if (resourceLoadingCor.asset == null) {
+
+            if (resourceLoadingCor.asset == null)
+            {
                 yield break;
             }
 
             // create tex.
             var tex = resourceLoadingCor.asset as Texture2D;
-            var spr = Sprite.Create(tex, new Rect(0,0, tex.width, tex.height), Vector2.zero);
-            
+            var spr = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
+
             yield return spr;
         }
 
-        private IEnumerator<Sprite> LoadImageFromWeb (string url) {
+        private IEnumerator<Sprite> LoadImageFromWeb(string url)
+        {
             var connectionId = ConstSettings.CONNECTIONID_DOWNLOAD_IMAGE_PREFIX + Guid.NewGuid().ToString();
             var reqHeaders = httpRequestHeaderDelegate("GET", url, new Dictionary<string, string>(), string.Empty);
 
             // start download tex from url.
-            using (var request = UnityWebRequestTexture.GetTexture(url)) {
-                foreach (var reqHeader in reqHeaders) {
+            using (var request = UnityWebRequestTexture.GetTexture(url))
+            {
+                foreach (var reqHeader in reqHeaders)
+                {
                     request.SetRequestHeader(reqHeader.Key, reqHeader.Value);
                 }
 
-                var p = request.Send();
+                var p = request.SendWebRequest();
 
                 var timeoutSec = ConstSettings.TIMEOUT_SEC;
                 var limitTick = DateTime.UtcNow.AddSeconds(timeoutSec).Ticks;
 
-                while (!p.isDone) {
+                while (!p.isDone)
+                {
                     yield return null;
 
                     // check timeout.
-                    if (0 < timeoutSec && limitTick < DateTime.UtcNow.Ticks) {
+                    if (0 < timeoutSec && limitTick < DateTime.UtcNow.Ticks)
+                    {
                         Debug.LogError("timeout. load aborted, dataPath:" + url);
                         request.Abort();
                         yield break;
@@ -558,19 +656,22 @@ namespace UUebView {
 
                 var responseCode = (int)request.responseCode;
                 var responseHeaders = request.GetResponseHeaders();
-                
-                
-                if (request.isNetworkError) {
+
+
+                if (request.isNetworkError)
+                {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,
                         responseCode,
-                        null, 
-                        request.error, 
-                        (conId, data) => {
+                        null,
+                        request.error,
+                        (conId, data) =>
+                        {
                             throw new Exception("request encountered some kind of error.");
-                        }, 
-                        (conId, code, reason) => {
+                        },
+                        (conId, code, reason) =>
+                        {
                             // do nothing.
                         }
                     );
@@ -583,135 +684,164 @@ namespace UUebView {
                     connectionId,
                     responseHeaders,
                     responseCode,
-                    request, 
+                    request,
                     request.error,
-                    (conId, data) => {
+                    (conId, data) =>
+                    {
                         // create tex.
                         var tex = DownloadHandlerTexture.GetContent(request);
 
                         // cache this sprite for other requests.
-                        spr = Sprite.Create(tex, new Rect(0,0, tex.width, tex.height), Vector2.zero);
-                    }, 
-                    (conId, code, reason) => {
+                        spr = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
+                    },
+                    (conId, code, reason) =>
+                    {
                         // do nothing.
                     }
                 );
 
-                if (spr != null) {
+                if (spr != null)
+                {
                     yield return spr;
                 }
             }
         }
 
-        private string GetCustomTagLoadPath (int tagValue, TreeType treeType) {
+        private string GetCustomTagLoadPath(int tagValue, TreeType treeType)
+        {
             var tag = GetTagFromValue(tagValue);
-           
-            switch (treeType) {
+
+            switch (treeType)
+            {
                 case TreeType.CustomLayer:
-                case TreeType.CustomEmptyLayer: {
-                    return uuebTags.layerInfos.Where(t => t.layerName == tag).Select(t => t.loadPath).FirstOrDefault();
-                }
+                case TreeType.CustomEmptyLayer:
+                    {
+                        return uuebTags.layerInfos.Where(t => t.layerName == tag).Select(t => t.loadPath).FirstOrDefault();
+                    }
                 case TreeType.Content_Img:
-                case TreeType.Content_Text: {
-                    return uuebTags.contents.Where(t => t.contentName == tag).Select(t => t.loadPath).FirstOrDefault();
-                }
-                default: {
-                    throw new Exception("unexpected tree type:" + treeType + " of tag:" + tag);
-                }
-            }            
+                case TreeType.Content_Text:
+                    {
+                        return uuebTags.contents.Where(t => t.contentName == tag).Select(t => t.loadPath).FirstOrDefault();
+                    }
+                default:
+                    {
+                        throw new Exception("unexpected tree type:" + treeType + " of tag:" + tag);
+                    }
+            }
         }
 
-        public string UUebTagsName () {
-            if (uuebTags == null) {
+        public string UUebTagsName()
+        {
+            if (uuebTags == null)
+            {
                 return string.Empty;
             }
             return uuebTags.viewName;
         }
 
-        public void BackGameObjects (params string[] usingIds) {
+        public void BackGameObjects(params string[] usingIds)
+        {
             var cachedKeys = goCache.Keys.ToArray();
 
             var unusingIds = cachedKeys.Except(usingIds);
-            foreach (var unusingCacheId in unusingIds) {
+            foreach (var unusingCacheId in unusingIds)
+            {
                 var cache = goCache[unusingCacheId];
                 cache.transform.SetParent(cacheBox.transform);
             }
         }
 
 
-        public void Reset () {
+        public void Reset()
+        {
             BackGameObjects();
             goCache.Clear();
         }
-        
-        public int GetAdditionalTagCount () {
+
+        public int GetAdditionalTagCount()
+        {
             return undefinedTagDict.Count;
         }
 
-        public bool IsDefaultTag (int tag) {
-            if (defaultTagIntStrPair.ContainsKey(tag)) {
+        public bool IsDefaultTag(int tag)
+        {
+            if (defaultTagIntStrPair.ContainsKey(tag))
+            {
                 return true;
             }
             return false;
         }
 
-        public TreeType GetTreeType (int tag) {
+        public TreeType GetTreeType(int tag)
+        {
             // 組み込みtagであれば、静的に解決できる。
-            if (defaultTagIntStrPair.ContainsKey(tag)) {
-				switch (tag) {
-                    case (int)HTMLTag.img: {
-                        return TreeType.Content_Img;
-                    }
+            if (defaultTagIntStrPair.ContainsKey(tag))
+            {
+                switch (tag)
+                {
+                    case (int)HTMLTag.img:
+                        {
+                            return TreeType.Content_Img;
+                        }
                     case (int)HTMLTag.hr:
-                    case (int)HTMLTag.br: {
-                        return TreeType.Content_CRLF;
-                    }
-                    default: {
-                        return TreeType.Container;
-                    }
+                    case (int)HTMLTag.br:
+                        {
+                            return TreeType.Content_CRLF;
+                        }
+                    default:
+                        {
+                            return TreeType.Container;
+                        }
                 }
-			}
+            }
 
             // tag is not default.
-            
+
             var customTagStr = GetTagFromValue(tag);
             // Debug.LogError("customTagStr:" + customTagStr);
             // foreach (var s in customTagTypeDict.Keys) {
             //     Debug.LogError("s:" + s);
             // }
-            if (!customTagTypeDict.ContainsKey(customTagStr)) {
+            if (!customTagTypeDict.ContainsKey(customTagStr))
+            {
                 return TreeType.NotFound;
             }
             return customTagTypeDict[customTagStr];
         }
 
-        private class AssetLoadingConstraint : IDisposable {
-			private string target;
-			private List<string> list;
-			
-			public AssetLoadingConstraint (string target, List<string> list) {
-				this.target = target;
-				this.list = list;
+        private class AssetLoadingConstraint : IDisposable
+        {
+            private string target;
+            private List<string> list;
 
-				this.list.Add(this.target);
-			}
+            public AssetLoadingConstraint(string target, List<string> list)
+            {
+                this.target = target;
+                this.list = list;
 
-			private bool disposedValue = false;
+                this.list.Add(this.target);
+            }
 
-			protected virtual void Dispose (bool disposing) {
-				if (!disposedValue) {
-					if (disposing) {
+            private bool disposedValue = false;
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!disposedValue)
+                {
+                    if (disposing)
+                    {
                         Debug.LogError("remove from list:" + target);
-						list.Remove(target);
-					}
-					disposedValue = true;
-				}
-			}
+                        list.Remove(target);
+                    }
+                    disposedValue = true;
+                }
+            }
 
-			void IDisposable.Dispose () {
-				Dispose(true);
-			}
-		}
+            void IDisposable.Dispose()
+            {
+                Dispose(true);
+            }
+        }
 
 
 
@@ -721,27 +851,31 @@ namespace UUebView {
 
 
         private UUebTags uuebTags;
-        public bool IsLoadingUUebTags {
+        public bool IsLoadingUUebTags
+        {
             get; private set;
         }
 
         private Dictionary<string, TreeType> customTagTypeDict = new Dictionary<string, TreeType>();
         private Dictionary<string, BoxConstraint[]> layerDict;
-        private Dictionary<string, BoxPos>unboxedLayerSizeDict;
-        
+        private Dictionary<string, BoxPos> unboxedLayerSizeDict;
 
-        public IEnumerator LoadUUebTags (string uriSource) {
-            if (IsLoadingUUebTags) {
+
+        public IEnumerator LoadUUebTags(string uriSource)
+        {
+            if (IsLoadingUUebTags)
+            {
                 throw new Exception("multiple uuebTags description found. only one uuebTags description is valid.");
             }
 
             var schemeEndIndex = uriSource.IndexOf("//");
             var scheme = uriSource.Substring(0, schemeEndIndex);
-            
+
             IsLoadingUUebTags = true;
 
 
-            Action<UUebTags> succeeded = uuebTags => {
+            Action<UUebTags> succeeded = uuebTags =>
+            {
                 this.uuebTags = uuebTags;
                 this.customTagTypeDict = this.uuebTags.GetTagTypeDict();
 
@@ -751,85 +885,102 @@ namespace UUebView {
 
                 var layerInfos = uuebTags.layerInfos;
 
-                foreach (var layerInfo in layerInfos) {
+                foreach (var layerInfo in layerInfos)
+                {
                     layerDict[layerInfo.layerName.ToLower()] = layerInfo.boxes;
                     unboxedLayerSizeDict[layerInfo.layerName.ToLower()] = layerInfo.unboxedLayerSize;
                 }
 
                 IsLoadingUUebTags = false;
             };
-            
-            Action<int, string> failed = (code, reason) => {
+
+            Action<int, string> failed = (code, reason) =>
+            {
                 throw new Exception("未対処なリストのロードエラー。failed to load uuebTags. code:" + code + " reason:" + reason + " from:" + uriSource);
                 this.uuebTags = new UUebTags(ConstSettings.UUEBTAGS_DEFAULT, new ContentInfo[0], new LayerInfo[0]);// set empty list.
                 IsLoadingUUebTags = false;
             };
 
             IEnumerator cor = null;
-            switch (scheme) {
-                case "assetbundle:": {
-                    cor = LoadTagsFromAssetBundle(uriSource, succeeded, failed);
-                    break;
-                }
+            switch (scheme)
+            {
+                case "assetbundle:":
+                    {
+                        cor = LoadTagsFromAssetBundle(uriSource, succeeded, failed);
+                        break;
+                    }
                 case "https:":
-                case "http:": {
-                    cor =  LoadTagsFromWeb(uriSource, succeeded, failed);
-                    break;
-                }
-                case "resources:": {
-                    var resourcePath = uriSource.Substring("resources:".Length + 2);
-                    cor = LoadTagsFromResources(resourcePath, succeeded, failed);
-                    break;
-                }
-                default: {// other.
-                    throw new Exception("unsupported scheme found, scheme:" + scheme);
-                }
+                case "http:":
+                    {
+                        cor = LoadTagsFromWeb(uriSource, succeeded, failed);
+                        break;
+                    }
+                case "resources:":
+                    {
+                        var resourcePath = uriSource.Substring("resources:".Length + 2);
+                        cor = LoadTagsFromResources(resourcePath, succeeded, failed);
+                        break;
+                    }
+                default:
+                    {// other.
+                        throw new Exception("unsupported scheme found, scheme:" + scheme);
+                    }
             }
 
-            while (cor.MoveNext()) {
+            while (cor.MoveNext())
+            {
                 yield return null;
             }
         }
 
-        public BoxPos GetUnboxedLayerSize (int tagValue) {
+        public BoxPos GetUnboxedLayerSize(int tagValue)
+        {
             var key = GetTagFromValue(tagValue);
             return unboxedLayerSizeDict[key];
         }
 
-        public BoxConstraint[] GetConstraints (int tagValue) {
+        public BoxConstraint[] GetConstraints(int tagValue)
+        {
             var key = GetTagFromValue(tagValue);
             return layerDict[key];
         }
 
-        public string GetLayerBoxName (int layerTag, int boxTag) {
+        public string GetLayerBoxName(int layerTag, int boxTag)
+        {
             return GetTagFromValue(layerTag) + "_" + GetTagFromValue(boxTag);
         }
 
-        private IEnumerator LoadTagsFromAssetBundle (string url, Action<UUebTags> succeeded, Action<int, string> failed) {
+        private IEnumerator LoadTagsFromAssetBundle(string url, Action<UUebTags> succeeded, Action<int, string> failed)
+        {
             Debug.LogError("not yet applied. LoadListFromAssetBundle url:" + url);
             failed(-1, "not yet applied.");
             yield break;
         }
-        
-        private IEnumerator LoadTagsFromWeb (string url, Action<UUebTags> loadSucceeded, Action<int, string> loadFailed) {
+
+        private IEnumerator LoadTagsFromWeb(string url, Action<UUebTags> loadSucceeded, Action<int, string> loadFailed)
+        {
             var connectionId = ConstSettings.CONNECTIONID_DOWNLOAD_UUEBTAGS_PREFIX + Guid.NewGuid().ToString();
             var reqHeaders = httpRequestHeaderDelegate("GET", url, new Dictionary<string, string>(), string.Empty);
 
-            using (var request = UnityWebRequest.Get(url)) {
-                foreach (var reqHeader in reqHeaders) {
+            using (var request = UnityWebRequest.Get(url))
+            {
+                foreach (var reqHeader in reqHeaders)
+                {
                     request.SetRequestHeader(reqHeader.Key, reqHeader.Value);
                 }
 
-                var p = request.Send();
+                var p = request.SendWebRequest();
 
                 var timeoutSec = ConstSettings.TIMEOUT_SEC;
                 var limitTick = DateTime.UtcNow.AddSeconds(timeoutSec).Ticks;
 
-                while (!p.isDone) {
+                while (!p.isDone)
+                {
                     yield return null;
 
                     // check timeout.
-                    if (0 < timeoutSec && limitTick < DateTime.UtcNow.Ticks) {
+                    if (0 < timeoutSec && limitTick < DateTime.UtcNow.Ticks)
+                    {
                         request.Abort();
                         loadFailed(-1, "timeout to download list from url:" + url);
                         yield break;
@@ -838,18 +989,21 @@ namespace UUebView {
 
                 var responseCode = (int)request.responseCode;
                 var responseHeaders = request.GetResponseHeaders();
-                
-                if (request.isNetworkError) {
+
+                if (request.isNetworkError)
+                {
                     httpResponseHandlingDelegate(
                         connectionId,
                         responseHeaders,
                         responseCode,
-                        null, 
-                        request.error, 
-                        (conId, data) => {
+                        null,
+                        request.error,
+                        (conId, data) =>
+                        {
                             throw new Exception("request encountered some kind of error.");
-                        }, 
-                        (conId, code, reason) => {
+                        },
+                        (conId, code, reason) =>
+                        {
                             loadFailed(code, reason);
                         }
                     );
@@ -860,29 +1014,34 @@ namespace UUebView {
                     connectionId,
                     responseHeaders,
                     responseCode,
-                    string.Empty, 
+                    string.Empty,
                     request.error,
-                    (conId, unusedData) => {
+                    (conId, unusedData) =>
+                    {
                         var jsonStr = request.downloadHandler.text;
                         var newDepthAssetList = JsonUtility.FromJson<UUebTags>(jsonStr);
 
                         loadSucceeded(newDepthAssetList);
-                    }, 
-                    (conId, code, reason) => {
+                    },
+                    (conId, code, reason) =>
+                    {
                         loadFailed(code, reason);
                     }
                 );
             }
         }
-        
-        private IEnumerator LoadTagsFromResources (string path, Action<UUebTags> succeeded, Action<int, string> failed) {
+
+        private IEnumerator LoadTagsFromResources(string path, Action<UUebTags> succeeded, Action<int, string> failed)
+        {
             var requestCor = Resources.LoadAsync(path);
 
-            while (!requestCor.isDone) {
+            while (!requestCor.isDone)
+            {
                 yield return null;
             }
 
-            if (requestCor.asset == null) {
+            if (requestCor.asset == null)
+            {
                 failed(-1, "no list found in resources.");
                 yield break;
             }
@@ -890,7 +1049,7 @@ namespace UUebView {
             var jsonStr = (requestCor.asset as TextAsset).text;
             var depthAssetList = JsonUtility.FromJson<UUebTags>(jsonStr);
             succeeded(depthAssetList);
-		}
+        }
 
 
 
@@ -900,42 +1059,51 @@ namespace UUebView {
 
         private Dictionary<string, int> undefinedTagDict = new Dictionary<string, int>();
 
-        public string GetTagFromValue (int index) {
-			if (index < defaultTagStrIntPair.Count) {
-				return defaultTagIntStrPair[index];
-			}
+        public string GetTagFromValue(int index)
+        {
+            if (index < defaultTagStrIntPair.Count)
+            {
+                return defaultTagIntStrPair[index];
+            }
 
-			if (undefinedTagDict.ContainsValue(index)) {
-				return undefinedTagDict.FirstOrDefault(x => x.Value == index).Key;
-			}
-			
-			throw new Exception("failed to get tag from index. index:" + index);
-		}
+            if (undefinedTagDict.ContainsValue(index))
+            {
+                return undefinedTagDict.FirstOrDefault(x => x.Value == index).Key;
+            }
 
-        public int FindOrCreateTag (string tagCandidateStr) {
-            if (defaultTagStrIntPair.ContainsKey(tagCandidateStr)) {
-				return defaultTagStrIntPair[tagCandidateStr];
-			}
+            throw new Exception("failed to get tag from index. index:" + index);
+        }
+
+        public int FindOrCreateTag(string tagCandidateStr)
+        {
+            if (defaultTagStrIntPair.ContainsKey(tagCandidateStr))
+            {
+                return defaultTagStrIntPair[tagCandidateStr];
+            }
             // collect undefined tag.
             // Debug.LogError("tagCandidateStr:" + tagCandidateStr);
 
-            if (undefinedTagDict.ContainsKey(tagCandidateStr)) {
+            if (undefinedTagDict.ContainsKey(tagCandidateStr))
+            {
                 return undefinedTagDict[tagCandidateStr];
             }
-            
+
             var count = (int)HTMLTag._END + undefinedTagDict.Count + 1;
             undefinedTagDict[tagCandidateStr] = count;
             return count;
         }
 
-        public int FindTag (string tagCandidateStr) {
-            if (defaultTagStrIntPair.ContainsKey(tagCandidateStr)) {
-				return defaultTagStrIntPair[tagCandidateStr];
-			}
+        public int FindTag(string tagCandidateStr)
+        {
+            if (defaultTagStrIntPair.ContainsKey(tagCandidateStr))
+            {
+                return defaultTagStrIntPair[tagCandidateStr];
+            }
             // collect undefined tag.
             // Debug.LogError("tagCandidateStr:" + tagCandidateStr);
 
-            if (undefinedTagDict.ContainsKey(tagCandidateStr)) {
+            if (undefinedTagDict.ContainsKey(tagCandidateStr))
+            {
                 return undefinedTagDict[tagCandidateStr];
             }
 

@@ -1,139 +1,139 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Miyamasu;
-using UnityEngine;
+﻿// using System;
+// using System.Collections;
+// using System.Collections.Generic;
+// using Miyamasu;
+// using UnityEngine;
 
-public class ExtensionTests : MiyamasuTestRunner
-{
+// public class ExtensionTests : MiyamasuTestRunner
+// {
 
-    GameObject eventReceiverGameObj;
-    GameObject view;
+//     GameObject eventReceiverGameObj;
+//     GameObject view;
 
-    private static int index;
-    private void Show(GameObject view, Action loaded = null)
-    {
-        var canvas = GameObject.Find("Canvas/UUebViewCoreTestPlace");
-        if (canvas == null)
-        {
-            var prefab = Resources.Load<GameObject>("TestPrefabs/Canvas");
-            var canvasBase = GameObject.Instantiate(prefab);
-            canvasBase.name = "Canvas";
-            canvas = GameObject.Find("Canvas/MaterializeTestPlace");
-        }
-        var baseObj = new GameObject("base");
-
-
-        // ベースオブジェクトを見やすい位置に移動
-        var baseObjRect = baseObj.AddComponent<RectTransform>();
-        baseObjRect.anchoredPosition = new Vector2(100 * index, 0);
-        baseObjRect.anchorMin = new Vector2(0, 1);
-        baseObjRect.anchorMax = new Vector2(0, 1);
-        baseObjRect.pivot = new Vector2(0, 1);
+//     private static int index;
+//     private void Show(GameObject view, Action loaded = null)
+//     {
+//         var canvas = GameObject.Find("Canvas/UUebViewCoreTestPlace");
+//         if (canvas == null)
+//         {
+//             var prefab = Resources.Load<GameObject>("TestPrefabs/Canvas");
+//             var canvasBase = GameObject.Instantiate(prefab);
+//             canvasBase.name = "Canvas";
+//             canvas = GameObject.Find("Canvas/MaterializeTestPlace");
+//         }
+//         var baseObj = new GameObject("base");
 
 
-        baseObj.transform.SetParent(
-            canvas.transform, false);
+//         // ベースオブジェクトを見やすい位置に移動
+//         var baseObjRect = baseObj.AddComponent<RectTransform>();
+//         baseObjRect.anchoredPosition = new Vector2(100 * index, 0);
+//         baseObjRect.anchorMin = new Vector2(0, 1);
+//         baseObjRect.anchorMax = new Vector2(0, 1);
+//         baseObjRect.pivot = new Vector2(0, 1);
 
-        view.transform.SetParent(baseObj.transform, false);
 
-        index++;
-        if (loaded != null)
-        {
-            loaded();
-        }
-    }
+//         baseObj.transform.SetParent(
+//             canvas.transform, false);
 
-    [MSetup]
-    public void Setup()
-    {
-        eventReceiverGameObj = new GameObject("controller");
-        eventReceiverGameObj.AddComponent<TestReceiver>();
-    }
+//         view.transform.SetParent(baseObj.transform, false);
 
-    // [MTest]
-    // public IEnumerator DefaultText()
-    // {
-    //     var source = @"
-    // <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
-    // <body>Miyamasu Runtime Console</body>";
-    //     var done = false;
+//         index++;
+//         if (loaded != null)
+//         {
+//             loaded();
+//         }
+//     }
 
-    //     eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
-    //     {
-    //         done = true;
-    //     };
-    //     view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+//     [MSetup]
+//     public void Setup()
+//     {
+//         eventReceiverGameObj = new GameObject("controller");
+//         eventReceiverGameObj.AddComponent<TestReceiver>();
+//     }
 
-    //     Show(view);
+//     [MTest]
+//     public IEnumerator DefaultText()
+//     {
+//         var source = @"
+//     <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+//     <body>Miyamasu Runtime Console</body>";
+//         var done = false;
 
-    //     yield return WaitUntil(
-    //         () => done, () => { throw new TimeoutException("too late."); }, 50
-    //     );
-    // }
+//         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+//         {
+//             done = true;
+//         };
+//         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
 
-    // [MTest]
-    // public IEnumerator UseTextMeshPro()
-    // {
-    //     var source = @"
-    // <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
-    // <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>";
-    //     var done = false;
+//         Show(view);
 
-    //     eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
-    //     {
-    //         done = true;
-    //     };
-    //     view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+//         yield return WaitUntil(
+//             () => done, () => { throw new TimeoutException("too late."); }, 50
+//         );
+//     }
 
-    //     Show(view);
+//     [MTest]
+//     public IEnumerator UseTextMeshPro()
+//     {
+//         var source = @"
+//     <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+//     <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>";
+//         var done = false;
 
-    //     yield return WaitUntil(
-    //         () => done, () => { throw new TimeoutException("too late."); }, 50
-    //     );
-    // }
+//         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+//         {
+//             done = true;
+//         };
+//         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
 
-    [MTest]
-    public IEnumerator UseText2()
-    {
-        var source = @"
-    <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
-    <body>Miyamasu Runtime Console</body>
-    <body>Miyamasu Runtime Console2</body>";
-        var done = false;
+//         Show(view);
 
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
-        {
-            done = true;
-        };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+//         yield return WaitUntil(
+//             () => done, () => { throw new TimeoutException("too late."); }, 50
+//         );
+//     }
 
-        Show(view);
+//     [MTest]
+//     public IEnumerator UseText2()
+//     {
+//         var source = @"
+//     <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+//     <body>Miyamasu Runtime Console</body>
+//     <body>Miyamasu Runtime Console2</body>";
+//         var done = false;
 
-        yield return WaitUntil(
-            () => done, () => { throw new TimeoutException("too late."); }, 50
-        );
-    }
+//         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+//         {
+//             done = true;
+//         };
+//         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
 
-    [MTest]
-    public IEnumerator UseTextMeshPro2()
-    {
-        var source = @"
-    <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
-    <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
-    <textmeshtxt>Miyamasu Runtime Console2</textmeshtxt>";
-        var done = false;
+//         Show(view);
 
-        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
-        {
-            done = true;
-        };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+//         yield return WaitUntil(
+//             () => done, () => { throw new TimeoutException("too late."); }, 50
+//         );
+//     }
 
-        Show(view);
+//     [MTest]
+//     public IEnumerator UseTextMeshPro2()
+//     {
+//         var source = @"
+//     <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+//     <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+//     <textmeshtxt>Miyamasu Runtime Console2</textmeshtxt>";
+//         var done = false;
 
-        yield return WaitUntil(
-            () => done, () => { throw new TimeoutException("too late."); }, 50
-        );
-    }
-}
+//         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+//         {
+//             done = true;
+//         };
+//         view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+//         Show(view);
+
+//         yield return WaitUntil(
+//             () => done, () => { throw new TimeoutException("too late."); }, 50
+//         );
+//     }
+// }

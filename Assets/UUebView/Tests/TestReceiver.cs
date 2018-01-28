@@ -6,7 +6,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UUebView;
 
-public class TestReceiver : MonoBehaviour, IUUebViewEventHandler {
+public class TestReceiver : MonoBehaviour, IUUebViewEventHandler
+{
     public Action OnLoadStarted;
     public Action OnProgress;
     public Action<string[]> OnLoaded;
@@ -14,60 +15,76 @@ public class TestReceiver : MonoBehaviour, IUUebViewEventHandler {
     public Action OnContentLoadFailed;
     public Action OnElementTapped;
     public Action OnElementLongTapped;
-    
-    void IUUebViewEventHandler.OnLoadStarted() {
+
+    void IUUebViewEventHandler.OnLoadStarted()
+    {
         Debug.Log("OnLoadStarted");
-        if (OnLoadStarted != null) {
+        if (OnLoadStarted != null)
+        {
             OnLoadStarted();
         }
     }
 
-    void IUUebViewEventHandler.OnProgress(double progress) {
+    void IUUebViewEventHandler.OnProgress(double progress)
+    {
         Debug.Log("OnProgress progress:" + progress);
-        if (OnProgress != null) {
+        if (OnProgress != null)
+        {
             OnProgress();
         }
     }
 
-    void IUUebViewEventHandler.OnLoaded(string[] treeIds) {
+    void IUUebViewEventHandler.OnLoaded(string[] treeIds)
+    {
         Debug.Log("OnLoaded");
-        if (OnLoaded != null) {
+        if (OnLoaded != null)
+        {
             OnLoaded(treeIds);
         }
     }
 
-    void IUUebViewEventHandler.OnUpdated(string[] treeIds) {
+    void IUUebViewEventHandler.OnUpdated(string[] treeIds)
+    {
         Debug.Log("OnUpdated");
-        if (OnUpdated != null) {
+        if (OnUpdated != null)
+        {
             OnUpdated(treeIds);
         }
     }
 
-    void IUUebViewEventHandler.OnLoadFailed(ContentType type, int code, string reason) {
+    void IUUebViewEventHandler.OnLoadFailed(ContentType type, int code, string reason)
+    {
         Debug.Log("OnContentLoadFailed type:" + type + " code:" + code + " reason:" + reason);
-        if (OnContentLoadFailed != null) {
+        if (OnContentLoadFailed != null)
+        {
             OnContentLoadFailed();
         }
     }
 
-    void IUUebViewEventHandler.OnElementTapped(ContentType type, GameObject element, string param, string id) {
+    void IUUebViewEventHandler.OnElementTapped(ContentType type, GameObject element, string param, string id)
+    {
         Debug.Log("OnElementTapped type:" + type + " param:" + param + " id:" + id);
-        if (OnElementTapped != null) {
+        if (OnElementTapped != null)
+        {
             OnElementTapped();
         }
-        
-        switch (type) {
-            case ContentType.IMAGE: {
-                if (element != null) {
-                    var img = element.GetComponent<Image>();
-                    StartCoroutine(Rotate(img));
+
+        switch (type)
+        {
+            case ContentType.IMAGE:
+                {
+                    if (element != null)
+                    {
+                        var img = element.GetComponent<Image>();
+                        StartCoroutine(Rotate(img));
+                    }
+                    break;
                 }
-                break;
-            }
         }
     }
 
-    private IEnumerator Rotate (Image img) {
+    private IEnumerator Rotate(Image img)
+    {
         var rectTrans = img.GetComponent<RectTransform>();
         var count = 0;
         var max = 18;
@@ -90,12 +107,14 @@ public class TestReceiver : MonoBehaviour, IUUebViewEventHandler {
         rectTrans.rotation = Quaternion.Euler(0, 0, start.eulerAngles.z - 180f);
     }
 
-    void IUUebViewEventHandler.OnElementLongTapped(ContentType type, string param, string id) {
+    void IUUebViewEventHandler.OnElementLongTapped(ContentType type, string param, string id)
+    {
         Debug.Log("OnElementLongTapped");
-        if (OnElementLongTapped != null) {
+        if (OnElementLongTapped != null)
+        {
             OnElementLongTapped();
         }
     }
 
-    
+
 }
