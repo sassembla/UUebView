@@ -1103,7 +1103,7 @@ namespace UUebView
                 // 1行目を書いた結果、この1行の幅が画面幅を超えている場合、書き足した今回のぶんを次の行に送る。
                 if (textViewCursor.viewWidth < tmGeneratorLines[0].length)
                 {
-                    // Debug.LogError("ここだな、現在の行高さを使うと、単に次の行に行きさえすればいいので、どうするか。textViewCursor.viewWidth:" + textViewCursor.viewWidth + " tmGeneratorLines[0].length:" + tmGeneratorLines[0].length);
+                    Debug.LogError("ここだな、現在の行高さを使うと、単に次の行に行きさえすればいいので、どうするか。textViewCursor.viewWidth:" + textViewCursor.viewWidth + " tmGeneratorLines[0].length:" + tmGeneratorLines[0].length);
                     // var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
                     // textTree.keyValueStore[HTMLAttribute._CONTENT] = string.Empty;
 
