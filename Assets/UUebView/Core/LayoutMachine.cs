@@ -27,6 +27,7 @@ namespace UUebView
             Continue,
             InsertContentToNextLine,
             RetryWithNextLine,
+            RetryWithNextLineWithParentWidth,
             Crlf,
             HeadInsertedToTheEndOfLine,
             TailInsertedToLine,
@@ -554,7 +555,7 @@ namespace UUebView
                                     // 処理の開始時にラインにいれていたものを削除
                                     linedElements.Remove(child);
 
-                                    // 含まれているものの整列処理をし、最終的な列の高さを受け取る
+                                    // 現在までにラインに含まれているものの整列処理をし、最終的な列の高さを受け取る
                                     var newLineOffsetY = DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
 
                                     // ここまでの列の整列と高さ取得が完了したのでリセット
@@ -562,6 +563,25 @@ namespace UUebView
 
                                     // ここまでの行の高さがcurrentHeightに出ているので、currentHeightから次の行を開始する。
                                     nextChildViewCursor = ViewCursor.NextLine(newLineOffsetY, containerViewCursor.viewWidth, containerViewCursor.viewHeight);
+
+                                    // もう一度この行を処理する。
+                                    goto currentLineRetry;
+                                }
+                            case InsertType.RetryWithNextLineWithParentWidth:
+                                {
+                                    // Debug.LogError("テキストコンテンツが0行を叩き出したので、このコンテンツ自体をもう一度レイアウトする。");
+
+                                    // 処理の開始時にラインにいれていたものを削除
+                                    linedElements.Remove(child);
+
+                                    // 現在までにラインに含まれているものの整列処理をし、最終的な列の高さを受け取る
+                                    var newLineOffsetY = DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
+
+                                    // ここまでの列の整列と高さ取得が完了したのでリセット
+                                    linedElements.Clear();
+
+                                    // ここまでの行の高さがcurrentHeightに出ているので、currentHeightから次の行を開始する。幅を親の最大値に合わせる。
+                                    nextChildViewCursor = ViewCursor.NextLine(newLineOffsetY, containerViewCursor.offsetX + containerViewCursor.viewWidth, containerViewCursor.viewHeight);
 
                                     // もう一度この行を処理する。
                                     goto currentLineRetry;
@@ -1080,19 +1100,22 @@ namespace UUebView
 
                 var onLayoutPresetX = (float)textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X];
 
-                var firstLineEndpoint = onLayoutPresetX + tmGeneratorLines[0].length;
-                if (textViewCursor.viewWidth < firstLineEndpoint && !string.IsNullOrEmpty(textComponent.text))
+                // 1行目を書いた結果、この1行の幅が画面幅を超えている場合、書き足した今回のぶんを次の行に送る。
+                if (textViewCursor.viewWidth < tmGeneratorLines[0].length)
                 {
-                    Debug.LogError("ここだな、現在の行高さを使うと、単に次の行に行きさえすればいいので、どうするか。");
-                    var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
-                    textTree.keyValueStore[HTMLAttribute._CONTENT] = string.Empty;
+                    // Debug.LogError("ここだな、現在の行高さを使うと、単に次の行に行きさえすればいいので、どうするか。textViewCursor.viewWidth:" + textViewCursor.viewWidth + " tmGeneratorLines[0].length:" + tmGeneratorLines[0].length);
+                    // var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
+                    // textTree.keyValueStore[HTMLAttribute._CONTENT] = string.Empty;
 
-                    // このコンテンツの文字列は空ということにして、全てのコンテンツを次に送る。
-                    var nextLineContent = new InsertedTree(textTree, text, textTree.tagValue);
+                    // // このコンテンツの文字列は空ということにして、全てのコンテンツを次に送る。
+                    // var nextLineContent = new InsertedTree(textTree, text, textTree.tagValue);
 
-                    insertion(InsertType.InsertContentToNextLine, nextLineContent);
-                    Debug.LogError("最初の行のエンドが画面幅を超えている");
-                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
+                    // insertion(InsertType.InsertContentToNextLine, nextLineContent);
+                    // Debug.LogError("最初の行のエンドが画面幅を超えている");
+                    // yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
+                    // yield break;
+                    Debug.LogError("viewWidthを親に戻す、みたいなのを込みのこれを作るか。");
+                    insertion(InsertType.RetryWithNextLineWithParentWidth, null);
                     yield break;
                 }
 
