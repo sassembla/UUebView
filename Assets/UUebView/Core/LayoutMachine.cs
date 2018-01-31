@@ -27,11 +27,12 @@ namespace UUebView
             Continue,
             InsertContentToNextLine,
             RetryWithNextLine,
-            RetryWithNextLineWithParentWidth,
+            RetryWithNextLineFromMiddleLine,
             Crlf,
             HeadInsertedToTheEndOfLine,
             TailInsertedToLine,
             LastLineEndedInTheMiddleOfLine,
+            AddContentToContainer,
         };
 
         public IEnumerator Layout(TagTree rootTree, Vector2 view, Action<TagTree> layouted)
@@ -377,6 +378,7 @@ namespace UUebView
             // treeに位置をセットしてposを返す
             yield return imgTree.SetPos(contentViewCursor.offsetX, contentViewCursor.offsetY, imageWidth, imageHeight);
         }
+        private List<TagTree> globalLineElements = new List<TagTree>();
 
         private IEnumerator<ChildPos> DoContainerLayout(TagTree containerTree, ViewCursor containerViewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null)
         {
@@ -476,6 +478,12 @@ namespace UUebView
                                             }
                                             break;
                                         }
+                                    case InsertType.AddContentToContainer:
+                                        {
+                                            Debug.LogError("AddContentToContainerが発生");
+                                            linedElements.Add(insertingChild);
+                                            break;
+                                        }
                                 }
 
                                 // 特に何もないのでemptyを返す
@@ -525,11 +533,6 @@ namespace UUebView
 
                                     var childOffsetY = nextChildViewCursor.offsetY + defaultTextHeight;
 
-                                    /*
-                                        さて次の行の開始概念をどうするか。
-                                        Liningを行い、クリアする。そこまではOKで、
-                                        んん、さっきと一緒か。lining前のoffsetY + heightと、lining後のoffsetYを
-                                    */
                                     // 処理の開始時にラインにいれていたもの(crlf)を削除
                                     linedElements.Remove(child);
 
@@ -561,17 +564,15 @@ namespace UUebView
                                     // ここまでの列の整列と高さ取得が完了したのでリセット
                                     linedElements.Clear();
 
-                                    // ここまでの行の高さがcurrentHeightに出ているので、currentHeightから次の行を開始する。
+                                    // ここまでの行の高さがcurrentHeightに出ているので、currentHeightから次の行を開始する。幅を親の最大値に合わせる。
                                     nextChildViewCursor = ViewCursor.NextLine(newLineOffsetY, containerViewCursor.viewWidth, containerViewCursor.viewHeight);
 
                                     // もう一度この行を処理する。
                                     goto currentLineRetry;
                                 }
-                            case InsertType.RetryWithNextLineWithParentWidth:
+                            case InsertType.RetryWithNextLineFromMiddleLine:
                                 {
-                                    // Debug.LogError("テキストコンテンツが0行を叩き出したので、このコンテンツ自体をもう一度レイアウトする。");
-
-                                    // 処理の開始時にラインにいれていたものを削除
+                                    // このコンテナ内での処理の開始時にラインにいれていたものを削除
                                     linedElements.Remove(child);
 
                                     // 現在までにラインに含まれているものの整列処理をし、最終的な列の高さを受け取る
@@ -579,9 +580,20 @@ namespace UUebView
 
                                     // ここまでの列の整列と高さ取得が完了したのでリセット
                                     linedElements.Clear();
+                                    var width = containerViewCursor.viewWidth;
+
+                                    if (linedElements.Count == 0 && 0 < globalLineElements.Count)
+                                    {
+                                        // set width to max.
+                                        width = containerViewCursor.offsetX + containerViewCursor.viewWidth;
+
+                                        // set y offset to max of global line..
+                                        newLineOffsetY = globalLineElements.Select(t => t.viewHeight).Max();
+                                        globalLineElements.Clear();
+                                    }
 
                                     // ここまでの行の高さがcurrentHeightに出ているので、currentHeightから次の行を開始する。幅を親の最大値に合わせる。
-                                    nextChildViewCursor = ViewCursor.NextLine(newLineOffsetY, containerViewCursor.offsetX + containerViewCursor.viewWidth, containerViewCursor.viewHeight);
+                                    nextChildViewCursor = ViewCursor.NextLine(newLineOffsetY, width, containerViewCursor.viewHeight);
 
                                     // もう一度この行を処理する。
                                     goto currentLineRetry;
@@ -660,6 +672,7 @@ namespace UUebView
                                 {
                                     if (1 < containerChildren.Count && i == containerChildren.Count - 1 && insertion != null)
                                     {
+                                        Debug.Log("最終行がインサートで終わった。");
                                         insertion(InsertType.LastLineEndedInTheMiddleOfLine, child);
                                     }
                                     break;
@@ -667,20 +680,26 @@ namespace UUebView
                             case InsertType.LastLineEndedInTheMiddleOfLine:
                                 {
                                     /*
-                                        ここで送られて来た子を、ラインへと加える必要がある。うわーー未来にレイアウトが完成する感じだ、そのまま足してると死ぬな〜〜。ハンドル足す形にするか。
-                                        最終行のコンテンツ高さをどうするかな〜〜liningRefみたいなのを作って持っとかないといけないの面倒くさいな〜〜、、幅さえあってれば文句ないみたいなのをまずやってみるか。
-                                        ここで、子のコンテナがこのコンテンツを最後にレイアウトを終えているので、カーソルが弄れる。
-                                     */
+                                       状況としてありえるのが、
+                                       ・コンテナを跨いだLining
+                                       で、ここで処理している要素はとあるコンテナの最終行なので、そうなる素養がある。
 
-                                    // イベント発行元である子コンテナ自身はLiningから除外
+                                       ・以降のコンテンツで改行が発生する = newLineへの移行が発生した瞬間に、やっと解放されるようなやつ。
+
+                                       で、newLineが発生するまではいくらでもコンテナを跨いだLining要素を追加する必要がある。
+                                    */
+
+                                    // イベント発行元である子コンテナ自身は現在のLiningから除外し、コンテナ(現在のコンテキスト)の親のLiningへと追加する。
                                     linedElements.Remove(child);
-
-                                    // このへんで、child = childContainerに含まれる末尾要素のコピーを作り出してlineにいれておいて、
-                                    // lining処理が終わった後でchildそれ自体に反映、みたいなのをやれるといいな〜と思うが利益が少なすぎて泣ける。
-                                    // だいたい見た目的に変になるの確定してるし。避けるっしょみたいな。
 
                                     var childContainer = child;
                                     var containersLastChild = childContainer.GetChildren().Last();
+
+                                    // ここまでのコンテンツを削除
+                                    globalLineElements.Clear();
+
+                                    // このコンテンツの最後のラインのコンテンツを追加
+                                    globalLineElements.Add(containersLastChild);
 
                                     // コンテナ内の最後のコンテンツの右から次のコンテンツが出るように、オフセットをセット。
                                     nextChildViewCursor = new ViewCursor(
@@ -689,6 +708,8 @@ namespace UUebView
                                         containerViewCursor.viewWidth - (containersLastChild.offsetX + containersLastChild.viewWidth),
                                         containerViewCursor.viewHeight
                                     );
+
+                                    // このコンテンツ自体は終了なので、次のコンテンツへと移動。
                                     continue;
                                 }
                         }
@@ -924,7 +945,7 @@ namespace UUebView
                 // 0行だったら、入らなかったということなので、改行をしてもらってリトライを行う。
                 if (lineCount == 0 && !string.IsNullOrEmpty(textComponent.text))
                 {
-                    // このケースってもう無いっぽい。uGUIが0行を返さなくなったのかな。
+                    Debug.LogError("このケース存在しないかも。");
                     insertion(InsertType.RetryWithNextLine, null);
                     yield break;
                 }
@@ -971,9 +992,12 @@ namespace UUebView
 
                         var charHeight = GetCharHeight(bodyContent, textComponent);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
+                        yield break;
                     }
 
-                    insertion(InsertType.RetryWithNextLine, null);
+                    // 行なかで、1行目のコンテンツがまるきり入らなかった。
+                    // よって、改行を行なって次の行からコンテンツを開始する。
+                    insertion(InsertType.RetryWithNextLineFromMiddleLine, null);
                     yield break;
                 }
 
@@ -1084,59 +1108,25 @@ namespace UUebView
             using (new TMProTextComponentUsing(textComponent))
             {
                 var tmLineCount = textInfos.lineCount;
-                Debug.LogError("tmLineCount:" + tmLineCount);
-                // 0行だったら、入らなかったということなので、改行をしてもらってリトライを行う。
-                /*
-                    訂正、TMProは行の数が3になるところまでは同じで、ただし文字の非単語単位の分解を行わない。
-                    よって、行数は出るのだけれど、すでに文字が飛び出している状態、というのが発生する。
-                    つまり新ケースだ。入りきってないので改行させるんだけど、幅としては親の幅を使う、というやつ。
-
-                    今までの場合、行数が0だと、そも入らないのでその行へのインプットを先送りにすることで対処していた。
-                    RetryWithNextLineで画面幅がリセットされる、、はずだった。
-
-                    現在の状態の通常テキスト側で起こっているのは、単語を勝手に分割して3行入るよって宣言してくる、というやつで、
-                    行頭がこの状態の場合は通すしかないが、そうで無い場合は行ごと全体を先送りにする。
-                 */
-
                 var onLayoutPresetX = (float)textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X];
-
-                // 1行目を書いた結果、この1行の幅が画面幅を超えている場合、書き足した今回のぶんを次の行に送る。
-                if (textViewCursor.viewWidth < tmGeneratorLines[0].length)
-                {
-                    Debug.LogError("ここだな、現在の行高さを使うと、単に次の行に行きさえすればいいので、どうするか。textViewCursor.viewWidth:" + textViewCursor.viewWidth + " tmGeneratorLines[0].length:" + tmGeneratorLines[0].length);
-                    // var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
-                    // textTree.keyValueStore[HTMLAttribute._CONTENT] = string.Empty;
-
-                    // // このコンテンツの文字列は空ということにして、全てのコンテンツを次に送る。
-                    // var nextLineContent = new InsertedTree(textTree, text, textTree.tagValue);
-
-                    // insertion(InsertType.InsertContentToNextLine, nextLineContent);
-                    // Debug.LogError("最初の行のエンドが画面幅を超えている");
-                    // yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
-                    // yield break;
-                    Debug.LogError("viewWidthを親に戻す、みたいなのを込みのこれを作るか。");
-                    insertion(InsertType.RetryWithNextLineWithParentWidth, null);
-                    yield break;
-                }
-
                 // Debug.Log("text:" + text + " textViewCursor.viewWidth:" + textViewCursor.viewWidth);
 
                 // 1行以上のラインが画面内にある。
 
-                /*
-                    ここで、このtreeに対するカーソルのoffsetXが0ではない場合、行の中間から行を書き出していることになる。
-
-                    また上記に加え、親コンテナ自体のoffsetXが0ではない場合も、やはり、行の中間から行を書き出していることになる。
-                    判定のために、親コンテナからtextTreeへ、親コンテナのoffsetX = 書き始め位置の書き込みをする。
-
-                    行が2行以上ある場合、1行目は右端まで到達しているのが確定する。
-                    2行目以降はoffsetX=0の状態で書かれる必要がある。
-
-                    コンテンツを分離し、それを叶える。
-                */
-
                 var isStartAtZeroOffset = onLayoutPresetX == 0 && textViewCursor.offsetX == 0;
                 var isMultilined = 1 < tmLineCount;
+
+
+                // このコンテナの1行目を別のコンテナの結果位置 = 行中から書いた結果、この1行の幅が画面幅を超えている場合、全体を次の行に送る。
+                if (!isStartAtZeroOffset && textViewCursor.viewWidth < tmGeneratorLines[0].length)
+                {
+                    Debug.LogError("ここだな、現在の行高さを使うと、単に次の行に行きさえすればいいので、どうするか。textViewCursor.viewWidth:" + textViewCursor.viewWidth + " tmGeneratorLines[0].length:" + tmGeneratorLines[0].length + " text:" + text + " onLayoutPresetX:" + onLayoutPresetX);
+                    // 行なかで、1行目のコンテンツがまるきり入らなかった。
+                    // よって、改行を行なって次の行からコンテンツを開始する。
+                    // textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X] = 0.0f;
+                    insertion(InsertType.RetryWithNextLineFromMiddleLine, null);
+                    yield break;
+                }
 
                 // 複数行存在するんだけど、2行目のスタートが0文字目の場合、1行目に1文字も入っていない。
                 if (isMultilined && tmGeneratorLines[1].firstCharacterIndex == 0)
@@ -1161,10 +1151,11 @@ namespace UUebView
 
                         var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
+                        yield break;
                     }
 
-                    // コンテンツ全体を次の行で開始させる。
-                    insertion(InsertType.RetryWithNextLine, null);
+                    // 行中からのコンテンツ追加で、複数行があるので、コンテンツ全体を次の行で開始させる。
+                    insertion(InsertType.RetryWithNextLineFromMiddleLine, null);
                     yield break;
                 }
 
@@ -1172,7 +1163,7 @@ namespace UUebView
                 {
                     if (isMultilined)
                     {
-                        Debug.LogError("行頭での折り返しのある複数行 text:" + text);
+                        Debug.LogError("行頭での折り返しのある複数行 text:" + text + " textViewCursor.offsetX:" + textViewCursor.offsetX);
 
                         // 複数行が頭から出ている状態で、改行を含んでいる。最終行が中途半端なところにあるのが確定しているので、切り離して別コンテンツとして処理する必要がある。
                         var bodyContent = text.Substring(0, tmGeneratorLines[tmLineCount - 1].firstCharacterIndex);
@@ -1204,8 +1195,9 @@ namespace UUebView
                         Debug.LogError("行頭の単一行 text:" + text);
                         var width = textComponent.preferredWidth;
                         var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
+                        Debug.Log("height:" + height);// これが出たあとに、別のタグが連続すること自体が問題なのか。blockの概念が無いからな〜〜。ふーむ、既存で解決できないバグだ。
 
-                        // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
+                        // 最終行かどうかの判断はここではできないので、単一行の入力が終わったことを親コンテナへと通知する。
                         insertion(InsertType.TailInsertedToLine, textTree);
 
                         // Debug.LogError("行頭の単一行 text:" + text + " textViewCursor:" + textViewCursor);
