@@ -1747,14 +1747,40 @@ Prefab:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114284706143782342, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_havePropertiesChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114284706143782342, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_isInputParsingRequired
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 223392516522933876, guid: bef2465012acf45ef8f08944cde35bf6,
         type: 2}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 737175280}
-    - target: {fileID: 1181465929303002, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
+    - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_fontSize
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_fontSizeBase
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_firstOverflowCharacterIndex
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_textInfo.lineCount
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}

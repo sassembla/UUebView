@@ -82,9 +82,9 @@ public class TreeQLTests : MiyamasuTestRunner
     public IEnumerator MultipleTMProPrefab()
     {
         var source = @"
-    <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
-    <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
-    <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>";
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -98,6 +98,5 @@ public class TreeQLTests : MiyamasuTestRunner
         yield return WaitUntil(
             () => done, () => { throw new TimeoutException("too late."); }, 50
         );
-        yield break;
     }
 }

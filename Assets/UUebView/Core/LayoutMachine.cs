@@ -770,7 +770,7 @@ namespace UUebView
 
 
         }
-        private GameObject tmGo;
+        private static TMPro.TextMeshProUGUI tmGoComponent;
 
         /**
             列挙されたコンポーネント型をプレファブから取得試行してあったものを返す。
@@ -805,29 +805,30 @@ namespace UUebView
             {
                 Debug.LogWarning("固定でTMProの内容だけを扱う。まだこのコードは適当。どうやって最適化しようかな、、どんなコンポーネントがあるかが判断できればいいんだよな。");
                 Debug.LogWarning("とりあえず動かそう。");
-                if (tmGo == null)
+                if (tmGoComponent == null)
                 {
-                    tmGo = GameObject.Instantiate(prefab);// 必須 これでTMProGUIを持ったGOが一個出来上がる。
+                    var tmGo = GameObject.Instantiate(prefab);// 必須 これでTMProGUIを持ったGOが一個出来上がる。
                     tmGo.transform.SetParent(GameObject.Find("Canvas").transform);// 必須
+                    tmGoComponent = tmGo.GetComponent<TMPro.TextMeshProUGUI>();
+                    tmGoComponent.text = string.Empty;
                 }
                 else
                 {
-                    // もうtmGoがある状態で来た。ので、コンポーネントだけをprefabと入れ替えられないかな、、
-                    // GameObject.DestroyImmediate(tmGo.GetComponent<TMPro.TextMeshProUGUI>());
-                    var s = tmGo.GetComponent<TMPro.TextMeshProUGUI>();
-                    s = prefab.GetComponent<TMPro.TextMeshProUGUI>();
+                    var t = prefab.GetComponent<TMPro.TextMeshProUGUI>();
+
+                    // レイアウトだけだったらこれらのパラメータで足りる、みたいなのを集めて使おう。
+                    tmGoComponent.font = t.font;
+                    tmGoComponent.fontSize = t.fontSize;
+
+                    tmGoComponent.text = string.Empty;
                 }
 
-
-                var tmComponent = tmGo.GetComponent<TMPro.TextMeshProUGUI>();
-                if (tmComponent != null)
+                if (tmGoComponent.font == null)
                 {
-                    if (tmComponent.font == null)
-                    {
-                        throw new Exception("font is null. prefab:" + resLoader.UUebTagsName() + "/" + prefab.name);
-                    }
-                    yield return tmComponent;
+                    throw new Exception("font is null. prefab:" + resLoader.UUebTagsName() + "/" + prefab.name);
                 }
+
+                yield return tmGoComponent;
             }
         }
 
@@ -1024,7 +1025,6 @@ namespace UUebView
                         // 次のコンテンツを新しい行から開始する。
                         insertion(InsertType.InsertContentToNextLine, nextLineContent);
 
-                        // Debug.LogError("newViewCursor:" + newViewCursor);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
                     }
                     else
@@ -1050,6 +1050,8 @@ namespace UUebView
          */
         private IEnumerator<ChildPos> DoTextMeshProComponentLayout(TagTree textTree, TMPro.TextMeshProUGUI textComponent, string text, ViewCursor textViewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null)
         {
+
+            Debug.LogError("DoTextMeshProComponentLayout text:" + text);
             textComponent.text = text;
 
             // このメソッドは、コンポーネントがgoにアタッチされてcanvasに乗っている場合のみ動作する。
@@ -1062,7 +1064,7 @@ namespace UUebView
             using (new TMProTextComponentUsing(textComponent))
             {
                 var tmLineCount = textInfos.lineCount;
-
+                Debug.LogError("tmLineCount:" + tmLineCount);
                 // 0行だったら、入らなかったということなので、改行をしてもらってリトライを行う。
                 /*
                     訂正、TMProは行の数が3になるところまでは同じで、ただし文字の非単語単位の分解を行わない。
@@ -1081,6 +1083,7 @@ namespace UUebView
                 var firstLineEndpoint = onLayoutPresetX + tmGeneratorLines[0].length;
                 if (textViewCursor.viewWidth < firstLineEndpoint && !string.IsNullOrEmpty(textComponent.text))
                 {
+                    Debug.LogError("ここだな、現在の行高さを使うと、単に次の行に行きさえすればいいので、どうするか。");
                     var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
                     textTree.keyValueStore[HTMLAttribute._CONTENT] = string.Empty;
 
@@ -1088,7 +1091,7 @@ namespace UUebView
                     var nextLineContent = new InsertedTree(textTree, text, textTree.tagValue);
 
                     insertion(InsertType.InsertContentToNextLine, nextLineContent);
-
+                    Debug.LogError("最初の行のエンドが画面幅を超えている");
                     yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
                     yield break;
                 }
@@ -1146,7 +1149,7 @@ namespace UUebView
                 {
                     if (isMultilined)
                     {
-                        // Debug.LogError("行頭での折り返しのある複数行 text:" + text);
+                        Debug.LogError("行頭での折り返しのある複数行 text:" + text);
 
                         // 複数行が頭から出ている状態で、改行を含んでいる。最終行が中途半端なところにあるのが確定しているので、切り離して別コンテンツとして処理する必要がある。
                         var bodyContent = text.Substring(0, tmGeneratorLines[tmLineCount - 1].firstCharacterIndex);
@@ -1175,7 +1178,7 @@ namespace UUebView
                     }
                     else
                     {
-                        // Debug.LogError("行頭の単一行 text:" + text);
+                        Debug.LogError("行頭の単一行 text:" + text);
                         var width = textComponent.preferredWidth;
                         var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
@@ -1183,8 +1186,6 @@ namespace UUebView
                         insertion(InsertType.TailInsertedToLine, textTree);
 
                         // Debug.LogError("行頭の単一行 text:" + text + " textViewCursor:" + textViewCursor);
-
-                        // Debug.LogError("行頭の単一行 newViewCursor:" + newViewCursor);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                     }
                 }
@@ -1192,7 +1193,7 @@ namespace UUebView
                 {
                     if (isMultilined)
                     {
-                        // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
+                        Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
                         var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
                         // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
@@ -1215,7 +1216,7 @@ namespace UUebView
                     }
                     else
                     {
-                        // Debug.LogError("行中追加の単一行 text:" + text);
+                        Debug.LogError("行中追加の単一行 text:" + text);
                         var width = textComponent.preferredWidth;
                         var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
@@ -1223,7 +1224,6 @@ namespace UUebView
                         // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                         insertion(InsertType.TailInsertedToLine, textTree);
 
-                        // Debug.LogError("newViewCursor:" + newViewCursor);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                     }
                 }

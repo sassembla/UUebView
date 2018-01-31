@@ -1,1 +1,1 @@
-{"viewName":"TextMeshPro","contents":[{"contentName":"textmeshtxt","type":1,"loadPath":"resources://Views/TextMeshPro/TEXTMESHTXT"}],"layerInfos":[]}
+{"viewName":"TextMeshPro","contents":[{"contentName":"textmeshtxt","type":1,"loadPath":"resources://Views/TextMeshPro/TEXTMESHTXT"},{"contentName":"textmeshtxt2","type":1,"loadPath":"resources://Views/TextMeshPro/TEXTMESHTXT2"}],"layerInfos":[]}
