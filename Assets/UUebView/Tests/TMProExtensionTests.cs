@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Miyamasu;
 using UnityEngine;
 
-public class TreeQLTests : MiyamasuTestRunner
+public class TMProExtensionTests : MiyamasuTestRunner
 {
     GameObject eventReceiverGameObj;
     GameObject view;
@@ -85,6 +85,297 @@ public class TreeQLTests : MiyamasuTestRunner
         <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
         <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
         <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator SmallMiddleLarge()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplex()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt>Miyamasu Runtime Console3</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplexVariety()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplexWithImage()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>
+        <img src='https://dummyimage.com/30.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console4</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplexWithImageOnHeadOfLine()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <img src='https://dummyimage.com/30.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>
+        <textmeshtxt>Miyamasu Runtime Console4</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplexWithImageOnHeadOfLine40()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <img src='https://dummyimage.com/40.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>
+        <textmeshtxt>Miyamasu Runtime Console4</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplexWithImageOnHeadOfLine40_2()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <textmeshtxt>M</textmeshtxt>
+        <img src='https://dummyimage.com/40.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>
+        <textmeshtxt>Miyamasu Runtime Console4</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplexWithImageOnHeadOfLine40_3()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <textmeshtxt>Miyamasu</textmeshtxt>
+        <img src='https://dummyimage.com/40.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>
+        <textmeshtxt>Miyamasu Runtime Console4</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplexWithImageOnHeadOfLine60()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <img src='https://dummyimage.com/60.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>
+        <textmeshtxt>Miyamasu Runtime Console4</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator MultipleTMProPrefabComplexWithImageOnHeadOfLine100()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <img src='https://dummyimage.com/100.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>
+        <textmeshtxt2>Miyamasu Runtime Console2</textmeshtxt2>
+        <textmeshtxt3>Miyamasu Runtime Console3</textmeshtxt3>
+        <textmeshtxt>Miyamasu Runtime Console4</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator LargeImageWithTMProText()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <img src='https://dummyimage.com/200.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 50
+        );
+    }
+
+    [MTest]
+    public IEnumerator TMProTextWithLargeImageWithTMProText()
+    {
+        var source = @"
+        <!DOCTYPE uuebview href='resources://Views/TextMeshPro/UUebTags'>
+        <textmeshtxt>Miyamasu</textmeshtxt>
+        <img src='https://dummyimage.com/200.png/09f/fff'/>
+        <textmeshtxt>Miyamasu Runtime Console</textmeshtxt>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>

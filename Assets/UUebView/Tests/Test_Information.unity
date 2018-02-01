@@ -1740,93 +1740,97 @@ Prefab:
     - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
         type: 2}
       propertyPath: m_havePropertiesChanged
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
         type: 2}
       propertyPath: m_isInputParsingRequired
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114284706143782342, guid: bef2465012acf45ef8f08944cde35bf6,
+    - target: {fileID: 114502775384616002, guid: bef2465012acf45ef8f08944cde35bf6,
         type: 2}
       propertyPath: m_havePropertiesChanged
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114284706143782342, guid: bef2465012acf45ef8f08944cde35bf6,
+    - target: {fileID: 114502775384616002, guid: bef2465012acf45ef8f08944cde35bf6,
         type: 2}
       propertyPath: m_isInputParsingRequired
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 223392516522933876, guid: bef2465012acf45ef8f08944cde35bf6,
         type: 2}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 737175280}
-    - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
+    - target: {fileID: 114284706143782342, guid: bef2465012acf45ef8f08944cde35bf6,
         type: 2}
-      propertyPath: m_fontSize
-      value: 28
+      propertyPath: m_havePropertiesChanged
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
+    - target: {fileID: 114284706143782342, guid: bef2465012acf45ef8f08944cde35bf6,
         type: 2}
-      propertyPath: m_fontSizeBase
-      value: 28
-      objectReference: {fileID: 0}
-    - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
-        type: 2}
-      propertyPath: m_firstOverflowCharacterIndex
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 114187942080704204, guid: bef2465012acf45ef8f08944cde35bf6,
-        type: 2}
-      propertyPath: m_textInfo.lineCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1814514170090830, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1129365213902870, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1631584304842518, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1147678558757634, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1810121158853430, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1347213071895664, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
+      propertyPath: m_isInputParsingRequired
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1812034692339890, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224175831963957844, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: 140.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 224342853838818632, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 1549900341199024, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1810121158853430, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1869105729324458, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1347213071895664, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1631584304842518, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1189093938287572, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1814514170090830, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1147678558757634, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1432305602463094, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1528331684479150, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+    - target: {fileID: 1129365213902870, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1856942041153380, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1181465929303002, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
