@@ -474,7 +474,7 @@ namespace UUebView
                                                 linedElements.Add(insertingChild);
 
                                                 // ライン化処理
-                                                DoLining(containerViewCursor.viewWidth, linedElements, alignMode);
+                                                DoLiningFromFirstContent(containerViewCursor.viewWidth, linedElements);
 
                                                 // 消化
                                                 linedElements.Clear();
@@ -662,12 +662,20 @@ namespace UUebView
                                 }
                             case InsertType.TailInsertedToLine:
                                 {
+                                    // Debug.Log("TailInsertedToLine containerChildren.Count:" + containerChildren.Count);
+                                    // foreach (var linedElement in linedElements)
+                                    // {
+                                    //     Debug.Log("linedElement:" + linedElement.treeType);
+                                    // }
+
                                     if (1 < containerChildren.Count && childIndex == containerChildren.Count - 1 && insertion != null)
                                     {
+                                        // Debug.Log("複数行あるコンテンツの最終行");
                                         // 文章の最終行が終わった。このコンテンツを含むコンテナへと伝達
                                         insertion(InsertType.LastLineEndedInTheMiddleOfLine, child);
 
-                                        Debug.LogWarning("もしブロック要素なら、ここで改行しちゃえばいい。");
+                                        // Debug.Log("もしブロック要素なら、ここで改行しちゃえばいい。");
+                                        break;
                                     }
 
                                     // 最終行ではないので何もしない。
@@ -675,10 +683,11 @@ namespace UUebView
                                 }
                             case InsertType.LastLineEndedInTheMiddleOfLine:
                                 {
+                                    // Debug.Log("LastLineEndedInTheMiddleOfLine");
                                     /*
-                                       状況としてありえるのが、
+                                       状況として
                                        ・コンテナを跨いだLining
-                                       で、ここで処理している要素はとあるコンテナの最終行なので、そうなる素養がある。
+                                       があり得て、ここで処理している要素はとあるコンテナの最終行なので、そうなる素養がある。
 
                                        ・以降のコンテンツで改行が発生する = newLineへの移行が発生した瞬間に、やっと解放されるようなやつ。
 
@@ -719,10 +728,10 @@ namespace UUebView
 
                                         という状態になった際、孫テキストの行の高さ + 子コンテナのoffsetYが、改行後にセットされるコンテンツのoffsetYになる。
                                      */
-                                    containersLastChild.keyValueStore[HTMLAttribute._ONLAYOUT_LAYOUTED_OFFSET_Y] = childContainer.offsetY;
 
-                                    // 最終行がインサートで終わったので、後続のコンテンツの影響を受ける可能性がある。
-                                    // 具体的には、行中から開始した最初の行、というものがある場合、そのコンテンツのコンテナの親まで通知が行き、
+                                    // Debug.Log("LastLineEndedInTheMiddleOfLine childContainer.offsetY:" + childContainer.offsetY);
+
+                                    containersLastChild.keyValueStore[HTMLAttribute._ONLAYOUT_LAYOUTED_OFFSET_Y] = childContainer.offsetY;
 
                                     // コンテナ内の最後のコンテンツの右から次のコンテンツが出るように、オフセットをセット。
                                     nextChildViewCursor = new ViewCursor(
@@ -783,19 +792,14 @@ namespace UUebView
                         {
                             case InsertType.LineEndedWithFilledImage:
                                 {
-                                    // 画像コンテンツのリサイズで行が終わり、その列のコンテンツの整列を行う。
-                                    var newLineHeightY = DoLiningFromFirstContent(containerViewCursor.viewWidth, linedElements);
-
-                                    var alreadyLayoutedFirstLinedContentParentOffsetY = 0f;
-                                    if (0 < linedElements.Count && linedElements[0].keyValueStore.ContainsKey(HTMLAttribute._ONLAYOUT_LAYOUTED_OFFSET_Y))
-                                    {
-                                        // 前コンテンツの最後のコンテンツが含まれている場合、それはtextで、_ONLAYOUT_LAYOUTED_OFFSET_Yプロパティにコンテンツ自体のオフセットを持っている。
-                                        // その値にさらに最後のコンテンツのオフセットを追加することで、ラインの開始高さを取得することができる。
-                                        alreadyLayoutedFirstLinedContentParentOffsetY = (float)linedElements[0].keyValueStore[HTMLAttribute._ONLAYOUT_LAYOUTED_OFFSET_Y] + linedElements[0].offsetY;
-                                    }
+                                    // ここでは、最後が画像コンテンツなので、その列の整列後の画像コンテンツのオフセットと高さを使うことで次の行のオフセットが出せる。
+                                    DoLiningFromFirstContent(containerViewCursor.viewWidth, linedElements);
+                                    var resizedImageContainer = linedElements[linedElements.Count - 1];
+                                    var newLineOffsetY = resizedImageContainer.offsetY + resizedImageContainer.viewHeight;
 
                                     linedElements.Clear();
-                                    nextChildViewCursor = ViewCursor.NextLine(newLineHeightY + alreadyLayoutedFirstLinedContentParentOffsetY, containerViewCursor.viewWidth, containerViewCursor.viewHeight);
+                                    nextChildViewCursor = ViewCursor.NextLine(newLineOffsetY, containerViewCursor.viewWidth, containerViewCursor.viewHeight);
+                                    // Debug.Log("LineEndedWithFilledImage nextChildViewCursor:" + nextChildViewCursor);
                                     break;
                                 }
                             default:
@@ -1108,16 +1112,13 @@ namespace UUebView
                     }
                     else
                     {
-                        // Debug.LogError("行頭の単一行 text:" + text);
+                        // Debug.LogError("行頭の単一行 text:" + text + " textViewCursor.offsetY:" + textViewCursor.offsetY);
                         var width = textComponent.preferredWidth;
                         var height = (generator.lines[0].height * textComponent.lineSpacing);
 
                         // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                         insertion(InsertType.TailInsertedToLine, textTree);
 
-                        // Debug.LogError("行頭の単一行 text:" + text + " textViewCursor:" + textViewCursor);
-
-                        // Debug.LogError("行頭の単一行 newViewCursor:" + newViewCursor);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                     }
                 }
@@ -1237,7 +1238,7 @@ namespace UUebView
                 {
                     if (isMultilined)
                     {
-                        // Debug.LogError("行頭での折り返しのある複数行 text:" + text + " textViewCursor.offsetX:" + textViewCursor.offsetX + " tmLineCount:" + tmLineCount);
+                        Debug.LogError("行頭での折り返しのある複数行 text:" + text + " textViewCursor.offsetX:" + textViewCursor.offsetX + " tmLineCount:" + tmLineCount);
                         /*
                             TMProのtextInfo上のレイアウト指示と、実際にレイアウトした時に自動的に分割されるワードに差がある。
                             abc が a\nbcになることもあれば、レイアウト時には分割されずabcで入ってしまうこともある。
@@ -1285,22 +1286,23 @@ namespace UUebView
                     }
                     else
                     {
-                        // Debug.LogError("行頭の単一行 text:" + text);
+                        Debug.LogError("行頭の単一行 text:" + text);
                         var currentLineWidth = textComponent.preferredWidth;
                         var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
                         // 最終行かどうかの判断はここではできないので、単一行の入力が終わったことを親コンテナへと通知する。
                         insertion(InsertType.TailInsertedToLine, textTree);
 
-                        // Debug.LogError("行頭の単一行 text:" + text + " textViewCursor:" + textViewCursor);
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
+                        var childPos = textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
+                        Debug.LogError("行頭の単一行 text:" + text + " childPos:" + childPos);
+                        yield return childPos;
                     }
                 }
                 else
                 {
                     if (isMultilined)
                     {
-                        // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
+                        Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
                         var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
                         // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
@@ -1323,7 +1325,7 @@ namespace UUebView
                     }
                     else
                     {
-                        // Debug.LogError("行中追加の単一行 text:" + text);
+                        Debug.LogError("行中追加の単一行 text:" + text);
                         var width = textComponent.preferredWidth;
                         var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
