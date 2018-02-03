@@ -154,20 +154,8 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
     //     yield return Show(tree);
     // }
 
-    [MTest]
-    public IEnumerator MaterializeHTMLWithSmallTextHasValidView()
-    {
-        var sample = @"
-        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    <tmbody>over 100px string should be multi lined text.</tmbody>";
-        TagTree tree = null;
-        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
-
-        yield return Show(tree);
-    }
-
     // [MTest]
-    // public IEnumerator MaterializeHTMLWithMiddleTextHasValidView()
+    // public IEnumerator MaterializeHTMLWithSmallTextHasValidView()
     // {
     //     var sample = @"
     //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
@@ -253,21 +241,21 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
     //     yield return Show(tree);
     // }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithDoubleBoxedLayer()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
-    // <textbox>
-    //     <tmp>fmmm???</tmp>
-    //     <updatetext>something.</updatetext>
-    //     <updatetext>omake!</updatetext>
-    // </textbox>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithDoubleBoxedLayer()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    <textbox>
+        <tmp>fmmm???</tmp>
+        <updatetext>something.</updatetext>
+        <updatetext>omake!</updatetext>
+    </textbox>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
     // [MTest]
     // public IEnumerator MaterializeHTMLWithSmallImage()

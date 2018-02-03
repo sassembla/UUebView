@@ -1172,6 +1172,9 @@ namespace UUebView
             // Debug.LogError("DoTextMeshProComponentLayout text:" + text + " textViewCursor:" + textViewCursor);
             textComponent.text = text;
 
+            // textComponent.に対してwidthをセットする必要がある。
+            textComponent.rectTransform.sizeDelta = new Vector2(textViewCursor.viewWidth, float.PositiveInfinity);
+
             // このメソッドは、コンポーネントがgoにアタッチされてcanvasに乗っている場合のみ動作する。
             var textInfos = textComponent.GetTextInfo(text);
 
@@ -1238,7 +1241,7 @@ namespace UUebView
                 {
                     if (isMultilined)
                     {
-                        Debug.LogError("行頭での折り返しのある複数行 text:" + text + " textViewCursor.offsetX:" + textViewCursor.offsetX + " tmLineCount:" + tmLineCount);
+                        // Debug.LogError("行頭での折り返しのある複数行 text:" + text + " textViewCursor.offsetX:" + textViewCursor.offsetX + " tmLineCount:" + tmLineCount);
                         /*
                             TMProのtextInfo上のレイアウト指示と、実際にレイアウトした時に自動的に分割されるワードに差がある。
                             abc が a\nbcになることもあれば、レイアウト時には分割されずabcで入ってしまうこともある。
@@ -1272,6 +1275,7 @@ namespace UUebView
                         var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
                         insertion(InsertType.InsertContentToNextLine, nextLineContent);
 
+
                         // 最終行以外はハコ型に収まった状態なので、ハコとして出力する。
                         // 最終一つ前までの高さを出して、このコンテンツの高さとして扱う。
                         var totalHeight = 0f;
@@ -1286,7 +1290,7 @@ namespace UUebView
                     }
                     else
                     {
-                        Debug.LogError("行頭の単一行 text:" + text);
+                        // Debug.LogError("行頭の単一行 text:" + text);
                         var currentLineWidth = textComponent.preferredWidth;
                         var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
@@ -1294,7 +1298,7 @@ namespace UUebView
                         insertion(InsertType.TailInsertedToLine, textTree);
 
                         var childPos = textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
-                        Debug.LogError("行頭の単一行 text:" + text + " childPos:" + childPos);
+
                         yield return childPos;
                     }
                 }
@@ -1302,7 +1306,7 @@ namespace UUebView
                 {
                     if (isMultilined)
                     {
-                        Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
+                        // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
                         var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
                         // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
@@ -1325,7 +1329,7 @@ namespace UUebView
                     }
                     else
                     {
-                        Debug.LogError("行中追加の単一行 text:" + text);
+                        // Debug.LogError("行中追加の単一行 text:" + text);
                         var width = textComponent.preferredWidth;
                         var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
