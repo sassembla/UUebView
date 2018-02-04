@@ -9,17 +9,17 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1732019000839794}
+  m_RootGameObject: {fileID: 1165580693040450}
   m_IsPrefabParent: 1
---- !u!1 &1732019000839794
+--- !u!1 &1165580693040450
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224702312844340236}
-  - component: {fileID: 222155994269539606}
+  - component: {fileID: 224382368485272686}
+  - component: {fileID: 222515572666461802}
   m_Layer: 5
   m_Name: TEXTBOX2
   m_TagString: Untagged
@@ -27,18 +27,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!222 &222155994269539606
+--- !u!222 &222515572666461802
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1732019000839794}
---- !u!224 &224702312844340236
+  m_GameObject: {fileID: 1165580693040450}
+--- !u!224 &224382368485272686
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1732019000839794}
+  m_GameObject: {fileID: 1165580693040450}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

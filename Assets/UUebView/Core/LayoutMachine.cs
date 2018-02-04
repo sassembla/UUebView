@@ -68,8 +68,8 @@ namespace UUebView
             {
                 throw new Exception("cannot use negative width. viewCursor:" + viewCursor + " tag:" + Debug_GetTagStrAndType(tree));
             }
-            // Debug.LogError("tree:" + Debug_GetTagStrAndType(tree) + " viewCursor:" + viewCursor);
-            // Debug.LogWarning("まだ実装してない、brとかhrでの改行処理。 実際にはpとかも一緒で、「このコンテンツが終わったら改行する」みたいな属性が必須。区分けとしてはここではないか。＿なんちゃらシリーズと一緒に分けちゃうのもありかな〜");
+
+            // Debug.Log("tree:" + Debug_GetTagStrAndType(tree) + " viewCursor:" + viewCursor);
 
             IEnumerator<ChildPos> cor = null;
             switch (tree.treeType)
@@ -234,6 +234,7 @@ namespace UUebView
                     }
 
                     var childView = new ViewCursor(childBoxViewRect.x, childBoxViewRect.y + additionalHeight, childBoxViewRect.width, childBoxViewRect.height);
+                    // Debug.Log("DoLayerLayout childView:" + childView);
 
                     var cor = LayoutBoxedContents(boxTree, childView);
 
@@ -938,6 +939,7 @@ namespace UUebView
                     // レイアウトだけだったらこれらのパラメータで足りる、みたいなのを集めて使おう。
                     tmGoComponent.font = t.font;
                     tmGoComponent.fontSize = t.fontSize;
+                    tmGoComponent.fontStyle = t.fontStyle;
 
                     tmGoComponent.text = string.Empty;
                 }
@@ -1004,6 +1006,8 @@ namespace UUebView
          */
         private IEnumerator<ChildPos> DoTextComponentLayout(TagTree textTree, Text textComponent, string text, ViewCursor textViewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null)
         {
+            // Debug.Log("DoTextComponentLayout text:" + text.Length + " textViewCursor:" + textViewCursor);
+
             // invalidate first.
             generator.Invalidate();
 
@@ -1169,7 +1173,7 @@ namespace UUebView
          */
         private IEnumerator<ChildPos> DoTextMeshProComponentLayout(TagTree textTree, TMPro.TextMeshProUGUI textComponent, string text, ViewCursor textViewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null)
         {
-            // Debug.LogError("DoTextMeshProComponentLayout text:" + text + " textViewCursor:" + textViewCursor);
+            // Debug.Log("DoTextMeshProComponentLayout text:" + text.Length + " textViewCursor:" + textViewCursor);
             textComponent.text = text;
 
             // textComponent.に対してwidthをセットする必要がある。
@@ -1524,7 +1528,8 @@ namespace UUebView
             }
 
             // 内包されたviewCursorを生成する。
-            var childView = ViewCursor.ZeroOffsetViewCursor(boxView);
+            var childViewCursor = ViewCursor.ZeroOffsetViewCursor(boxView);
+            // Debug.Log("childViewCursor:" + childViewCursor);
 
             for (var i = 0; i < childCount; i++)
             {
@@ -1537,7 +1542,7 @@ namespace UUebView
                 // 子供ごとにレイアウトし、結果を受け取る
                 var cor = DoLayout(
                     child,
-                    childView,
+                    childViewCursor,
                     (insertType, newChild) =>
                     {
                         throw new Exception("never come here.");
@@ -1559,14 +1564,14 @@ namespace UUebView
 
                 // レイアウトが済んだchildの位置を受け取り、改行
                 // Debug.LogError("layoutbox 改行");
-                childView = ViewCursor.NextLine(cor.Current.offsetY + cor.Current.viewHeight, boxView.viewWidth, boxView.viewHeight);
+                childViewCursor = ViewCursor.NextLine(cor.Current.offsetY + cor.Current.viewHeight, boxView.viewWidth, boxView.viewHeight);
 
                 // 現在の子供のレイアウトが終わっていて、なおかつライン処理、改行が済んでいる。
             }
 
             // 最終コンテンツのoffsetを使ってboxの高さをセット
             // treeに位置をセットしてposを返す
-            yield return boxTree.SetPos(boxView.offsetX, boxView.offsetY, boxView.viewWidth, childView.offsetY);
+            yield return boxTree.SetPos(boxView.offsetX, boxView.offsetY, boxView.viewWidth, childViewCursor.offsetY);
         }
 
 

@@ -130,341 +130,341 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
         );
     }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTML()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>something</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTML()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLHasValidView()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>something</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLHasValidView()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithSmallTextHasValidView()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>over 100px string should be multi lined text with good separation. need some length.</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithSmallTextHasValidView()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>over 100px string should be multi lined text with good separation. need some length.</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithLink()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><tma href='https://dummyimage.com/100.png/09f/fff'>link!</tma></tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithLink()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><tma href='https://dummyimage.com/100.png/09f/fff'>link!</tma></tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithLinkWithId()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><tma href='https://dummyimage.com/100.png/09f/fff' id='linkId'>link!</tma></tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithLinkWithId()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><tma href='https://dummyimage.com/100.png/09f/fff' id='linkId'>link!</tma></tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithImage()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/100.png/09f/fff'/></tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithImage()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/100.png/09f/fff'/></tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithImageAsButton()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/100.png/09f/fff' button='true''/></tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithImageAsButton()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/100.png/09f/fff' button='true''/></tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithImageAsButtonWithId()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/100.png/09f/fff' button='true' id='imageId'/></tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithImageAsButtonWithId()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/100.png/09f/fff' button='true' id='imageId'/></tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithImageAsButtonWithIdMakeChanges()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>
-    // <tmp listen='imageId' hidden='true'>something</tmp>
-    // <img src='https://dummyimage.com/100.png/09f/fff' button='true' id='imageId'/>
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithImageAsButtonWithIdMakeChanges()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
+    <tmp listen='imageId' hidden='true'>something</tmp>
+    <img src='https://dummyimage.com/100.png/09f/fff' button='true' id='imageId'/>
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithDoubleBoxedLayer()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
-    // <textbox>
-    //     <tmp>fmmm???</tmp>
-    //     <updatetext>something.</updatetext>
-    //     <updatetext>omake!</updatetext>
-    // </textbox>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithDoubleBoxedLayer()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    <textbox>
+        <tmp>fmmm???</tmp>
+        <updatetext>something.</updatetext>
+        <updatetext>omake!</updatetext>
+    </textbox>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithSmallImage()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/10.png/09f/fff'/></tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithSmallImage()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/10.png/09f/fff'/></tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithSmallImageAndText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/10.png/09f/fff'/>text</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithSmallImageAndText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/10.png/09f/fff'/>text</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithSmallImageAndSmallText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithSmallImageAndSmallText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithWideImageAndText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/97x10/000/fff'/>something</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithWideImageAndText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/97x10/000/fff'/>something</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithTextAndWideImage()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>something<img src='https://dummyimage.com/100x10/000/fff'/></tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithTextAndWideImage()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something<img src='https://dummyimage.com/100x10/000/fff'/></tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
-
-
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithTextAndWideImageAndText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>something<img src='https://dummyimage.com/100x10/000/fff'/>else</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
-
-    //     yield return Show(tree);
-    // }
-
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>something<img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
-
-    //     yield return Show(tree);
-    // }
-
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithWideImageAndTextAndWideImageAndText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
-
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithTextAndSmallImage()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>something<img src='https://dummyimage.com/10x10/000/fff'/></tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithTextAndWideImageAndText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something<img src='https://dummyimage.com/100x10/000/fff'/>else</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
+    [MTest]
+    public IEnumerator MaterializeHTMLWithTextAndWideImageAndTextAndWideImageAndText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something<img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithTextAndSmallImageAndText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>something<img src='https://dummyimage.com/10x10/000/fff'/>b!</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+        yield return Show(tree);
+    }
 
-    //     yield return Show(tree);
-    // }
+    [MTest]
+    public IEnumerator MaterializeHTMLWithWideImageAndTextAndWideImageAndText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody>something<img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/100x10/000/fff'/>other</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
-
-    //     yield return Show(tree);
-    // }
-
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText()
-    // {
-    //     var sample = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmbody><img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/10x20/000/fff'/>other</tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
-
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
 
-    // [MTest]
-    // public IEnumerator LoadHTMLWithCustomTagLink()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithTextAndSmallImage()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something<img src='https://dummyimage.com/10x10/000/fff'/></tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithCustomTag()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
-    // <tmbody>
-    // <customtag><custombg><textbg><customtext>something</customtext></textbg></custombg></customtag>
-    // else
 
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithTextAndSmallImageAndText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something<img src='https://dummyimage.com/10x10/000/fff'/>b!</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithCustomTagSmallText()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
-    // <tmbody>
-    // <customtag><custombg><textbg><customtext>
-    // something you need is not time, money, but do things fast.</customtext></textbg></custombg></customtag>
-    // else
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithTextAndSmallImageAndTextAndWideImageAndText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something<img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/100x10/000/fff'/>other</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithCustomTagLargeText()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
-    // <tmbody>
-    // <customtag><custombg><textbg><customtext>
-    // Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    // </customtext></textbg></custombg></customtag>
-    // else
-    // <customimg src='https://dummyimage.com/10x20/000/fff'/>
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithSmallImageAndTextAndSmallImageAndText()
+    {
+        var sample = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody><img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/10x20/000/fff'/>other</tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
+
+
+    [MTest]
+    public IEnumerator LoadHTMLWithCustomTagLink()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+
+        yield return Show(tree);
+    }
+
+    [MTest]
+    public IEnumerator MaterializeHTMLWithCustomTag()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <tmbody>
+    <customtag><custombg><textbg><customtext>something</customtext></textbg></custombg></customtag>
+    else
+
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+
+        yield return Show(tree);
+    }
+
+    [MTest]
+    public IEnumerator MaterializeHTMLWithCustomTagSmallText()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <tmbody>
+    <customtag><custombg><textbg><customtext>
+    something you need is not time, money, but do things fast.</customtext></textbg></custombg></customtag>
+    else
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+
+        yield return Show(tree);
+    }
+
+    [MTest]
+    public IEnumerator MaterializeHTMLWithCustomTagLargeText()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <tmbody>
+    <customtag><custombg><textbg><customtext>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </customtext></textbg></custombg></customtag>
+    else
+    <customimg src='https://dummyimage.com/10x20/000/fff'/>
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+
+        yield return Show(tree);
+    }
 
     [MTest]
     public IEnumerator MultipleBoxConstraints()
@@ -490,228 +490,228 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
         yield return Show(tree);
     }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithCustomTagMultiple()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
-    // <tmbody>
-    // <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
-    // <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>
-    // else
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithCustomTagMultiple()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <tmbody>
+    <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
+    <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>
+    else
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithCustomTagMultipleByInnerContent()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
-    // <tmbody>
-    // <customtag>
-    //     <custombg><textbg><customtext>something1</customtext></textbg></custombg>
-    //     <custombg><textbg><customtext>something2</customtext></textbg></custombg>
-    // </customtag>
-    // else
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator MaterializeHTMLWithCustomTagMultipleByInnerContent()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <tmbody>
+    <customtag>
+        <custombg><textbg><customtext>something1</customtext></textbg></custombg>
+        <custombg><textbg><customtext>something2</customtext></textbg></custombg>
+    </customtag>
+    else
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer()
-    // {
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
-    // <customtag>
-    //     <custombg><textbg><customtext>something1</customtext></textbg></custombg>
-    //     <custombg><textbg><customtext>something2</customtext></textbg></custombg>
-    // </customtag>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    [MTest]
+    public IEnumerator LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer()
+    {
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <customtag>
+        <custombg><textbg><customtext>something1</customtext></textbg></custombg>
+        <custombg><textbg><customtext>something2</customtext></textbg></custombg>
+    </customtag>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout()
-    // {
-    //     var sampleHtml = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
-    // <tmbody>
-    //     <bg>
-    //     	<textbg>
-    //     		<textbox>
-    // 	    		<tmp>koko ni nihongo ga iikanji ni hairu. <br> 2line content! 2line content! 2line content!2 line content! a good thing.<tma href='somewhere'>link</tma>a long text will make large window. something like this.</tmp>
-    // 	    		<updatetext>omake! abc d</updatetext>
-    //                 <tmp>ef ghijklm</tmp>
-    //                 <updatetext>aaaaaaaaaaaaannnnnnnnnnnnnnn</updatetext>
-    // 	    	</textbox>
-    // 	    </textbg>
-    //     </bg>
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
+    [MTest]
+    public IEnumerator MaterializeHTMLWithDoubleBoxedLayerNeverOverLayout()
+    {
+        var sampleHtml = @"
+    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    <tmbody>
+        <bg>
+        	<textbg>
+        		<textbox>
+    	    		<tmp>koko ni nihongo ga iikanji ni hairu. <br> 2line content! 2line content! 2line content!2 line content! a good thing.<tma href='somewhere'>link</tma>a long text will make large window. something like this.</tmp>
+    	    		<updatetext>omake! abc d</updatetext>
+                    <tmp>ef ghijklm</tmp>
+                    <updatetext>aaaaaaaaaaaaannnnnnnnnnnnnnn</updatetext>
+    	    	</textbox>
+    	    </textbg>
+        </bg>
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeSampleView2_HiddenBreakView()
-    // {
-    //     var sampleHtml = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
-    // <tmbody>
-    //     <bg>
-    //     	<titlebox>
-    //     		<titletext>レモン一個ぶんのビタミンC</titletext>
-    //     	</titlebox>
-    //     	<newbadge></newbadge>
-    //     	<textbg>
-    //     		<textbox>
-    // 	    		<updatetext>koko ni nihongo ga iikanji ni hairu. good thing. long text will make large window. like this.</updatetext>
-    // 	    		<updatetext hidden='true' listen='readmore'>omake!<img src='https://dummyimage.com/100.png/07f/fff'/></updatetext>
-    //                 <img src='https://dummyimage.com/100.png/09f/fff' button='true' id='readmore'/>
-    // 	    	</textbox>
-    // 	    </textbg>
-    //     </bg>
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
+    [MTest]
+    public IEnumerator MaterializeSampleView2_HiddenBreakView()
+    {
+        var sampleHtml = @"
+    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    <tmbody>
+        <bg>
+        	<titlebox>
+        		<titletext>レモン一個ぶんのビタミンC</titletext>
+        	</titlebox>
+        	<newbadge></newbadge>
+        	<textbg>
+        		<textbox>
+    	    		<updatetext>koko ni nihongo ga iikanji ni hairu. good thing. long text will make large window. like this.</updatetext>
+    	    		<updatetext hidden='true' listen='readmore'>omake!<img src='https://dummyimage.com/100.png/07f/fff'/></updatetext>
+                    <img src='https://dummyimage.com/100.png/09f/fff' button='true' id='readmore'/>
+    	    	</textbox>
+    	    </textbg>
+        </bg>
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator LayoutSampleView2_HiddenBreakView()
-    // {
-    //     var sampleHtml = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
-    // <tmbody>
-    //     <bg>
-    //     	<textbg>
-    //     		<textbox>
-    // 	    		<updatetext>koko ni nihongo ga iikanji ni hairu. good thing. long text will make large window. like this.</updatetext>
-    // 	    		<updatetext hidden='true' listen='readmore'>omake!</updatetext>
-    // 	    	</textbox>
-    // 	    </textbg>
-    //     </bg>
-    // </tmbody>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
-    //     yield return Show(tree);
-    // }
+    [MTest]
+    public IEnumerator LayoutSampleView2_HiddenBreakView()
+    {
+        var sampleHtml = @"
+    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    <tmbody>
+        <bg>
+        	<textbg>
+        		<textbox>
+    	    		<updatetext>koko ni nihongo ga iikanji ni hairu. good thing. long text will make large window. like this.</updatetext>
+    	    		<updatetext hidden='true' listen='readmore'>omake!</updatetext>
+    	    	</textbox>
+    	    </textbg>
+        </bg>
+    </tmbody>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeGroupHeightChanged()
-    // {
-    //     var sampleHtml = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
-    // <tmbody>
-    // 	<bg>
-    // 		<titlebox>
-    // 			<titletext>Sample</titletext>
-    // 		</titlebox>
-    // 		<newbadge/>
-    // 		<newbadge/>
-    //         <textbg>
-    //         </textbg>
-    //     </bg>
-    // </tmbody>
-    // ";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
-    //     yield return Show(tree);
-    // }
+    [MTest]
+    public IEnumerator MaterializeGroupHeightChanged()
+    {
+        var sampleHtml = @"
+    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    <tmbody>
+    	<bg>
+    		<titlebox>
+    			<titletext>Sample</titletext>
+    		</titlebox>
+    		<newbadge/>
+    		<newbadge/>
+            <textbg>
+            </textbg>
+        </bg>
+    </tmbody>
+    ";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeAfterLayer()
-    // {
-    //     var sampleHtml = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
-    // <tmbody>
-    // 	<bg>
-    //     </bg>
-    //     <tmp>hey!</tmp>
-    // </tmbody>
-    // ";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
-    //     yield return Show(tree);
-    // }
+    [MTest]
+    public IEnumerator MaterializeAfterLayer()
+    {
+        var sampleHtml = @"
+    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    <tmbody>
+    	<bg>
+        </bg>
+        <tmp>hey!</tmp>
+    </tmbody>
+    ";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; }, 300);
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeBrBrSupport()
-    // {
-    //     var sampleHtml = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmp>
-    //     something<br><br>
-    //     else
-    // </tmp>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
-    //     yield return Show(tree);
-    // }
+    [MTest]
+    public IEnumerator MaterializeBrBrSupport()
+    {
+        var sampleHtml = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmp>
+        something<br><br>
+        else
+    </tmp>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeCenterAlignSupport()
-    // {
-    //     var sampleHtml = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmp align='center'>aaa</tmp>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
-    //     yield return Show(tree);
-    // }
+    [MTest]
+    public IEnumerator MaterializeCenterAlignSupport()
+    {
+        var sampleHtml = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmp align='center'>aaa</tmp>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator MaterializeRightAlignSupport()
-    // {
-    //     var sampleHtml = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmp align='right'>aaa</tmp>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
-    //     yield return Show(tree);
-    // }
+    [MTest]
+    public IEnumerator MaterializeRightAlignSupport()
+    {
+        var sampleHtml = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmp align='right'>aaa</tmp>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
+        yield return Show(tree);
+    }
 
 
 
-    // [MTest]
-    // public IEnumerator PSupport()
-    // {
-    //     var sampleHtml = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmp>
-    //     p1<tma href=''>a1</tma>p2
-    // </tmp>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
-    //     yield return Show(tree);
-    // }
+    [MTest]
+    public IEnumerator PSupport()
+    {
+        var sampleHtml = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmp>
+        p1<tma href=''>a1</tma>p2
+    </tmp>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
+        yield return Show(tree);
+    }
 
-    // [MTest]
-    // public IEnumerator PSupport2()
-    // {
-    //     Debug.LogWarning("保留");
-    //     yield break;
+    [MTest]
+    public IEnumerator PSupport2()
+    {
+        Debug.LogWarning("保留");
+        yield break;
 
-    //     var sampleHtml = @"
-    //     <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
-    // <tmp>
-    //     p1<tma href=''>a1</tma>p2
-    // </tmp><tmp>
-    //     p3
-    // </tmp>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
-    //     yield return Show(tree);
-    // }
+        var sampleHtml = @"
+        <!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmp>
+        p1<tma href=''>a1</tma>p2
+    </tmp><tmp>
+        p3
+    </tmp>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sampleHtml, treeSource => { tree = treeSource; });
+        yield return Show(tree);
+    }
 }
