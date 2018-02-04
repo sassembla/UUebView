@@ -68,6 +68,8 @@ namespace UUebView
             parsed(root);
         }
 
+        private string viewNameSpace;
+
         /**
 			与えられたstringから情報を抜き出し、パーツの親子構造を規定する。
 			ParsedTreeを返してくる。
@@ -220,11 +222,11 @@ namespace UUebView
                                 readingPointLength = length;
                             }
 
-                            var rawTagName = resLoader.GetTagFromValue(foundTag);
+                            var rawTagName = resLoader.GetRawTagFromValue(foundTag);
+                            // Debug.Log("rawTagName:" + rawTagName);
 
                             // set tag.
                             var tag = foundTag;
-                            // Debug.LogError("rawTagName:" + rawTagName);
 
                             // ここで、すでにtagは見つかっているので、ここまでのコンテンツは親タグのものとして整理できる。
                             {
@@ -717,6 +719,8 @@ namespace UUebView
                 {
                     yield return -1;
                 }
+
+
 
                 // loaded.
             }

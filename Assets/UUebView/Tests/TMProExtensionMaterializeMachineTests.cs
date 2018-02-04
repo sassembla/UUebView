@@ -241,21 +241,21 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
     //     yield return Show(tree);
     // }
 
-    [MTest]
-    public IEnumerator MaterializeHTMLWithDoubleBoxedLayer()
-    {
-        var sample = @"
-    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
-    <textbox>
-        <tmp>fmmm???</tmp>
-        <updatetext>something.</updatetext>
-        <updatetext>omake!</updatetext>
-    </textbox>";
-        TagTree tree = null;
-        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+    // [MTest]
+    // public IEnumerator MaterializeHTMLWithDoubleBoxedLayer()
+    // {
+    //     var sample = @"
+    // <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    // <textbox>
+    //     <tmp>fmmm???</tmp>
+    //     <updatetext>something.</updatetext>
+    //     <updatetext>omake!</updatetext>
+    // </textbox>";
+    //     TagTree tree = null;
+    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-        yield return Show(tree);
-    }
+    //     yield return Show(tree);
+    // }
 
     // [MTest]
     // public IEnumerator MaterializeHTMLWithSmallImage()
@@ -466,29 +466,29 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
     //     yield return Show(tree);
     // }
 
-    // [MTest]
-    // public IEnumerator MultipleBoxConstraints()
-    // {
+    [MTest]
+    public IEnumerator MultipleBoxConstraints()
+    {
 
-    //     var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/TMMultipleBoxConstraints/UUebTags'>
-    // <itemlayout>
-    // <topleft>
-    //     <img src='https://dummyimage.com/100.png/09f/fff'/>
-    // </topleft>
-    // <topright>
-    //     <img src='https://dummyimage.com/100.png/08f/fff'/>
-    // </topright>
-    // <content><tmp>something! need more lines for test. get wild and tough is really good song. really really good song. forever. long lives get wild and tough!</tmp></content>
-    // <bottom>
-    //     <img src='https://dummyimage.com/100.png/07f/fff'/>
-    // </bottom>
-    // </itemlayout>";
-    //     TagTree tree = null;
-    //     yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
+        var sample = @"
+    <!DOCTYPE uuebview href='resources://Views/TMMultipleBoxConstraints/UUebTags'>
+    <itemlayout>
+    <topleft>
+        <img src='https://dummyimage.com/100.png/09f/fff'/>
+    </topleft>
+    <topright>
+        <img src='https://dummyimage.com/100.png/08f/fff'/>
+    </topright>
+    <content><tmp>something! need more lines for test. get wild and tough is really good song. really really good song. forever. long lives get wild and tough!</tmp></content>
+    <bottom>
+        <img src='https://dummyimage.com/100.png/07f/fff'/>
+    </bottom>
+    </itemlayout>";
+        TagTree tree = null;
+        yield return CreateLayoutedTree(sample, treeSource => { tree = treeSource; });
 
-    //     yield return Show(tree);
-    // }
+        yield return Show(tree);
+    }
 
     // [MTest]
     // public IEnumerator MaterializeHTMLWithCustomTagMultiple()

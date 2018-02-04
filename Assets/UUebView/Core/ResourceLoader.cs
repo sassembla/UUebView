@@ -202,85 +202,86 @@ namespace UUebView
             }
 
             var prefabName = GetTagFromValue(tagValue);
+            // Debug.Log("prefabName:" + prefabName);
+
+            if (prefabCache.ContainsKey(prefabName))
+            {
+                // Debug.LogError("return cached loadingPrefabName:" + loadingPrefabName);
+                yield return prefabCache[prefabName];
+                yield break;
+            }
 
             while (loadingPrefabNames.Contains(prefabName))
             {
                 yield return null;
             }
 
-            if (prefabCache.ContainsKey(prefabName))
+            loadingPrefabNames.Add(prefabName);
+            Debug.LogWarning("loadingの機構usingで書き換えよう。");
             {
-                // Debug.LogError("return cached loadingPrefabName:" + loadingPrefabName);
-                yield return prefabCache[prefabName];
-            }
-            else
-            {
-                loadingPrefabNames.Add(prefabName);
-
+                switch (IsDefaultTag(tagValue))
                 {
-                    switch (IsDefaultTag(tagValue))
-                    {
-                        case true:
-                            {
-                                // デフォルトコンテンツはResourcesからの読み出しを行う。
-                                var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
+                    case true:
+                        {
+                            // デフォルトコンテンツはResourcesからの読み出しを行う。
+                            var loadingPrefabName = ConstSettings.PREFIX_PATH_INFORMATION_RESOURCE + ConstSettings.UUEBTAGS_DEFAULT + "/" + prefabName;
 
-                                var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
-                                while (cor.MoveNext())
+                            var cor = LoadPrefabFromResourcesOrCache(loadingPrefabName);
+                            while (cor.MoveNext())
+                            {
+                                if (cor.Current != null)
                                 {
-                                    if (cor.Current != null)
+                                    break;
+                                }
+                                yield return null;
+                            }
+                            var loadedPrefab = cor.Current;
+
+                            prefab = loadedPrefab;
+                            break;
+                        }
+
+                    // 非デフォルトタグでは、コンテナとcustomBox以外のtypeにはloadpathが存在する。
+                    default:
+                        {
+                            switch (treeType)
+                            {
+                                case TreeType.Container:
+                                case TreeType.CustomBox:
                                     {
+                                        throw new Exception("unexpected loading. tag:" + GetTagFromValue(tagValue) + " is not contents.");
+                                    }
+                                default:
+                                    {
+                                        var loadPath = GetCustomTagLoadPath(tagValue, treeType);
+                                        // Debug.Log("loadPath:" + loadPath);
+
+                                        var cor = LoadCustomPrefabFromLoadPathOrCache(loadPath);
+                                        while (cor.MoveNext())
+                                        {
+                                            if (cor.Current != null)
+                                            {
+                                                break;
+                                            }
+                                            yield return null;
+                                        }
+
+                                        var loadedPrefab = cor.Current;
+
+                                        prefab = loadedPrefab;
                                         break;
                                     }
-                                    yield return null;
-                                }
-                                var loadedPrefab = cor.Current;
-
-                                prefab = loadedPrefab;
-                                break;
                             }
-
-                        // 非デフォルトタグでは、コンテナとcustomBox以外のtypeにはloadpathが存在する。
-                        default:
-                            {
-                                switch (treeType)
-                                {
-                                    case TreeType.Container:
-                                    case TreeType.CustomBox:
-                                        {
-                                            throw new Exception("unexpected loading. tag:" + GetTagFromValue(tagValue) + " is not contents.");
-                                        }
-                                    default:
-                                        {
-                                            var loadPath = GetCustomTagLoadPath(tagValue, treeType);
-
-                                            var cor = LoadCustomPrefabFromLoadPathOrCache(loadPath);
-                                            while (cor.MoveNext())
-                                            {
-                                                if (cor.Current != null)
-                                                {
-                                                    break;
-                                                }
-                                                yield return null;
-                                            }
-
-                                            var loadedPrefab = cor.Current;
-
-                                            prefab = loadedPrefab;
-                                            break;
-                                        }
-                                }
-                                break;
-                            }
-                    }
-
-                    // cache.
-                    prefabCache[prefabName] = prefab;
+                            break;
+                        }
                 }
 
-                loadingPrefabNames.Remove(prefabName);
-                yield return prefab;
+                // cache.
+                prefabCache[prefabName] = prefab;
             }
+
+            loadingPrefabNames.Remove(prefabName);
+            yield return prefab;
         }
 
         public IEnumerator<GameObject> LoadGameObjectFromPrefab(string id, int tagValue, TreeType treeType)
@@ -290,6 +291,7 @@ namespace UUebView
 
             if (goCache.ContainsKey(id))
             {
+                // idによるキャッシュヒット
                 gameObj = goCache[id];
             }
             else
@@ -461,8 +463,6 @@ namespace UUebView
          */
         private IEnumerator<GameObject> LoadPrefabFromResourcesOrCache(string loadingPrefabName)
         {
-            // Debug.LogError("start loadingPrefabName:" + loadingPrefabName);
-
             var cor = Resources.LoadAsync(loadingPrefabName);
 
             while (!cor.isDone)
@@ -709,7 +709,7 @@ namespace UUebView
 
         private string GetCustomTagLoadPath(int tagValue, TreeType treeType)
         {
-            var tag = GetTagFromValue(tagValue);
+            var tag = GetRawTagFromValue(tagValue);
 
             switch (treeType)
             {
@@ -797,11 +797,9 @@ namespace UUebView
 
             // tag is not default.
 
-            var customTagStr = GetTagFromValue(tag);
-            // Debug.LogError("customTagStr:" + customTagStr);
-            // foreach (var s in customTagTypeDict.Keys) {
-            //     Debug.LogError("s:" + s);
-            // }
+            var customTagStr = GetRawTagFromValue(tag);
+            // Debug.Log("customTagStr:" + customTagStr);
+
             if (!customTagTypeDict.ContainsKey(customTagStr))
             {
                 return TreeType.NotFound;
@@ -901,6 +899,7 @@ namespace UUebView
                 IsLoadingUUebTags = false;
             };
 
+
             IEnumerator cor = null;
             switch (scheme)
             {
@@ -935,19 +934,19 @@ namespace UUebView
 
         public BoxPos GetUnboxedLayerSize(int tagValue)
         {
-            var key = GetTagFromValue(tagValue);
+            var key = GetRawTagFromValue(tagValue);
             return unboxedLayerSizeDict[key];
         }
 
         public BoxConstraint[] GetConstraints(int tagValue)
         {
-            var key = GetTagFromValue(tagValue);
+            var key = GetRawTagFromValue(tagValue);
             return layerDict[key];
         }
 
         public string GetLayerBoxName(int layerTag, int boxTag)
         {
-            return GetTagFromValue(layerTag) + "_" + GetTagFromValue(boxTag);
+            return GetRawTagFromValue(layerTag) + "_" + GetRawTagFromValue(boxTag);
         }
 
         private IEnumerator LoadTagsFromAssetBundle(string url, Action<UUebTags> succeeded, Action<int, string> failed)
@@ -1068,7 +1067,27 @@ namespace UUebView
 
             if (undefinedTagDict.ContainsValue(index))
             {
-                return undefinedTagDict.FirstOrDefault(x => x.Value == index).Key;
+                var key = undefinedTagDict.FirstOrDefault(x => x.Value == index).Key;
+                // Debug.Log("GetTagFromValue key:" + key);
+
+                return key;
+            }
+
+            throw new Exception("failed to get tag from index. index:" + index);
+        }
+
+        public string GetRawTagFromValue(int index)
+        {
+            if (index < defaultTagStrIntPair.Count)
+            {
+                return defaultTagIntStrPair[index];
+            }
+
+            if (undefinedTagDict.ContainsValue(index))
+            {
+                var key = undefinedTagDict.FirstOrDefault(x => x.Value == index).Key;
+                // Debug.Log("GetTagFromValue key:" + key);
+                return key.Substring(uuebTags.viewName.Length);
             }
 
             throw new Exception("failed to get tag from index. index:" + index);
@@ -1083,13 +1102,13 @@ namespace UUebView
             // collect undefined tag.
             // Debug.LogError("tagCandidateStr:" + tagCandidateStr);
 
-            if (undefinedTagDict.ContainsKey(tagCandidateStr))
+            if (undefinedTagDict.ContainsKey(uuebTags.viewName + tagCandidateStr))
             {
-                return undefinedTagDict[tagCandidateStr];
+                return undefinedTagDict[uuebTags.viewName + tagCandidateStr];
             }
 
             var count = (int)HTMLTag._END + undefinedTagDict.Count + 1;
-            undefinedTagDict[tagCandidateStr] = count;
+            undefinedTagDict[uuebTags.viewName + tagCandidateStr] = count;
             return count;
         }
 
@@ -1102,9 +1121,9 @@ namespace UUebView
             // collect undefined tag.
             // Debug.LogError("tagCandidateStr:" + tagCandidateStr);
 
-            if (undefinedTagDict.ContainsKey(tagCandidateStr))
+            if (undefinedTagDict.ContainsKey(uuebTags.viewName + tagCandidateStr))
             {
-                return undefinedTagDict[tagCandidateStr];
+                return undefinedTagDict[uuebTags.viewName + tagCandidateStr];
             }
 
             return -1;

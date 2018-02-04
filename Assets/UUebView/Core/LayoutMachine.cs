@@ -909,7 +909,7 @@ namespace UUebView
 
             var prefab = cor.Current;
 
-            Debug.LogWarning("今後、この部分を外部展開可能にする。コンポーネントを返せればいいので、型の列挙だけできれば良さそう。 prefab:" + prefab);
+            // Debug.Log("今後、この部分を外部展開可能にする。コンポーネントを返せればいいので、型の列挙だけできれば良さそう。 prefab:" + prefab);
 
             var textComponent = prefab.GetComponent<Text>();
             if (textComponent != null)
@@ -971,7 +971,7 @@ namespace UUebView
             }
 
             object textComponentSrc = textComponentCor.Current;
-
+            // Debug.Log("textComponentSrc:" + textComponentSrc);
 
             IEnumerator<ChildPos> cor = null;
 
@@ -1324,7 +1324,6 @@ namespace UUebView
                         // 次のコンテンツを新しい行から開始する。
                         insertion(InsertType.InsertContentToNextLine, nextLineContent);
 
-                        // Debug.LogError("newViewCursor:" + newViewCursor);
                         yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
                     }
                     else

@@ -1664,7 +1664,7 @@ Prefab:
       objectReference: {fileID: 737175280}
     - target: {fileID: 1814514170090830, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1533294874191872, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
       propertyPath: m_IsActive
@@ -1769,6 +1769,19 @@ Prefab:
         type: 2}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1949133666661790, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_Name
+      value: updateText
+      objectReference: {fileID: 0}
+    - target: {fileID: 1152452722690134, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
+      propertyPath: m_Name
+      value: titleText
+      objectReference: {fileID: 0}
+    - target: {fileID: 224135303432430634, guid: bef2465012acf45ef8f08944cde35bf6,
+        type: 2}
+      propertyPath: m_SizeDelta.x
+      value: 240.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
