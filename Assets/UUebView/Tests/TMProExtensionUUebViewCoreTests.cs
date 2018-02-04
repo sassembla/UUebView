@@ -9,7 +9,7 @@ using UUebView;
 /**
     test for UUebView generator.
 */
-public class UUebViewCoreTests : MiyamasuTestRunner
+public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
 {
     GameObject eventReceiverGameObj;
     GameObject view;
@@ -17,7 +17,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     private static int index;
     private void Show(GameObject view, Action loaded = null)
     {
-        var canvas = GameObject.Find("Canvas/UUebViewCoreTestPlace");
+        var canvas = GameObject.Find("Canvas/TMProExtensionUUebViewCoreTestPlace");
         if (canvas == null)
         {
             var prefab = Resources.Load<GameObject>("TestPrefabs/Canvas");
@@ -67,8 +67,8 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator GenerateSingleViewFromSource()
     {
-        var source = @"
-    <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></tmbody>";
 
         var done = false;
 
@@ -88,7 +88,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator GenerateSingleViewFromUrl()
     {
-        var url = "resources://UUebViewTest/UUebViewTest.html";
+        var url = "resources://UUebViewTest/TMUUebViewTest.html";
 
         var done = false;
 
@@ -108,11 +108,11 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator LoadThenReload()
     {
-        var source = @"
-    <body>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
         reload sample.
         <img src='https://dummyimage.com/100.png/09f/fff'/>
-    </body>";
+    </tmbody>";
 
         var done = false;
 
@@ -145,12 +145,12 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator ShowAndHide()
     {
-        var source = @"
-    <body>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
         something3.
         <img src='https://dummyimage.com/100.png/09f/fff' id='button' button='true'/>
-        <p hidden='false' listen='button'>else other long text.<a href='somewhere'> and link.</a></p>
-    </body>";
+        <tmp hidden='false' listen='button'>else other long text.<tma href='somewhere'> and link.</tma></tmp>
+    </tmbody>";
 
         var done = false;
 
@@ -170,12 +170,12 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator HideAndShow()
     {
-        var source = @"
-    <body>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
         something3.
         <img src='https://dummyimage.com/100.png/09f/fff' id='button' button='true'/>
-        <p hidden='true' listen='button'>else</p>
-    </body>";
+        <tmp hidden='true' listen='button'>else</tmp>
+    </tmbody>";
 
         var done = false;
 
@@ -195,13 +195,13 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator CascadeButton()
     {
-        var source = @"
-    <body>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
         <img src='https://dummyimage.com/100.png/09f/fff' id='button' button='true'/>
         <img hidden='true' src='https://dummyimage.com/100.png/08f/fff' id='button2' button='true' listen='button'/>
         <img hidden='true' src='https://dummyimage.com/100.png/07f/fff' id='button3' button='true' listen='button2'/>
         <img hidden='true' src='https://dummyimage.com/100.png/06f/fff' id='button4' button='true' listen='button3'/>
-    </body>";
+    </tmbody>";
 
         var done = false;
 
@@ -221,13 +221,13 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator CachedContent()
     {
-        var source = @"
-    <body>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
         <img src='https://dummyimage.com/100.png/09f/fff' id='button' button='true'/>
         <img hidden='true' src='https://dummyimage.com/100.png/08f/fff' id='button2' button='true' listen='button'/>
         <img hidden='true' src='https://dummyimage.com/100.png/07f/fff' id='button3' button='true' listen='button2'/>
         <img hidden='true' src='https://dummyimage.com/100.png/06f/fff' id='button4' button='true' listen='button3'/>
-    </body>";
+    </tmbody>";
 
         var done = false;
 
@@ -247,12 +247,12 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator ShowLinkByButton()
     {
-        var source = @"
-    <body>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
         something3.
         <img src='https://dummyimage.com/100.png/09f/fff' id='button1' button='true'/>
-        <a href='href test' hidden='true' listen='button1'>link</a>
-    </body>";
+        <tma href='href test' hidden='true' listen='button1'>link</tma>
+    </tmbody>";
 
         var done = false;
 
@@ -273,8 +273,8 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     public IEnumerator ManyImages()
     {
         var source = @"
-    <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    <body>
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <tmbody>
         something4.
         <customimg src='https://dummyimage.com/100.png/09f/fff' id='button1' button='true'/>
         <customimg src='https://dummyimage.com/101.png/09f/fff' id='button1' button='true'/>
@@ -286,8 +286,8 @@ public class UUebViewCoreTests : MiyamasuTestRunner
         <customimg src='https://dummyimage.com/107.png/09f/fff' id='button1' button='true'/>
         <customimg src='https://dummyimage.com/108.png/09f/fff' id='button1' button='true'/>
         <customimg src='https://dummyimage.com/109.png/09f/fff' id='button1' button='true'/>
-        <a href='href test' hidden='true' listen='button1'>link</a>
-    </body>";
+        <tma href='href test' hidden='true' listen='button1'>link</tma>
+    </tmbody>";
 
         var done = false;
 
@@ -308,8 +308,8 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     public IEnumerator Sample2()
     {
         var source = @"
-    <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
-    <body>
+    <!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
+    <tmbody>
         <bg>
         	<titlebox>
         		<titletext>レモン一個ぶんのビタミンC</titletext>
@@ -323,7 +323,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     	    	</textbox>
     	    </textbg>
         </bg>
-    </body>";
+    </tmbody>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -343,7 +343,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     public IEnumerator HideThenShow()
     {
         var source = @"
-<!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
+<!DOCTYPE uuebview href='resources://Views/TMMyInfoView/UUebTags'>
 <bg>
     <textbg>
         <textbox>
@@ -373,7 +373,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner
         {
             var tree = uUebView.Core.layoutedTree;
             var targetTextBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[1];
-            True(targetTextBox.offsetY == 26f, "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
+            True(targetTextBox.offsetY.ToString() == "19.55124", "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
         }
 
         // show hidden contents.
@@ -392,7 +392,6 @@ public class UUebViewCoreTests : MiyamasuTestRunner
             );
         }
 
-
         // hide hidden contents again.
         {
             var updated = false;
@@ -410,7 +409,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner
         {
             var tree = uUebView.Core.layoutedTree;
             var targetTextBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[1];
-            True(targetTextBox.offsetY == 26f, "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
+            True(targetTextBox.offsetY.ToString() == "19.55124", "not match, targetTextBox.offsetY:" + targetTextBox.offsetY);
         }
         // ShowLayoutRecursive(tree, uUebView.Core.resLoader);
     }
@@ -418,10 +417,10 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator UnityRichTextColorSupport()
     {
-        var source = @"
-    <body>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
         <color=#ff0000ff>red</color> <color=#008000ff>green</color> <color=#0000ffff>blue</color>
-    </body>";
+    </tmbody>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -440,10 +439,10 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator UnityRichTextSizeSupport()
     {
-        var source = @"
-    <p>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmp>
         a<size=50>large string</size>b
-    </p>";
+    </tmp>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -463,10 +462,10 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     public IEnumerator SetViewName()
     {
         var viewName = "SetViewName";
-        var source = @"
-    <body>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
         <color=#ff0000ff>red</color> <color=#008000ff>green</color> <color=#0000ffff>blue</color>
-    </body>";
+    </tmbody>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -485,13 +484,13 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator BrOnHeadOfContents()
     {
-        var source = @"
-    <body>
-        <p>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
+        <tmp>
             <br>
             aaa
-        </p>
-    </body>";
+        </tmp>
+    </tmbody>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -510,10 +509,10 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator BrOnHeadOfContents2()
     {
-        var source = @"
-    <body>
-        <h1>Miyamasu Runtime Console</h1><br>
-    </body>";
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmbody>
+        <tmh1>Miyamasu Runtime Console</tmh1><br>
+    </tmbody>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -532,8 +531,8 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator BrOnHeadOfContents3()
     {
-        var source = @"
-    <h1>Miyamasu Runtime Console</h1><br>";
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmh1>Miyamasu Runtime Console</tmh1><br>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -552,11 +551,11 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     [MTest]
     public IEnumerator BrOnHeadOfContents4()
     {
-        var source = @"
-    <h1>Miyamasu Runtime Console</h1><br>
-    <p>
+        var source = @"<!DOCTYPE uuebview href='resources://Views/TMDefault/UUebTags'>
+    <tmh1>Miyamasu Runtime Console</tmh1><br>
+    <tmp>
     	<br>ddd<br>
-    </p>";
+    </tmp>";
         var done = false;
 
         eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
@@ -576,8 +575,8 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     public IEnumerator MassiveView()
     {
         var source = @"
-    <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    <body>
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <tmbody>
     <customtag><custombg><textbg><customtext>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
     </customtext></textbg></custombg></customtag>
@@ -640,7 +639,7 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     </customtext></textbg></custombg></customtag>
     else
     <customimg src='https://dummyimage.com/10x20/000/fff'/>
-    </body>";
+    </tmbody>";
 
         var done = false;
 
@@ -661,12 +660,12 @@ public class UUebViewCoreTests : MiyamasuTestRunner
     public IEnumerator ErrorString()
     {
         var source = @"
-    <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    <body>
+    <!DOCTYPE uuebview href='resources://Views/TMLayoutHTMLWithCustomTag/UUebTags'>
+    <tmbody>
     <customtag><custombg><textbg><customtext>
     日本語と半角スペースで何かが起きるっぽい？( )さて？ (~) と、 (〜)と、以上。
     </customtext></textbg></custombg></customtag>
-    </body>
+    </tmbody>
     ";
         var done = false;
 

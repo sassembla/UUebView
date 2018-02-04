@@ -1268,7 +1268,7 @@ namespace UUebView
                                 continue;
                             }
 
-                            bodyContent += lineText + "\n";
+                            bodyContent += lineText;// + "\n"
                         }
 
 

@@ -9,31 +9,31 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1609620152702618}
+  m_RootGameObject: {fileID: 1767043551766204}
   m_IsPrefabParent: 1
---- !u!1 &1609620152702618
+--- !u!1 &1767043551766204
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224581381083582026}
-  - component: {fileID: 222998327892325920}
-  - component: {fileID: 114281501928090106}
-  m_Layer: 5
-  m_Name: CUSTOMTEXT
+  - component: {fileID: 224085200387407218}
+  - component: {fileID: 222085429001140518}
+  - component: {fileID: 114749531539723198}
+  m_Layer: 0
+  m_Name: TMA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114281501928090106
+--- !u!114 &114749531539723198
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1609620152702618}
+  m_GameObject: {fileID: 1767043551766204}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1453722849, guid: 89f0137620f6af44b9ba852b4190e64e, type: 3}
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.42320424, g: 0.9191176, b: 0.40549308, a: 1}
+  m_fontColor: {r: 0.33288276, g: 0.9632353, b: 0.44156426, a: 1}
   m_enableVertexGradient: 0
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
@@ -113,7 +113,7 @@ MonoBehaviour:
   m_pageToDisplay: 1
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
-    textComponent: {fileID: 114281501928090106}
+    textComponent: {fileID: 114749531539723198}
     characterCount: 0
     spriteCount: 0
     spaceCount: 0
@@ -140,18 +140,18 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &222998327892325920
+--- !u!222 &222085429001140518
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1609620152702618}
---- !u!224 &224581381083582026
+  m_GameObject: {fileID: 1767043551766204}
+--- !u!224 &224085200387407218
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1609620152702618}
+  m_GameObject: {fileID: 1767043551766204}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
