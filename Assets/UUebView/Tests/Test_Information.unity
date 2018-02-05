@@ -1437,43 +1437,6 @@ Prefab:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 737175280}
-    - target: {fileID: 224342853838818632, guid: bef2465012acf45ef8f08944cde35bf6,
-        type: 2}
-      propertyPath: m_RootOrder
-      value: 19
-      objectReference: {fileID: 0}
-    - target: {fileID: 224642975646851816, guid: bef2465012acf45ef8f08944cde35bf6,
-        type: 2}
-      propertyPath: m_RootOrder
-      value: 22
-      objectReference: {fileID: 0}
-    - target: {fileID: 224612557999461986, guid: bef2465012acf45ef8f08944cde35bf6,
-        type: 2}
-      propertyPath: m_RootOrder
-      value: 18
-      objectReference: {fileID: 0}
-    - target: {fileID: 224828659015144424, guid: bef2465012acf45ef8f08944cde35bf6,
-        type: 2}
-      propertyPath: m_RootOrder
-      value: 21
-      objectReference: {fileID: 0}
-    - target: {fileID: 224175831963957844, guid: bef2465012acf45ef8f08944cde35bf6,
-        type: 2}
-      propertyPath: m_RootOrder
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1416253207049596, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_Name
-      value: TMProExtensionUUebViewCoreTestPlace
-      objectReference: {fileID: 0}
-    - target: {fileID: 1856942041153380, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1181465929303002, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bef2465012acf45ef8f08944cde35bf6, type: 2}
   m_IsPrefabParent: 0
