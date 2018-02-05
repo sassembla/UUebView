@@ -923,8 +923,6 @@ namespace UUebView
             }
             else
             {
-                Debug.LogWarning("固定でTMProの内容だけを扱う。まだこのコードは適当。どうやって最適化しようかな、、どんなコンポーネントがあるかが判断できればいいんだよな。");
-                Debug.LogWarning("とりあえず動かそう。");
                 if (tmGoComponent == null)
                 {
                     var tmGo = GameObject.Instantiate(prefab);// 必須 これでTMProGUIを持ったGOが一個出来上がる。

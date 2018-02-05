@@ -113,7 +113,7 @@ public class ExtensionTests : MiyamasuTestRunner
         yield return WaitUntil(
             () => done, () => { throw new TimeoutException("too late."); }, 50
         );
-        Debug.LogWarning("改行による文字列コンテンツの順不同が発生している。ふーむ。");
+        // Debug.LogWarning("改行による文字列コンテンツの順不同が発生している。ふーむ。");
     }
 
     [MTest]
