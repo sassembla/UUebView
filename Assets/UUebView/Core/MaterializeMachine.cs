@@ -23,9 +23,6 @@ namespace UUebView
 
         public IEnumerator Materialize(GameObject root, UUebViewCore core, TagTree tree, float yOffset, Action onLoaded)
         {
-
-            var materializeId = Guid.NewGuid().ToString();
-
             {
                 var rootRectTrans = root.GetComponent<RectTransform>();
                 this.core = core;

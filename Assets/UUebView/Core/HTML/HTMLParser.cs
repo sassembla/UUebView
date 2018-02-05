@@ -68,8 +68,6 @@ namespace UUebView
             parsed(root);
         }
 
-        private string viewNameSpace;
-
         /**
 			与えられたstringから情報を抜き出し、パーツの親子構造を規定する。
 			ParsedTreeを返してくる。
