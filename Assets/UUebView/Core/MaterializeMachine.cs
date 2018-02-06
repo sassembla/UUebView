@@ -39,7 +39,6 @@ namespace UUebView
                 rootRectTrans.pivot = Vector2.up;
 
                 rootRectTrans.sizeDelta = new Vector2(tree.viewWidth, tree.viewHeight);
-                Debug.Log("viewHeight:" + viewHeight + " vs totalHeight:" + rootRectTrans.sizeDelta.y);
             }
 
             // 描画範囲にあるツリーのidを集める。ここから一瞬でも外れたらskip。
@@ -89,6 +88,9 @@ namespace UUebView
             onLoaded();
         }
 
+        /**
+            ツリーの中で画面内の範囲のもののidを集める。
+         */
         private List<string> TraverseTree(TagTree sourceTree, float offsetY, float viewHeight)
         {
             var drawTargetTreeIds = new List<string>();
@@ -101,7 +103,7 @@ namespace UUebView
         private void CollectTreeIdRecursive(TagTree sourceTree, float treeOffsetY, float offsetY, float viewHeight, List<string> drawTargetTreeIds)
         {
             var currentTreeOffsetY = treeOffsetY + sourceTree.offsetY;
-            Debug.Log("currentTreeOffsetY:" + currentTreeOffsetY + " offsetY:" + offsetY + " viewHeight:" + viewHeight);
+            // Debug.Log("currentTreeOffsetY:" + currentTreeOffsetY + " offsetY:" + offsetY + " viewHeight:" + viewHeight);
 
             // top is in range or not.
             if (offsetY + viewHeight < currentTreeOffsetY)
@@ -371,6 +373,29 @@ namespace UUebView
                     Debug.LogError("e:" + e);
                 }
             }
+        }
+
+        private List<string> drawTreeIds = new List<string>();
+        public IEnumerator OnScroll(GameObject root, TagTree layoutedTree, float yOffset, float viewHeight)
+        {
+            var newDrawTreeIds = TraverseTree(layoutedTree, yOffset, viewHeight);
+            Debug.Log("newDrawTreeIds:" + newDrawTreeIds.Count + " vs drawTreeIds:" + drawTreeIds.Count);
+
+
+            // まずは1列、重複するだろうか。->しない。
+            var children = layoutedTree.GetChildren();
+            for (var i = 0; i < children.Count; i++)
+            {
+                var child = children[i];
+                var cor = MaterializeRecursive(child, root, drawTreeIds);
+
+                while (cor.MoveNext())
+                {
+                    yield return null;
+                }
+            }
+
+            drawTreeIds = newDrawTreeIds;
         }
     }
 }

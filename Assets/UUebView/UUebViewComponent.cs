@@ -50,9 +50,10 @@ namespace UUebView
         }
 
         public static GameObject GenerateSingleViewFromHTML(
-            GameObject eventReceiverGameObj,
+            GameObject eventReceiverScrollViewGameObj,
             string source,
             Vector2 viewRect,
+            float offsetY,
             ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null,
             ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null,
             string viewName = ConstSettings.ROOTVIEW_NAME
@@ -62,10 +63,12 @@ namespace UUebView
             viewObj.AddComponent<RectTransform>();
             viewObj.name = viewName;
 
+            // viewObjにUUebViewComponentを追加し、UUebViewComponentにコアを追加する。
+            // viewObjのUUebViewComponentはuuebViewCoreインスタンスを持っているので、そのコアに外部からさらにイベントを追加することができる。
             var uuebView = viewObj.AddComponent<UUebViewComponent>();
             var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate);
             uuebView.SetCore(uuebViewCore);
-            uuebViewCore.LoadHtml(source, viewRect, eventReceiverGameObj);
+            uuebViewCore.LoadHtml(source, viewRect, offsetY, eventReceiverScrollViewGameObj);
 
             return viewObj;
         }
@@ -94,6 +97,11 @@ namespace UUebView
         public void SetCore(UUebViewCore core)
         {
             this.Core = core;
+        }
+
+        public Action<float> GetScrollEvent()
+        {
+            return this.Core.OnScrollRangeChanged;
         }
 
         void Update()

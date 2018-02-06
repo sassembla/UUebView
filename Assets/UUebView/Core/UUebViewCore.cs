@@ -30,7 +30,10 @@ namespace UUebView
         void StartCoroutine(IEnumerator iEnum);
     }
 
-
+    /**
+        動作のコア、UUebViewのインスタンスコントロールを行う。
+        固有のresourceLoader、layoutMachine、materializeMachineを持つ。
+     */
     public class UUebViewCore
     {
         private Dictionary<string, List<TagTree>> listenerDict = new Dictionary<string, List<TagTree>>();
@@ -132,7 +135,7 @@ namespace UUebView
         private Vector2 viewRect;
         private GameObject eventReceiverGameObj;
 
-        public void LoadHtml(string source, Vector2 viewRect, GameObject eventReceiverGameObj = null)
+        public void LoadHtml(string source, Vector2 viewRect, float offsetY, GameObject eventReceiverGameObj = null)
         {
             viewState = ViewState.Loading;
 
@@ -147,7 +150,7 @@ namespace UUebView
                 this.eventReceiverGameObj = eventReceiverGameObj;
             }
 
-            var cor = Parse(source);
+            var cor = Parse(source, offsetY);
             CoroutineExecutor(cor);
         }
 
@@ -234,7 +237,7 @@ namespace UUebView
                     }
             }
 
-            var parse = Parse(html);
+            var parse = Parse(html, 0f);
 
             while (parse.MoveNext())
             {
@@ -242,7 +245,7 @@ namespace UUebView
             }
         }
 
-        private IEnumerator Parse(string source)
+        private IEnumerator Parse(string source, float offsetY)
         {
             IEnumerator reload = null;
 
@@ -251,9 +254,9 @@ namespace UUebView
                 source,
                 parsedTagTree =>
                 {
+                    Debug.LogWarning("このへんをイベントにしないとな〜〜という感じ");
                     if (parsedTagTree.errors.Any())
                     {
-                        // このへんをイベントにしないとな〜〜という感じ
                         Debug.LogError("parse errors:" + parsedTagTree.errors.Count);
                         foreach (var error in parsedTagTree.errors)
                         {
@@ -261,7 +264,7 @@ namespace UUebView
                         }
                         return;
                     }
-                    reload = Load(parsedTagTree, viewRect, eventReceiverGameObj);
+                    reload = Load(parsedTagTree, viewRect, offsetY, eventReceiverGameObj);
                 }
             );
 
@@ -285,7 +288,7 @@ namespace UUebView
             layout -> materialize.
             if parsedTagTree was changed, materialize dirty flagged content only.
          */
-        private IEnumerator Load(TagTree tree, Vector2 viewRect, GameObject eventReceiverGameObj = null)
+        private IEnumerator Load(TagTree tree, Vector2 viewRect, float offsetY, GameObject eventReceiverGameObj = null)
         {
             var usingIds = TagTree.CorrectTrees(tree);
 
@@ -308,7 +311,7 @@ namespace UUebView
                         this,
                         this.layoutedTree,
                         viewRect,
-                        0f,
+                        offsetY,
                         () =>
                         {
                             StartCalculateProgress(newIds);
@@ -396,7 +399,7 @@ namespace UUebView
         public void Reload()
         {
             resLoader.Reset();
-            CoroutineExecutor(Load(layoutedTree, viewRect, eventReceiverGameObj));
+            CoroutineExecutor(Load(layoutedTree, viewRect, 0f, eventReceiverGameObj));
         }
 
         /**
@@ -469,6 +472,28 @@ namespace UUebView
             }
 
 
+        }
+
+        public void OnScrollRangeChanged(float index)
+        {
+            var offsetY = (int)index;
+            if (0 <= offsetY && offsetY <= viewRect.y)
+            {
+                // スクロール値が範囲内だけれど、イベント中なので無視する。
+                if (viewState != ViewState.Ready)
+                {
+                    // ignore.
+                    Debug.Log("イベント中にスクロールが来ても無視する(記録しておく必要はある気がする");
+                    return;
+                }
+
+                // offsetY ~ 画面高さの範囲を扱う。この範囲は、offset + viewHeightなのだけれど
+                // コンテンツの全高から換算する必要がある。そのへんはmaterializeが頑張ればいいのか。view高さは知らないと思うんで、
+
+                // resLoader.BackGameObjects(scrollUsingIds);とりあえず全てのオブジェクトを戻しちゃえばいいような気がするが、ちょっと違うかな、、
+                var cor = materializeMachine.OnScroll(view.GetGameObject(), this.layoutedTree, offsetY, viewRect.y);
+                CoroutineExecutor(cor);
+            }
         }
 
         private enum ViewState
