@@ -46,7 +46,7 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
         core = new UUebView.UUebViewCore(view);
         view.SetCore(core);
 
-        var canvas = GameObject.Find("Canvas/TMProExtensionTestPlace");
+        var canvas = GameObject.Find("Canvas/TMProExtensionMaterializeMachineTestPlace");
         if (canvas == null)
         {
             var prefab = Resources.Load<GameObject>("TestPrefabs/Canvas");

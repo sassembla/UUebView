@@ -139,7 +139,7 @@ namespace UUebView
                     }
 
                     // このloading countは常に1になってしまっていて、ここが最初のボトルネック。parseの時点でprefabのloadを扱ってしまってもいいかも。
-                    // もう一箇所ある。
+                    // 進度的に、ここで待つのをやめる + もう一段下で待つのをやめる、ということをしていて、待っているのはUnityが時間を要する系統のもの。
                     if (0 < ResourceLoader.loadingPrefabNames.Count || 0 < ResourceLoader.spriteDownloadingUris.Count)
                     {
                         // Debug.Log("ResourceLoader.loadingPrefabNames.Count:" + ResourceLoader.loadingPrefabNames.Count);
@@ -937,10 +937,20 @@ namespace UUebView
             {
                 if (tmGoComponent == null)
                 {
-                    var targetCanvas = GameObject.FindObjectOfType<Canvas>();
-                    if (targetCanvas == null)
+                    var targetCanvasArray = GameObject.FindObjectsOfType<Canvas>();
+                    if (targetCanvasArray == null || targetCanvasArray.Length == 0)
                     {
                         throw new Exception("UUebView with TMPro requires at least 1 visible canvas.");
+                    }
+
+                    Canvas targetCanvas = null;
+                    foreach (var canvas in targetCanvasArray)
+                    {
+                        if (canvas.isActiveAndEnabled)
+                        {
+                            targetCanvas = canvas;
+                            break;
+                        }
                     }
 
                     var tmGo = GameObject.Instantiate(prefab, targetCanvas.transform);// 必須
@@ -1036,152 +1046,149 @@ namespace UUebView
             var setting = textComponent.GetGenerationSettings(new Vector2(textViewCursor.viewWidth, float.PositiveInfinity));
             generator.Populate(text, setting);
 
-            using (new TextComponentUsing(textComponent, generator))
+            // この時点で、複数行に分かれるんだけど、最後の行のみ分離する必要がある。
+            var lineCount = generator.lineCount;
+            // Debug.LogError("lineCount:" + lineCount);
+            // Debug.LogError("default preferred width:" + textComponent.preferredWidth);
+
+            // 0行だったら、入らなかったということなので、改行をしてもらってリトライを行う。
+            if (lineCount == 0 && !string.IsNullOrEmpty(textComponent.text))
             {
-                // この時点で、複数行に分かれるんだけど、最後の行のみ分離する必要がある。
-                var lineCount = generator.lineCount;
-                // Debug.LogError("lineCount:" + lineCount);
-                // Debug.LogError("default preferred width:" + textComponent.preferredWidth);
+                Debug.LogError("このケース存在しないかも。");
+                insertion(InsertType.RetryWithNextLine, null);
+                yield break;
+            }
 
-                // 0行だったら、入らなかったということなので、改行をしてもらってリトライを行う。
-                if (lineCount == 0 && !string.IsNullOrEmpty(textComponent.text))
-                {
-                    Debug.LogError("このケース存在しないかも。");
-                    insertion(InsertType.RetryWithNextLine, null);
-                    yield break;
-                }
+            // 1行以上のラインがある。
 
-                // 1行以上のラインがある。
+            /*
+                ここで、このtreeに対するカーソルのoffsetXが0ではない場合、行の中間から行を書き出していることになる。
 
+                また上記に加え、親コンテナ自体のoffsetXが0ではない場合も、やはり、行の中間から行を書き出していることになる。
+                判定のために、親コンテナからtextTreeへ、親コンテナのoffsetX = 書き始め位置の書き込みをする。
+
+                行が2行以上ある場合、1行目は右端まで到達しているのが確定する。
+                2行目以降はoffsetX=0の状態で書かれる必要がある。
+
+                コンテンツを分離し、それを叶える。
+            */
+            var onLayoutPresetX = (float)textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X];
+            var isStartAtZeroOffset = onLayoutPresetX == 0 && textViewCursor.offsetX == 0;
+            var isMultilined = 1 < lineCount;
+
+            // 複数行存在するんだけど、2行目のスタートが0文字目の場合、1行目に1文字も入っていない。
+            if (isMultilined && generator.lines[1].startCharIdx == 0)
+            {
                 /*
-                    ここで、このtreeに対するカーソルのoffsetXが0ではない場合、行の中間から行を書き出していることになる。
-
-                    また上記に加え、親コンテナ自体のoffsetXが0ではない場合も、やはり、行の中間から行を書き出していることになる。
-                    判定のために、親コンテナからtextTreeへ、親コンテナのoffsetX = 書き始め位置の書き込みをする。
-
-                    行が2行以上ある場合、1行目は右端まで到達しているのが確定する。
-                    2行目以降はoffsetX=0の状態で書かれる必要がある。
-
-                    コンテンツを分離し、それを叶える。
+                    行頭でこれが起きる場合、コンテンツ幅が圧倒的に不足していて、一文字も入らないということが起きている。
+                    が、ここで文字を一切消費しないとなると後続の処理でも無限に処理が終わらない可能性があるため、最低でも1文字を消費する。
                 */
-                var onLayoutPresetX = (float)textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X];
-                var isStartAtZeroOffset = onLayoutPresetX == 0 && textViewCursor.offsetX == 0;
-                var isMultilined = 1 < lineCount;
-
-                // 複数行存在するんだけど、2行目のスタートが0文字目の場合、1行目に1文字も入っていない。
-                if (isMultilined && generator.lines[1].startCharIdx == 0)
-                {
-                    /*
-                        行頭でこれが起きる場合、コンテンツ幅が圧倒的に不足していて、一文字も入らないということが起きている。
-                        が、ここで文字を一切消費しないとなると後続の処理でも無限に処理が終わらない可能性があるため、最低でも1文字を消費する。
-                    */
-                    if (isStartAtZeroOffset)
-                    {
-                        // 最初の1文字目を強制的にセットする
-                        var bodyContent = text.Substring(0, 1);
-
-                        // 1文字目だけをこの文字列の内容としてセットし直す。
-                        textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
-
-                        // 最終行として1文字目以降を取得、
-                        var lastLineContent = text.Substring(1);
-
-                        // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
-                        var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
-                        insertion(InsertType.InsertContentToNextLine, nextLineContent);
-
-
-                        var charHeight = GetCharHeight(bodyContent, textComponent);
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
-                        yield break;
-                    }
-
-                    // 行なかで、1行目のコンテンツがまるきり入らなかった。
-                    // よって、改行を行なって次の行からコンテンツを開始する。
-                    insertion(InsertType.RetryWithNextLine, null);
-                    yield break;
-                }
-
                 if (isStartAtZeroOffset)
                 {
-                    if (isMultilined)
+                    // 最初の1文字目を強制的にセットする
+                    var bodyContent = text.Substring(0, 1);
+
+                    // 1文字目だけをこの文字列の内容としてセットし直す。
+                    textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
+
+                    // 最終行として1文字目以降を取得、
+                    var lastLineContent = text.Substring(1);
+
+                    // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
+                    var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
+                    insertion(InsertType.InsertContentToNextLine, nextLineContent);
+
+
+                    var charHeight = GetCharHeight(bodyContent, textComponent);
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
+                    yield break;
+                }
+
+                // 行なかで、1行目のコンテンツがまるきり入らなかった。
+                // よって、改行を行なって次の行からコンテンツを開始する。
+                insertion(InsertType.RetryWithNextLine, null);
+                yield break;
+            }
+
+            if (isStartAtZeroOffset)
+            {
+                if (isMultilined)
+                {
+                    // Debug.LogError("行頭での折り返しのある複数行 text:" + text);
+
+                    // 複数行が頭から出ている状態で、改行を含んでいる。最終行が中途半端なところにあるのが確定しているので、切り離して別コンテンツとして処理する必要がある。
+                    var bodyContent = text.Substring(0, generator.lines[generator.lineCount - 1].startCharIdx);
+
+                    // 内容の反映
+                    textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
+
+                    // 最終行
+                    var lastLineContent = text.Substring(generator.lines[generator.lineCount - 1].startCharIdx);
+
+                    // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
+                    var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
+                    insertion(InsertType.InsertContentToNextLine, nextLineContent);
+
+                    // 最終行以外はハコ型に収まった状態なので、ハコとして出力する。
+                    // 最終一つ前までの高さを出して、このコンテンツの高さとして扱う。
+                    var totalHeight = 0f + generator.lineCount - 1;// lineの高さだけを足すと、必ずlineCount-1ぶんだけ不足する。この挙動は謎。
+                    for (var i = 0; i < generator.lineCount - 1; i++)
                     {
-                        // Debug.LogError("行頭での折り返しのある複数行 text:" + text);
-
-                        // 複数行が頭から出ている状態で、改行を含んでいる。最終行が中途半端なところにあるのが確定しているので、切り離して別コンテンツとして処理する必要がある。
-                        var bodyContent = text.Substring(0, generator.lines[generator.lineCount - 1].startCharIdx);
-
-                        // 内容の反映
-                        textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
-
-                        // 最終行
-                        var lastLineContent = text.Substring(generator.lines[generator.lineCount - 1].startCharIdx);
-
-                        // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
-                        var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
-                        insertion(InsertType.InsertContentToNextLine, nextLineContent);
-
-                        // 最終行以外はハコ型に収まった状態なので、ハコとして出力する。
-                        // 最終一つ前までの高さを出して、このコンテンツの高さとして扱う。
-                        var totalHeight = 0f + generator.lineCount - 1;// lineの高さだけを足すと、必ずlineCount-1ぶんだけ不足する。この挙動は謎。
-                        for (var i = 0; i < generator.lineCount - 1; i++)
-                        {
-                            var line = generator.lines[i];
-                            totalHeight += (line.height * textComponent.lineSpacing);
-                        }
-
-                        // このビューのポジションをセット
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, totalHeight);
+                        var line = generator.lines[i];
+                        totalHeight += (line.height * textComponent.lineSpacing);
                     }
-                    else
-                    {
-                        // Debug.LogError("行頭の単一行 text:" + text + " textViewCursor.offsetY:" + textViewCursor.offsetY);
-                        var width = textComponent.preferredWidth;
-                        var height = (generator.lines[0].height * textComponent.lineSpacing);
 
-                        // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
-                        insertion(InsertType.TailInsertedToLine, textTree);
-
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
-                    }
+                    // このビューのポジションをセット
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, totalHeight);
                 }
                 else
                 {
-                    if (isMultilined)
-                    {
-                        // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
-                        var currentLineHeight = (generator.lines[0].height * textComponent.lineSpacing);
+                    // Debug.LogError("行頭の単一行 text:" + text + " textViewCursor.offsetY:" + textViewCursor.offsetY);
+                    var width = textComponent.preferredWidth;
+                    var height = (generator.lines[0].height * textComponent.lineSpacing);
 
-                        // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
-                        var currentLineContent = text.Substring(0, generator.lines[1].startCharIdx);
-                        textTree.keyValueStore[HTMLAttribute._CONTENT] = currentLineContent;
+                    // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
+                    insertion(InsertType.TailInsertedToLine, textTree);
 
-                        // get preferredWidht of text from trimmed line.
-                        textComponent.text = currentLineContent;
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
+                }
+            }
+            else
+            {
+                if (isMultilined)
+                {
+                    // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
+                    var currentLineHeight = (generator.lines[0].height * textComponent.lineSpacing);
 
-                        var currentLineWidth = textComponent.preferredWidth;
+                    // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
+                    var currentLineContent = text.Substring(0, generator.lines[1].startCharIdx);
+                    textTree.keyValueStore[HTMLAttribute._CONTENT] = currentLineContent;
 
-                        var restContent = text.Substring(generator.lines[1].startCharIdx);
-                        var nextLineContent = new InsertedTree(textTree, restContent, textTree.tagValue);
+                    // get preferredWidht of text from trimmed line.
+                    textComponent.text = currentLineContent;
 
-                        // 次のコンテンツを新しい行から開始する。
-                        insertion(InsertType.InsertContentToNextLine, nextLineContent);
+                    var currentLineWidth = textComponent.preferredWidth;
 
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
-                    }
-                    else
-                    {
-                        // Debug.LogError("行中追加の単一行 text:" + text);
-                        var width = textComponent.preferredWidth;
-                        var height = (generator.lines[0].height * textComponent.lineSpacing);
+                    var restContent = text.Substring(generator.lines[1].startCharIdx);
+                    var nextLineContent = new InsertedTree(textTree, restContent, textTree.tagValue);
 
-                        // Debug.LogError("行中の単一行 text:" + text + " textViewCursor:" + textViewCursor);
-                        // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
-                        insertion(InsertType.TailInsertedToLine, textTree);
+                    // 次のコンテンツを新しい行から開始する。
+                    insertion(InsertType.InsertContentToNextLine, nextLineContent);
 
-                        // Debug.LogError("newViewCursor:" + newViewCursor);
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
-                    }
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
+                }
+                else
+                {
+                    // Debug.LogError("行中追加の単一行 text:" + text);
+                    var width = textComponent.preferredWidth;
+                    var height = (generator.lines[0].height * textComponent.lineSpacing);
+
+                    // Debug.LogError("行中の単一行 text:" + text + " textViewCursor:" + textViewCursor);
+                    // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
+                    insertion(InsertType.TailInsertedToLine, textTree);
+
+                    // Debug.LogError("newViewCursor:" + newViewCursor);
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                 }
             }
         }
@@ -1195,7 +1202,7 @@ namespace UUebView
             // Debug.Log("DoTextMeshProComponentLayout text:" + text.Length + " textViewCursor:" + textViewCursor);
             textComponent.text = text;
 
-            // textComponent.に対してwidthをセットする必要がある。
+            // textComponentに対してwidthをセットする必要がある。
             textComponent.rectTransform.sizeDelta = new Vector2(textViewCursor.viewWidth, float.PositiveInfinity);
 
             // このメソッドは、コンポーネントがgoにアタッチされてcanvasに乗っている場合のみ動作する。
@@ -1204,162 +1211,192 @@ namespace UUebView
             // 各行の要素とパラメータを取得する。
             var tmGeneratorLines = textInfos.lineInfo;
             var lineSpacing = textComponent.lineSpacing;
+            var tmLineCount = textInfos.lineCount;
 
-            using (new TMProTextComponentUsing(textComponent))
+
+            var onLayoutPresetX = (float)textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X];
+            // Debug.Log("text:" + text + " textViewCursor.viewWidth:" + textViewCursor.viewWidth);
+
+            // 1行以上のラインが画面内にある。
+
+            var isStartAtZeroOffset = onLayoutPresetX == 0 && textViewCursor.offsetX == 0;
+            var isMultilined = 1 < tmLineCount;
+
+
+            // このコンテナの1行目を別のコンテナの結果位置 = 行中から書いた結果、この1行の幅が画面幅を超えている場合、全体を次の行に送る。
+            // あ、この判定では無理だな、、分割されたコンテナの可能性が出てくる？ 整列を下からではなく上からやる必要がある。
+            if (!isStartAtZeroOffset && textViewCursor.viewWidth < tmGeneratorLines[0].length)
             {
-                var tmLineCount = textInfos.lineCount;
-                var onLayoutPresetX = (float)textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X];
-                // Debug.Log("text:" + text + " textViewCursor.viewWidth:" + textViewCursor.viewWidth);
+                // 行なかで、1行目のコンテンツがまるきり入らなかった。
+                // よって、改行を行なって次の行からコンテンツを開始する。
+                // textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X] = 0.0f;
+                insertion(InsertType.RetryWithNextLine, null);
 
-                // 1行以上のラインが画面内にある。
+                // テキストとサイズを空に戻す
+                textComponent.text = string.Empty;
+                textComponent.rectTransform.sizeDelta = Vector2.zero;
 
-                var isStartAtZeroOffset = onLayoutPresetX == 0 && textViewCursor.offsetX == 0;
-                var isMultilined = 1 < tmLineCount;
+                yield break;
+            }
 
-
-                // このコンテナの1行目を別のコンテナの結果位置 = 行中から書いた結果、この1行の幅が画面幅を超えている場合、全体を次の行に送る。
-                // あ、この判定では無理だな、、分割されたコンテナの可能性が出てくる？ 整列を下からではなく上からやる必要がある。
-                if (!isStartAtZeroOffset && textViewCursor.viewWidth < tmGeneratorLines[0].length)
-                {
-                    // 行なかで、1行目のコンテンツがまるきり入らなかった。
-                    // よって、改行を行なって次の行からコンテンツを開始する。
-                    // textTree.keyValueStore[HTMLAttribute._ONLAYOUT_PRESET_X] = 0.0f;
-                    insertion(InsertType.RetryWithNextLine, null);
-                    yield break;
-                }
-
-                // 複数行存在するんだけど、2行目のスタートが0文字目の場合、1行目に1文字も入っていない。
-                if (isMultilined && tmGeneratorLines[1].firstCharacterIndex == 0)
-                {
-                    // 行頭でこれが起きる場合、コンテンツ幅が圧倒的に不足していて、一文字も入らないということが起きている。
-                    // 1文字ずつ切り分けて表示する。
-                    if (isStartAtZeroOffset)
-                    {
-                        // 最初の1文字目を強制的にセットする
-                        var bodyContent = text.Substring(0, 1);
-
-                        // 内容の反映
-                        textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
-
-                        // 最終行
-                        var lastLineContent = text.Substring(1);
-
-                        // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
-                        var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
-                        insertion(InsertType.InsertContentToNextLine, nextLineContent);
-
-
-                        var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
-                        yield break;
-                    }
-
-                    // 行中からのコンテンツ追加で、複数行があるので、コンテンツ全体を次の行で開始させる。
-                    insertion(InsertType.RetryWithNextLine, null);
-                    yield break;
-                }
-
+            // 複数行存在するんだけど、2行目のスタートが0文字目の場合、1行目に1文字も入っていない。
+            if (isMultilined && tmGeneratorLines[1].firstCharacterIndex == 0)
+            {
+                // 行頭でこれが起きる場合、コンテンツ幅が圧倒的に不足していて、一文字も入らないということが起きている。
+                // 1文字ずつ切り分けて表示する。
                 if (isStartAtZeroOffset)
                 {
-                    if (isMultilined)
+                    // 最初の1文字目を強制的にセットする
+                    var bodyContent = text.Substring(0, 1);
+
+                    // 内容の反映
+                    textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
+
+                    // 最終行
+                    var lastLineContent = text.Substring(1);
+
+                    // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
+                    var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
+                    insertion(InsertType.InsertContentToNextLine, nextLineContent);
+
+
+                    var charHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
+
+                    // テキストとサイズを空に戻す
+                    textComponent.text = string.Empty;
+                    textComponent.rectTransform.sizeDelta = Vector2.zero;
+
+
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
+                    yield break;
+                }
+
+                // 行中からのコンテンツ追加で、複数行があるので、コンテンツ全体を次の行で開始させる。
+                insertion(InsertType.RetryWithNextLine, null);
+
+                // テキストとサイズを空に戻す
+                textComponent.text = string.Empty;
+                textComponent.rectTransform.sizeDelta = Vector2.zero;
+
+                yield break;
+            }
+
+            if (isStartAtZeroOffset)
+            {
+                if (isMultilined)
+                {
+                    // Debug.LogError("行頭での折り返しのある複数行 text:" + text + " textViewCursor.offsetX:" + textViewCursor.offsetX + " tmLineCount:" + tmLineCount);
+                    /*
+                        TMProのtextInfo上のレイアウト指示と、実際にレイアウトした時に自動的に分割されるワードに差がある。
+                        abc が a\nbcになることもあれば、レイアウト時には分割されずabcで入ってしまうこともある。
+                        これは予知できないので、textInfoでの分割を正にする方向で対処する。
+                        具体的に言うと、文章に人力で\nを入れる。
+                     */
+
+                    var bodyContent = string.Empty;
+                    var lastLineContent = string.Empty;
+
+                    // TMProの場合、レイアウト時に文字を改行する場所と、実際にコンテンツを放り込んでしまって改行される箇所にズレがある。
+                    // よってこの時点で、改行を含んだ文字列へと強制的に変更する。
+                    for (var i = 0; i < tmLineCount; i++)
                     {
-                        // Debug.LogError("行頭での折り返しのある複数行 text:" + text + " textViewCursor.offsetX:" + textViewCursor.offsetX + " tmLineCount:" + tmLineCount);
-                        /*
-                            TMProのtextInfo上のレイアウト指示と、実際にレイアウトした時に自動的に分割されるワードに差がある。
-                            abc が a\nbcになることもあれば、レイアウト時には分割されずabcで入ってしまうこともある。
-                            これは予知できないので、textInfoでの分割を正にする方向で対処する。
-                            具体的に言うと、文章に人力で\nを入れる。
-                         */
-
-                        var bodyContent = string.Empty;
-                        var lastLineContent = string.Empty;
-
-                        // TMProの場合、レイアウト時に文字を改行する場所と、実際にコンテンツを放り込んでしまって改行される箇所にズレがある。
-                        // よってこの時点で、改行を含んだ文字列へと強制的に変更する。
-                        for (var i = 0; i < tmLineCount; i++)
+                        var lineInfo = tmGeneratorLines[i];
+                        var lineText = text.Substring(lineInfo.firstCharacterIndex, lineInfo.lastCharacterIndex - lineInfo.firstCharacterIndex + 1);
+                        if (i == tmLineCount - 1)
                         {
-                            var lineInfo = tmGeneratorLines[i];
-                            var lineText = text.Substring(lineInfo.firstCharacterIndex, lineInfo.lastCharacterIndex - lineInfo.firstCharacterIndex + 1);
-                            if (i == tmLineCount - 1)
-                            {
-                                lastLineContent = lineText;
-                                continue;
-                            }
-
-                            bodyContent += lineText;// + "\n"
+                            lastLineContent = lineText;
+                            continue;
                         }
 
-
-                        // 内容の反映
-                        textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
-
-                        // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
-                        var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
-                        insertion(InsertType.InsertContentToNextLine, nextLineContent);
-
-
-                        // 最終行以外はハコ型に収まった状態なので、ハコとして出力する。
-                        // 最終一つ前までの高さを出して、このコンテンツの高さとして扱う。
-                        var totalHeight = 0f;
-                        for (var i = 0; i < tmLineCount - 1; i++)
-                        {
-                            var line = tmGeneratorLines[i];
-                            totalHeight += (line.lineHeight + lineSpacing);
-                        }
-
-                        // このビューのポジションをセット
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, totalHeight);
+                        bodyContent += lineText;// + "\n"
                     }
-                    else
+
+
+                    // 内容の反映
+                    textTree.keyValueStore[HTMLAttribute._CONTENT] = bodyContent;
+
+                    // 最終行を分割して送り出す。追加されたコンテンツを改行後に処理する。
+                    var nextLineContent = new InsertedTree(textTree, lastLineContent, textTree.tagValue);
+                    insertion(InsertType.InsertContentToNextLine, nextLineContent);
+
+
+                    // 最終行以外はハコ型に収まった状態なので、ハコとして出力する。
+                    // 最終一つ前までの高さを出して、このコンテンツの高さとして扱う。
+                    var totalHeight = 0f;
+                    for (var i = 0; i < tmLineCount - 1; i++)
                     {
-                        // Debug.LogError("行頭の単一行 text:" + text);
-                        var currentLineWidth = textComponent.preferredWidth;
-                        var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
-
-                        // 最終行かどうかの判断はここではできないので、単一行の入力が終わったことを親コンテナへと通知する。
-                        insertion(InsertType.TailInsertedToLine, textTree);
-
-                        var childPos = textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
-
-                        yield return childPos;
+                        var line = tmGeneratorLines[i];
+                        totalHeight += (line.lineHeight + lineSpacing);
                     }
+
+                    // テキストとサイズを空に戻す
+                    textComponent.text = string.Empty;
+                    textComponent.rectTransform.sizeDelta = Vector2.zero;
+
+                    // このビューのポジションをセット
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, totalHeight);
                 }
                 else
                 {
-                    if (isMultilined)
-                    {
-                        // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
-                        var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
+                    // Debug.LogError("行頭の単一行 text:" + text);
+                    var currentLineWidth = textComponent.preferredWidth;
+                    var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
-                        // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
-                        var currentLineContent = text.Substring(0, tmGeneratorLines[1].firstCharacterIndex);
-                        textTree.keyValueStore[HTMLAttribute._CONTENT] = currentLineContent;
+                    // 最終行かどうかの判断はここではできないので、単一行の入力が終わったことを親コンテナへと通知する。
+                    insertion(InsertType.TailInsertedToLine, textTree);
 
-                        // get preferredWidht of text from trimmed line.
-                        textComponent.text = currentLineContent;
+                    var childPos = textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
 
-                        var currentLineWidth = textComponent.preferredWidth;
+                    // テキストとサイズを空に戻す
+                    textComponent.text = string.Empty;
+                    textComponent.rectTransform.sizeDelta = Vector2.zero;
 
-                        var restContent = text.Substring(tmGeneratorLines[1].firstCharacterIndex);
-                        var nextLineContent = new InsertedTree(textTree, restContent, textTree.tagValue);
+                    yield return childPos;
+                }
+            }
+            else
+            {
+                if (isMultilined)
+                {
+                    // Debug.LogError("行中追加での折り返しのある複数行 text:" + text);
+                    var currentLineHeight = (tmGeneratorLines[0].lineHeight + lineSpacing);
 
-                        // 次のコンテンツを新しい行から開始する。
-                        insertion(InsertType.InsertContentToNextLine, nextLineContent);
+                    // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
+                    var currentLineContent = text.Substring(0, tmGeneratorLines[1].firstCharacterIndex);
+                    textTree.keyValueStore[HTMLAttribute._CONTENT] = currentLineContent;
 
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
-                    }
-                    else
-                    {
-                        // Debug.LogError("行中追加の単一行 text:" + text);
-                        var width = textComponent.preferredWidth;
-                        var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
+                    // get preferredWidht of text from trimmed line.
+                    textComponent.text = currentLineContent;
 
-                        // Debug.LogError("行中の単一行 text:" + text + " textViewCursor:" + textViewCursor);
-                        // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
-                        insertion(InsertType.TailInsertedToLine, textTree);
+                    var currentLineWidth = textComponent.preferredWidth;
 
-                        yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
-                    }
+                    var restContent = text.Substring(tmGeneratorLines[1].firstCharacterIndex);
+                    var nextLineContent = new InsertedTree(textTree, restContent, textTree.tagValue);
+
+                    // 次のコンテンツを新しい行から開始する。
+                    insertion(InsertType.InsertContentToNextLine, nextLineContent);
+
+                    // テキストとサイズを空に戻す
+                    textComponent.text = string.Empty;
+                    textComponent.rectTransform.sizeDelta = Vector2.zero;
+
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
+                }
+                else
+                {
+                    // Debug.LogError("行中追加の単一行 text:" + text);
+                    var width = textComponent.preferredWidth;
+                    var height = (tmGeneratorLines[0].lineHeight + lineSpacing);
+
+                    // Debug.LogError("行中の単一行 text:" + text + " textViewCursor:" + textViewCursor);
+                    // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
+                    insertion(InsertType.TailInsertedToLine, textTree);
+
+                    // テキストとサイズを空に戻す
+                    textComponent.text = string.Empty;
+                    textComponent.rectTransform.sizeDelta = Vector2.zero;
+
+                    yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                 }
             }
         }
@@ -1593,69 +1630,6 @@ namespace UUebView
             // 最終コンテンツのoffsetを使ってboxの高さをセット
             // treeに位置をセットしてposを返す
             yield return boxTree.SetPos(boxView.offsetX, boxView.offsetY, boxView.viewWidth, childViewCursor.offsetY);
-        }
-
-
-        private class TextComponentUsing : IDisposable
-        {
-            private Text textComponent;
-            private TextGenerator gen;
-            public TextComponentUsing(Text textComponent, TextGenerator gen)
-            {
-                this.textComponent = textComponent;
-                this.gen = gen;
-            }
-
-            private bool disposedValue = false;
-
-            protected virtual void Dispose(bool disposing)
-            {
-                if (!disposedValue)
-                {
-                    if (disposing)
-                    {
-                        // dispose.
-                        textComponent.text = string.Empty;
-                        gen.Invalidate();
-                    }
-                    disposedValue = true;
-                }
-            }
-
-            void IDisposable.Dispose()
-            {
-                Dispose(true);
-            }
-        }
-
-        private class TMProTextComponentUsing : IDisposable
-        {
-            private TMPro.TextMeshProUGUI textComponent;
-            public TMProTextComponentUsing(TMPro.TextMeshProUGUI textComponent)
-            {
-                this.textComponent = textComponent;
-            }
-
-            private bool disposedValue = false;
-
-            protected virtual void Dispose(bool disposing)
-            {
-                if (!disposedValue)
-                {
-                    if (disposing)
-                    {
-                        // dispose.
-                        textComponent.text = string.Empty;
-                        textComponent.rectTransform.sizeDelta = Vector2.zero;
-                    }
-                    disposedValue = true;
-                }
-            }
-
-            void IDisposable.Dispose()
-            {
-                Dispose(true);
-            }
         }
 
         /*
