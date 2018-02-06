@@ -925,8 +925,13 @@ namespace UUebView
             {
                 if (tmGoComponent == null)
                 {
-                    var tmGo = GameObject.Instantiate(prefab);// 必須 これでTMProGUIを持ったGOが一個出来上がる。
-                    tmGo.transform.SetParent(GameObject.Find("Canvas").transform);// 必須
+                    var targetCanvas = GameObject.FindObjectOfType<Canvas>();
+                    if (targetCanvas == null)
+                    {
+                        throw new Exception("UUebView with TMPro requires at least 1 visible canvas.");
+                    }
+
+                    var tmGo = GameObject.Instantiate(prefab, targetCanvas.transform);// 必須
                     tmGoComponent = tmGo.GetComponent<TMPro.TextMeshProUGUI>();
                     tmGoComponent.text = string.Empty;
                 }
@@ -1195,7 +1200,6 @@ namespace UUebView
                 var isStartAtZeroOffset = onLayoutPresetX == 0 && textViewCursor.offsetX == 0;
                 var isMultilined = 1 < tmLineCount;
 
-                // Debug.LogWarning("TMProの場合の動作を丸っと変える必要がある。");
 
                 // このコンテナの1行目を別のコンテナの結果位置 = 行中から書いた結果、この1行の幅が画面幅を超えている場合、全体を次の行に送る。
                 // あ、この判定では無理だな、、分割されたコンテナの可能性が出てくる？ 整列を下からではなく上からやる必要がある。
@@ -1623,6 +1627,7 @@ namespace UUebView
                     {
                         // dispose.
                         textComponent.text = string.Empty;
+                        textComponent.rectTransform.sizeDelta = Vector2.zero;
                     }
                     disposedValue = true;
                 }

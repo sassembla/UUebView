@@ -307,6 +307,7 @@ namespace UUebView
                         view.GetGameObject(),
                         this,
                         this.layoutedTree,
+                        viewRect,
                         0f,
                         () =>
                         {
@@ -355,6 +356,7 @@ namespace UUebView
                         view.GetGameObject(),
                         this,
                         this.layoutedTree,
+                        viewRect,
                         0f,
                         () =>
                         {

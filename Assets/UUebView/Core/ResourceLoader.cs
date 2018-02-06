@@ -216,8 +216,8 @@ namespace UUebView
                 yield return null;
             }
 
-            loadingPrefabNames.Add(prefabName);
-            // Debug.LogWarning("loadingの機構usingで書き換えよう。");
+
+            using (new PrefabLoadingConstraint(prefabName))
             {
                 switch (IsDefaultTag(tagValue))
                 {
@@ -280,8 +280,37 @@ namespace UUebView
                 prefabCache[prefabName] = prefab;
             }
 
-            loadingPrefabNames.Remove(prefabName);
             yield return prefab;
+        }
+
+        private class PrefabLoadingConstraint : IDisposable
+        {
+            private string loadingPrefabName;
+            public PrefabLoadingConstraint(string loadingPrefabName)
+            {
+                this.loadingPrefabName = loadingPrefabName;
+                loadingPrefabNames.Add(loadingPrefabName);
+            }
+
+            private bool disposedValue = false;
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!disposedValue)
+                {
+                    if (disposing)
+                    {
+                        // dispose.
+                        loadingPrefabNames.Remove(loadingPrefabName);
+                    }
+                    disposedValue = true;
+                }
+            }
+
+            void IDisposable.Dispose()
+            {
+                Dispose(true);
+            }
         }
 
         public IEnumerator<GameObject> LoadGameObjectFromPrefab(string id, int tagValue, TreeType treeType)
@@ -474,14 +503,12 @@ namespace UUebView
             if (obj == null)
             {
                 var failedObj = new GameObject("failed to load element:" + loadingPrefabName);
-                loadingPrefabNames.Remove(loadingPrefabName);
                 yield return failedObj;
             }
             else
             {
                 // cache.
                 prefabCache[loadingPrefabName] = obj;
-                loadingPrefabNames.Remove(loadingPrefabName);
                 yield return obj;
             }
         }

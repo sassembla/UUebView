@@ -21,8 +21,14 @@ namespace UUebView
 
         public readonly Dictionary<string, KeyValuePair<GameObject, string>> eventObjectCache = new Dictionary<string, KeyValuePair<GameObject, string>>();
 
-        public IEnumerator Materialize(GameObject root, UUebViewCore core, TagTree tree, float yOffset, Action onLoaded)
+        // スクロールイベントから生成を行う ↓
+        // オブジェクトプールの再考(画面外に行ったオブジェクトのプール復帰、新しい要素のプールからの取得)
+
+        // Layer系のオブジェクト、高さが0のツリー、hiddenを無視する(この辺は上記のチョイス時に削れると良さそう。)
+        public IEnumerator Materialize(GameObject root, UUebViewCore core, TagTree tree, Vector2 viewRect, float yOffset, Action onLoaded)
         {
+            var viewHeight = viewRect.y;
+
             {
                 var rootRectTrans = root.GetComponent<RectTransform>();
                 this.core = core;
@@ -33,16 +39,27 @@ namespace UUebView
                 rootRectTrans.pivot = Vector2.up;
 
                 rootRectTrans.sizeDelta = new Vector2(tree.viewWidth, tree.viewHeight);
+                Debug.Log("viewHeight:" + viewHeight + " vs totalHeight:" + rootRectTrans.sizeDelta.y);
             }
+
+            // 描画範囲にあるツリーのidを集める。ここから一瞬でも外れたらskip。
+            var drawTreeIds = TraverseTree(tree, yOffset, viewHeight);
 
             // materialize root's children in parallel.
             var children = tree.GetChildren();
 
-            var cors = children.Select(child => MaterializeRecursive(child, root)).ToArray();
+            var cors = new List<IEnumerator>();
+            for (var i = 0; i < children.Count; i++)
+            {
+                var child = children[i];
+                var cor = MaterializeRecursive(child, root, drawTreeIds);
+                cors.Add(cor);
+            }
 
+            // firstviewのmaterializeまでを並列で実行する
             while (true)
             {
-                for (var i = 0; i < cors.Length; i++)
+                for (var i = 0; i < cors.Count; i++)
                 {
                     var cor = cors[i];
                     if (cor == null)
@@ -68,10 +85,51 @@ namespace UUebView
 
                 yield return null;
             }
+
             onLoaded();
         }
+
+        private List<string> TraverseTree(TagTree sourceTree, float offsetY, float viewHeight)
+        {
+            var drawTargetTreeIds = new List<string>();
+
+            CollectTreeIdRecursive(sourceTree, 0, offsetY, viewHeight, drawTargetTreeIds);
+
+            return drawTargetTreeIds;
+        }
+
+        private void CollectTreeIdRecursive(TagTree sourceTree, float treeOffsetY, float offsetY, float viewHeight, List<string> drawTargetTreeIds)
+        {
+            var currentTreeOffsetY = treeOffsetY + sourceTree.offsetY;
+            Debug.Log("currentTreeOffsetY:" + currentTreeOffsetY + " offsetY:" + offsetY + " viewHeight:" + viewHeight);
+
+            // top is in range or not.
+            if (offsetY + viewHeight < currentTreeOffsetY)
+            {
+                // do nothing.
+                return;
+            }
+
+            // bottom is in range or not.
+            if (currentTreeOffsetY + sourceTree.viewHeight < offsetY)
+            {
+                // do nothing.
+                return;
+            }
+
+            // this container is in range.
+            drawTargetTreeIds.Add(sourceTree.id);
+
+            var childlen = sourceTree.GetChildren();
+            for (var i = 0; i < childlen.Count; i++)
+            {
+                var child = childlen[i];
+                CollectTreeIdRecursive(child, currentTreeOffsetY, offsetY, viewHeight, drawTargetTreeIds);
+            }
+        }
+
         /**
-			現状は全ての子について1f内で各1度は実行する、という処理になっている。
+            現状は全ての子について1f内で各1度は実行する、という処理になっている。
             n-m-o
              \p-q
                \r
@@ -82,9 +140,8 @@ namespace UUebView
             pの展開時には、qとrが毎フレーム1度ずつ展開される。
 
             なので、全てのツリーが1fに1度は初期化されるようになる。
-
-		 */
-        private IEnumerator MaterializeRecursive(TagTree tree, GameObject parent)
+         */
+        private IEnumerator MaterializeRecursive(TagTree tree, GameObject parent, List<string> drawTargetTreeIds)
         {
             // Debug.LogError("materialize:" + tree.treeType + " tag:" + resLoader.GetTagFromValue(tree.tagValue));
             if (tree.keyValueStore.ContainsKey(HTMLAttribute.LISTEN) && tree.keyValueStore.ContainsKey(HTMLAttribute.HIDDEN))
@@ -95,6 +152,11 @@ namespace UUebView
             if (tree.hidden || tree.treeType == TreeType.Content_CRLF)
             {
                 // cancel materialize of this tree.
+                yield break;
+            }
+
+            if (!drawTargetTreeIds.Contains(tree.id))
+            {
                 yield break;
             }
 
@@ -225,12 +287,11 @@ namespace UUebView
 
             var children = tree.GetChildren();
 
-            // Debug.LogWarning("レイアウトが終わってるので、このへんはまだフルに分散できそう。内部的に分散する手法がいい感じになったらやろう。まあ2017で。");
             var enums = new List<IEnumerator>();
             for (var i = 0; i < children.Count; i++)
             {
                 var child = children[i];
-                var cor = MaterializeRecursive(child, newGameObject);
+                var cor = MaterializeRecursive(child, newGameObject, drawTargetTreeIds);
                 enums.Add(cor);
             }
 
@@ -280,8 +341,8 @@ namespace UUebView
                 button.onClick.RemoveAllListeners();
 
                 /*
-					this code can set action to button. but it does not appear in editor inspector.
-				*/
+                    this code can set action to button. but it does not appear in editor inspector.
+                */
                 button.onClick.AddListener(param);
             }
             else
