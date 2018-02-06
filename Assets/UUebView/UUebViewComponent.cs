@@ -39,7 +39,7 @@ namespace UUebView
              */
             if (!string.IsNullOrEmpty(presetUrl) && presetEventReceiver != null)
             {
-                Debug.Log("show preset view.");
+                // Debug.Log("show preset view.");
                 var viewObj = this.gameObject;
 
                 var uuebView = viewObj.GetComponent<UUebViewComponent>();
@@ -53,10 +53,10 @@ namespace UUebView
             GameObject eventReceiverScrollViewGameObj,
             string source,
             Vector2 viewRect,
-            float offsetY,
             ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null,
             ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null,
-            string viewName = ConstSettings.ROOTVIEW_NAME
+            string viewName = ConstSettings.ROOTVIEW_NAME,
+            Action<List<ParseError>> onParseFailed = null
         )
         {
             var viewObj = new GameObject("UUebView");
@@ -66,9 +66,9 @@ namespace UUebView
             // viewObjにUUebViewComponentを追加し、UUebViewComponentにコアを追加する。
             // viewObjのUUebViewComponentはuuebViewCoreインスタンスを持っているので、そのコアに外部からさらにイベントを追加することができる。
             var uuebView = viewObj.AddComponent<UUebViewComponent>();
-            var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate);
+            var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate, onParseFailed);
             uuebView.SetCore(uuebViewCore);
-            uuebViewCore.LoadHtml(source, viewRect, offsetY, eventReceiverScrollViewGameObj);
+            uuebViewCore.LoadHtml(source, viewRect, 0f, eventReceiverScrollViewGameObj);
 
             return viewObj;
         }
@@ -79,7 +79,8 @@ namespace UUebView
             Vector2 viewRect,
             ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null,
             ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null,
-            string viewName = ConstSettings.ROOTVIEW_NAME
+            string viewName = ConstSettings.ROOTVIEW_NAME,
+            Action<List<ParseError>> onParseFailed = null
         )
         {
             var viewObj = new GameObject("UUebView");
@@ -87,7 +88,7 @@ namespace UUebView
             viewObj.name = viewName;
 
             var uuebView = viewObj.AddComponent<UUebViewComponent>();
-            var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate);
+            var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate, onParseFailed);
             uuebView.SetCore(uuebViewCore);
             uuebViewCore.DownloadHtml(url, viewRect, eventReceiverGameObj);
 
@@ -99,10 +100,10 @@ namespace UUebView
             this.Core = core;
         }
 
-        public Action<float> GetScrollEvent()
-        {
-            return this.Core.OnScrollRangeChanged;
-        }
+        // public Action<float> GetScrollEvent()
+        // {
+        //     return this.Core.OnScrollRangeChanged;
+        // }
 
         void Update()
         {

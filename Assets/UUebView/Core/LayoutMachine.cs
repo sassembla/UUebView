@@ -39,7 +39,6 @@ namespace UUebView
         public IEnumerator Layout(TagTree rootTree, Vector2 view, Action<TagTree> layouted)
         {
             var viewCursor = new ViewCursor(0, 0, view.x, view.y);
-
             var cor = DoLayout(rootTree, viewCursor);
 
             while (cor.MoveNext())
@@ -48,12 +47,13 @@ namespace UUebView
                 {
                     break;
                 }
+
                 yield return null;
             }
 
             var childViewCursor = cor.Current;
 
-            // ビュー高さをセット
+            // レイアウト済みのビュー高さをセット
             rootTree.viewHeight = childViewCursor.viewHeight;
 
             layouted(rootTree);
@@ -121,23 +121,36 @@ namespace UUebView
                 resLoader.LoadParallel(loadThenSetHiddenPosCor);
 
                 var hiddenCursor = ViewCursor.ZeroSizeCursor(viewCursor);
-                // Debug.LogError("hidden tree:" + Debug_GetTagStrAndType(tree) + " viewCursor:" + viewCursor);
+                // Debug.Log("hidden tree:" + Debug_GetTagStrAndType(tree) + " viewCursor:" + viewCursor);
 
                 yield return tree.SetPosFromViewCursor(hiddenCursor);
-                throw new Exception("never come here.");
             }
             else
             {
+
+                // var sw = new System.Diagnostics.Stopwatch();
+                // sw.Start();
+
                 while (cor.MoveNext())
                 {
                     if (cor.Current != null)
                     {
                         break;
                     }
-                    yield return null;
+
+                    // このloading countは常に1になってしまっていて、ここが最初のボトルネック。parseの時点でprefabのloadを扱ってしまってもいいかも。
+                    // もう一箇所ある。
+                    if (0 < ResourceLoader.loadingPrefabNames.Count || 0 < ResourceLoader.spriteDownloadingUris.Count)
+                    {
+                        // Debug.Log("ResourceLoader.loadingPrefabNames.Count:" + ResourceLoader.loadingPrefabNames.Count);
+                        yield return null;
+                    }
                 }
 
-                // Debug.LogError("done layouted tree:" + Debug_GetTagStrAndType(tree) + " next cursor:" + cor.Current);
+                // sw.Stop();
+                // Debug.Log("layout sw:" + sw.ElapsedTicks + " tree.treeType:" + tree.treeType);
+
+
                 yield return cor.Current;
             }
         }
@@ -414,7 +427,6 @@ namespace UUebView
             {
                 // treeに位置をセットしてposを返す
                 yield return containerTree.SetPosFromViewCursor(containerViewCursor);
-                throw new Exception("never come here.");
             }
 
             var linedElements = new List<TagTree>();
@@ -489,7 +501,7 @@ namespace UUebView
                                         }
                                     case InsertType.AddContentToContainer:
                                         {
-                                            Debug.LogError("AddContentToContainerが発生");
+                                            // もう使われてないかも。
                                             linedElements.Add(insertingChild);
                                             break;
                                         }
@@ -972,7 +984,11 @@ namespace UUebView
                 {
                     break;
                 }
-                yield return null;
+
+                if (0 < ResourceLoader.loadingPrefabNames.Count || 0 < ResourceLoader.spriteDownloadingUris.Count)
+                {
+                    yield return null;
+                }
             }
 
             object textComponentSrc = textComponentCor.Current;
@@ -1352,7 +1368,10 @@ namespace UUebView
         private IEnumerator<ChildPos> DoCRLFLayout(TagTree crlfTree, ViewCursor viewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null)
         {
             // 親へとcrlfを伝達することで、改行処理を行ってもらう。
-            insertion(InsertType.Crlf, crlfTree);
+            if (insertion != null)
+            {
+                insertion(InsertType.Crlf, crlfTree);
+            }
 
             // コンテンツ自体は0サイズでセット、
             var currentViewCursor = ViewCursor.ZeroSizeCursor(viewCursor);

@@ -41,8 +41,9 @@ namespace UUebView
         public readonly ResourceLoader resLoader;
         private LayoutMachine layoutMachine;
         private MaterializeMachine materializeMachine;
+        private readonly Action<List<ParseError>> onParseFailed;
 
-        public UUebViewCore(IUUebView uuebView, ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null, ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null)
+        public UUebViewCore(IUUebView uuebView, ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null, ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null, Action<List<ParseError>> onParseFailed = null)
         {
             this.view = uuebView;
 
@@ -51,6 +52,22 @@ namespace UUebView
 
             layoutMachine = new LayoutMachine(resLoader);
             materializeMachine = new MaterializeMachine(resLoader);
+
+            if (onParseFailed != null)
+            {
+                this.onParseFailed = onParseFailed;
+            }
+            else
+            {
+                this.onParseFailed = errors =>
+                {
+                    Debug.LogError("parse errors:" + errors.Count);
+                    foreach (var error in errors)
+                    {
+                        Debug.LogError("code:" + error.code + " reason:" + error.reason);
+                    }
+                };
+            }
         }
 
         private void StartCalculateProgress(string[] treeIds)
@@ -254,13 +271,11 @@ namespace UUebView
                 source,
                 parsedTagTree =>
                 {
-                    Debug.LogWarning("このへんをイベントにしないとな〜〜という感じ");
                     if (parsedTagTree.errors.Any())
                     {
-                        Debug.LogError("parse errors:" + parsedTagTree.errors.Count);
-                        foreach (var error in parsedTagTree.errors)
+                        if (onParseFailed != null)
                         {
-                            Debug.LogError("code:" + error.code + " reason:" + error.reason);
+                            onParseFailed(parsedTagTree.errors);
                         }
                         return;
                     }
@@ -317,22 +332,22 @@ namespace UUebView
                             StartCalculateProgress(newIds);
                         }
                     );
+
                 }
             );
 
-            while (layout.MoveNext())
             {
-                yield return null;
+                while (layout.MoveNext())
+                {
+                    yield return null;
+                }
             }
 
-            if (materialize == null)
             {
-                yield break;
-            }
-
-            while (materialize.MoveNext())
-            {
-                yield return null;
+                while (materialize.MoveNext())
+                {
+                    yield return null;
+                }
             }
         }
 
@@ -474,27 +489,20 @@ namespace UUebView
 
         }
 
-        public void OnScrollRangeChanged(float index)
-        {
-            var offsetY = (int)index;
-            if (0 <= offsetY && offsetY <= viewRect.y)
-            {
-                // スクロール値が範囲内だけれど、イベント中なので無視する。
-                if (viewState != ViewState.Ready)
-                {
-                    // ignore.
-                    Debug.Log("イベント中にスクロールが来ても無視する(記録しておく必要はある気がする");
-                    return;
-                }
+        // public void OnScrollRangeChanged(float index)
+        // {
+        //     // スクロール値が範囲内だけれど、イベント中なので無視する。
+        //     if (viewState != ViewState.Ready)
+        //     {
+        //         // ignore.
+        //         Debug.Log("イベント中にスクロールが来ても無視する(記録しておく必要はある気がする");
+        //         return;
+        //     }
 
-                // offsetY ~ 画面高さの範囲を扱う。この範囲は、offset + viewHeightなのだけれど
-                // コンテンツの全高から換算する必要がある。そのへんはmaterializeが頑張ればいいのか。view高さは知らないと思うんで、
-
-                // resLoader.BackGameObjects(scrollUsingIds);とりあえず全てのオブジェクトを戻しちゃえばいいような気がするが、ちょっと違うかな、、
-                var cor = materializeMachine.OnScroll(view.GetGameObject(), this.layoutedTree, offsetY, viewRect.y);
-                CoroutineExecutor(cor);
-            }
-        }
+        //     var offsetY = (int)index;
+        //     var cor = materializeMachine.OnScroll(view.GetGameObject(), this.layoutedTree, offsetY, viewRect.y);
+        //     CoroutineExecutor(cor);
+        // }
 
         private enum ViewState
         {

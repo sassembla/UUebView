@@ -157,10 +157,10 @@ namespace UUebView
                 yield break;
             }
 
-            if (!drawTargetTreeIds.Contains(tree.id))
-            {
-                yield break;
-            }
+            // if (!drawTargetTreeIds.Contains(tree.id))
+            // {
+            //     yield break;
+            // }
 
             var objCor = resLoader.LoadGameObjectFromPrefab(tree.id, tree.tagValue, tree.treeType);
 
@@ -375,27 +375,55 @@ namespace UUebView
             }
         }
 
-        private List<string> drawTreeIds = new List<string>();
-        public IEnumerator OnScroll(GameObject root, TagTree layoutedTree, float yOffset, float viewHeight)
-        {
-            var newDrawTreeIds = TraverseTree(layoutedTree, yOffset, viewHeight);
-            Debug.Log("newDrawTreeIds:" + newDrawTreeIds.Count + " vs drawTreeIds:" + drawTreeIds.Count);
+        /*
+            scrollに合わせてMaterializeを行うプラン、とりあえず現状は不要っぽい。
+         */
+        // private List<string> drawTreeIds = new List<string>();
+        // private bool running = false;
+        // public IEnumerator OnScroll(GameObject root, TagTree layoutedTree, float yOffset, float viewHeight)
+        // {
+        //     // ここは、現在runしているツリーに関して記録して、それ以外が発生したらそれも追加で走らせる、とかのほうがいいんだろうか。
+        //     // それともこの形状でも問題ないのかな。範囲の問題な気はする。
+        //     if (running)
+        //     {
+        //         // 現在通過しているポイントまでの間のオブジェクトもちゃんと含む必要がある。ので、running中でも何らかの対処は必要。
+        //         yield break;
+        //     }
 
+        //     var newDrawTreeIds = TraverseTree(layoutedTree, yOffset, viewHeight);
 
-            // まずは1列、重複するだろうか。->しない。
-            var children = layoutedTree.GetChildren();
-            for (var i = 0; i < children.Count; i++)
-            {
-                var child = children[i];
-                var cor = MaterializeRecursive(child, root, drawTreeIds);
+        //     // idに関してはあるものがそのまま出ているので文句なし。
+        //     // で、まず重なるところをなんとかするか。
+        //     // 単純で、すでに存在するidは外す。
+        //     var newIds = newDrawTreeIds.Except(drawTreeIds).ToList();
+        //     Debug.Log("走ってる newIds:" + newIds.Count);
 
-                while (cor.MoveNext())
-                {
-                    yield return null;
-                }
-            }
+        //     if (0 < newIds.Count())
+        //     {
+        //         running = true;
+        //     }
+        //     else
+        //     {
+        //         yield break;
+        //     }
 
-            drawTreeIds = newDrawTreeIds;
-        }
+        //     /*
+        //         重複するところ、キャッシュをローテーションするところを作る。
+        //      */
+        //     var children = layoutedTree.GetChildren();
+        //     for (var i = 0; i < children.Count; i++)
+        //     {
+        //         var child = children[i];
+        //         var cor = MaterializeRecursive(child, root, newIds);
+
+        //         while (cor.MoveNext())
+        //         {
+        //             yield return null;
+        //         }
+        //     }
+
+        //     drawTreeIds = newDrawTreeIds;
+        //     running = false;
+        // }
     }
 }

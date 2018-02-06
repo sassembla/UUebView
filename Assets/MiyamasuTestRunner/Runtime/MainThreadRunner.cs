@@ -73,7 +73,7 @@ namespace Miyamasu
             var scrollViewWidth = contentRect.rect.width;
             Recorder.logAct = this.AddLog;
 
-            var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(scrollViewWidth, 100), 0f);
+            var view = UUebViewComponent.GenerateSingleViewFromHTML(this.gameObject, htmlContent, new Vector2(scrollViewWidth, 100));
             view.name = "MiyamasuRuntimeConsole";
             view.transform.SetParent(attachTargetView.transform, false);
 

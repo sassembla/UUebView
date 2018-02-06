@@ -50,11 +50,11 @@ namespace UUebView
             sprites and prefabs are cached statically.
          */
         private static SpriteCache spriteCache = new SpriteCache();
-        private static List<string> spriteDownloadingUris = new List<string>();
+        public static List<string> spriteDownloadingUris = new List<string>();
 
 
         private static PrefabCache prefabCache = new PrefabCache();
-        private static List<string> loadingPrefabNames = new List<string>();
+        public static List<string> loadingPrefabNames = new List<string>();
 
         private GameObjCache goCache = new GameObjCache();
 
@@ -206,7 +206,6 @@ namespace UUebView
 
             if (prefabCache.ContainsKey(prefabName))
             {
-                // Debug.LogError("return cached loadingPrefabName:" + loadingPrefabName);
                 yield return prefabCache[prefabName];
                 yield break;
             }
