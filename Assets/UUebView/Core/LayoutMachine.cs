@@ -922,8 +922,6 @@ namespace UUebView
 
             var prefab = cor.Current;
 
-            // Debug.Log("今後、この部分を外部展開可能にする。コンポーネントを返せればいいので、型の列挙だけできれば良さそう。 prefab:" + prefab);
-
             var textComponent = prefab.GetComponent<Text>();
             if (textComponent != null)
             {
