@@ -12,12 +12,14 @@ namespace TMPro
     {
         public string text;
         public float preferredHeight;
-        public Font font;
+
         public object fontSize;
         public object fontStyle;
         public RectTransform rectTransform;
         public int lineSpacing;
         public float preferredWidth;
+
+        public Font font { get { throw new Exception("this feature requires TextMesh Pro. please get it from AssetStore then delete UUebView/Extension/Delete_This_If_Use_TextMeshPro_Extension.dll."); } set { } }
 
         public TextInfo GetTextInfo(string text)
         {
