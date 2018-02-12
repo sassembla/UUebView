@@ -1,5 +1,5 @@
-#region Assembly TextMeshPro-2017.2-1.0.56-Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// TextMeshPro-2017.2-1.0.56-Runtime.dll
+#region Assembly TextMeshPro-Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// TextMeshPro-Runtime.dll
 #endregion
 
 using System;
