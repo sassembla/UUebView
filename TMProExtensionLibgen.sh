@@ -3,7 +3,7 @@
 	-r:/Applications/Unity2017.2.0p4/Unity.app/Contents/Managed/UnityEngine.dll \
 	-target:library \
 	-recurse:'ExtensionSource/*.cs' \
-	-out:ExtensionSource/Delete_This_If_Use_TextMeshPro_Extension.dll \
+	-out:ExtensionSource/TextMeshPro-2017.2-1.0.56-Runtime.dll \
 	-sdk:2
 
-cp ExtensionSource/Delete_This_If_Use_TextMeshPro_Extension.dll Assets/UUebView/Extension/Delete_This_If_Use_TextMeshPro_Extension.dll
+cp ExtensionSource/TextMeshPro-2017.2-1.0.56-Runtime.dll Assets/UUebView/Extension/Delete_This_If_Use_TextMeshPro_Extension.dll
