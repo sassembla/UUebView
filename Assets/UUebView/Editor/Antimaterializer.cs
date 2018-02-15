@@ -295,7 +295,7 @@ namespace UUebView
 
             // このコンポーネントをprefab化する
             {
-                var prefabPath = "Assets/InformationResources/Resources/Views/" + viewName + "/" + contentName.ToUpper() + ".prefab";
+                var prefabPath = ConstSettings.FULLPATH_INFORMATION_RESOURCE + viewName + "/" + contentName.ToUpper() + ".prefab";
                 var dirPath = Path.GetDirectoryName(prefabPath);
 
                 FileController.CreateDirectoryRecursively(dirPath);
@@ -427,7 +427,7 @@ namespace UUebView
                     prefab名は大文字 になる。
                 */
                 {
-                    var prefabPath = "Assets/InformationResources/Resources/Views/" + viewName + "/" + layerName.ToUpper() + ".prefab";
+                    var prefabPath = ConstSettings.FULLPATH_INFORMATION_RESOURCE + viewName + "/" + layerName.ToUpper() + ".prefab";
                     var dirPath = Path.GetDirectoryName(prefabPath);
 
                     FileController.CreateDirectoryRecursively(dirPath);

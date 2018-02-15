@@ -47,14 +47,20 @@ namespace UUebView
                 var uuebTagsCandidate = Selection.activeGameObject;
                 if (uuebTagsCandidate != null && uuebTagsCandidate.transform.parent.GetComponent<Canvas>() != null)
                 {
-                    // 選択されている名称のuuebTagsが存在しているはずなので、云々。初めからUUebTagsだけを扱えばいいか。
-
+                    // 選択されているオブジェクトのuuebTagsが存在しているはずなので、云々。初めからUUebTagsだけを扱えばいいか。
+                    Debug.Log("uuebTagsCandidate:" + uuebTagsCandidate.name);
                 }
 
                 // デフォルトもあるはずなので、そちらも。なかったらいらない。
-                if (false)
+                if (Directory.Exists(""))
                 {
 
+                }
+
+                // unitypackageを吐き出す
+                foreach (var a in reportTargetAssetPaths)
+                {
+                    Debug.Log("a:" + a);
                 }
             }
         }
