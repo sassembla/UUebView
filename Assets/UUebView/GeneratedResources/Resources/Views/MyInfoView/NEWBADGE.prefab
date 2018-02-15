@@ -9,18 +9,18 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1986456076756006}
+  m_RootGameObject: {fileID: 1222898727814148}
   m_IsPrefabParent: 1
---- !u!1 &1986456076756006
+--- !u!1 &1222898727814148
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224857424515342276}
-  - component: {fileID: 222630168993851882}
-  - component: {fileID: 114333627477247500}
+  - component: {fileID: 224211462882227068}
+  - component: {fileID: 222259880019632076}
+  - component: {fileID: 114827548425890630}
   m_Layer: 5
   m_Name: NEWBADGE
   m_TagString: Untagged
@@ -28,12 +28,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114333627477247500
+--- !u!114 &114827548425890630
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1986456076756006}
+  m_GameObject: {fileID: 1222898727814148}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
@@ -55,18 +55,18 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!222 &222630168993851882
+--- !u!222 &222259880019632076
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1986456076756006}
---- !u!224 &224857424515342276
+  m_GameObject: {fileID: 1222898727814148}
+--- !u!224 &224211462882227068
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1986456076756006}
+  m_GameObject: {fileID: 1222898727814148}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

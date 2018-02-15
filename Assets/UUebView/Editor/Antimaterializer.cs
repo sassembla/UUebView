@@ -108,7 +108,16 @@ namespace UUebView
             {
                 sw.WriteLine(jsonStr);
             }
+
+            // オリジナルのオブジェクト自体をprefabとして別途保存する。
+            if (!Directory.Exists(exportBasePath + "/Editor/"))
+            {
+                Directory.CreateDirectory(exportBasePath + "/Editor/");
+            }
+
+            PrefabUtility.CreatePrefab(exportBasePath + "/Editor/" + viewName + ".prefab", target);
             AssetDatabase.Refresh();
+
             Debug.Log("finished antimaterialize:" + viewName + ". view name is:" + target + " export file path:" + exportBasePath);
         }
 
