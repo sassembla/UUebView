@@ -92,7 +92,7 @@ public class MaterializeMachineTests : MiyamasuTestRunner
 
         TagTree layouted = null;
 
-        var layoutMachine = new LayoutMachine(core.resLoader);
+        var layoutMachine = new LayoutMachine(core.resLoader, new Handler());
 
         var cor2 = layoutMachine.Layout(
             parsedRoot,
@@ -114,7 +114,7 @@ public class MaterializeMachineTests : MiyamasuTestRunner
     private static int index;
     private IEnumerator Show(TagTree tree)
     {
-        var materializeMachine = new MaterializeMachine(core.resLoader);
+        var materializeMachine = new MaterializeMachine(core.resLoader, new Handler());
 
         var materializeDone = false;
 

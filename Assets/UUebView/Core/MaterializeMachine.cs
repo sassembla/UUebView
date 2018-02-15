@@ -14,9 +14,11 @@ namespace UUebView
     {
         private readonly ResourceLoader resLoader;
         private UUebViewCore core;
-        public MaterializeMachine(ResourceLoader resLoader)
+        private readonly IPluggable pluggable;
+        public MaterializeMachine(ResourceLoader resLoader, IPluggable pluggable)
         {
             this.resLoader = resLoader;
+            this.pluggable = pluggable;
         }
 
         public readonly Dictionary<string, KeyValuePair<GameObject, string>> eventObjectCache = new Dictionary<string, KeyValuePair<GameObject, string>>();
@@ -228,16 +230,7 @@ namespace UUebView
                             var text = tree.keyValueStore[HTMLAttribute._CONTENT] as string;
                             if (!string.IsNullOrEmpty(text))
                             {
-                                var textComponent = newGameObject.GetComponent<Text>();
-                                if (textComponent != null)
-                                {
-                                    textComponent.text = text;
-                                }
-                                else
-                                {
-                                    var textComponentPro = newGameObject.GetComponent<TMPro.TextMeshProUGUI>();
-                                    textComponentPro.text = text;
-                                }
+                                pluggable.SetText(newGameObject, text);
                             }
                         }
 

@@ -74,7 +74,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
 
 
         var layoutMachine = new LayoutMachine(
-            loader
+            loader,
+            new Handler()
         );
 
         var loaderCor = layoutMachine.Layout(
@@ -100,7 +101,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body>something</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     }
 
     [MTest]
@@ -108,7 +110,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body>something</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 16, "not match.");
     }
 
@@ -117,7 +120,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body>over 100px string should be multi lined text with good separation. need some length.</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 118, "not match. tree.viewHeight:" + tree.viewHeight);
     }
 
@@ -126,8 +130,9 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body><img src='https://dummyimage.com/100.png/09f/fff'/></body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
-        True(tree.viewHeight == 100, "not match.");
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        True(tree.viewHeight == 100, "not match. tree.viewHeight:" + tree.viewHeight);
     }
 
     [MTest]
@@ -135,7 +140,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/></body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 10, "not match.");
     }
 
@@ -144,7 +150,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>text</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 16, "not match.");
     }
 
@@ -153,7 +160,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 117, "not match. tree.viewHeight:" + tree.viewHeight);
     }
 
@@ -163,7 +171,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body><img src='https://dummyimage.com/97x10/000/fff'/>something</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 26, "not match. tree.viewHeight:" + tree.viewHeight);
     }
 
@@ -172,7 +181,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body>something<img src='https://dummyimage.com/100x10/000/fff'/></body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 16, "not match.");
     }
 
@@ -182,7 +192,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     {
         var sample = @"
 <body>something<img src='https://dummyimage.com/100x10/000/fff'/>else</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 16 + 16, "not match.");
     }
 
@@ -197,7 +208,8 @@ else
 <img src='https://dummyimage.com/100x20/000/fff'/>
 other
 </body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 16 + 16 + 16, "not match. tree.viewHeight:" + tree.viewHeight);
     }
 
@@ -206,7 +218,8 @@ other
     {
         var sample = @"
 <body><img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 10 + 16 + 16, "not match.");
     }
 
@@ -216,7 +229,8 @@ other
     {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/></body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 16, "not match.");
     }
 
@@ -226,7 +240,8 @@ other
     {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/>b!</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 16, "not match.");
     }
 
@@ -235,7 +250,8 @@ other
     {
         var sample = @"
 <body>something<img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/100x10/000/fff'/>other</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 16 + 16 + 16, "not match.");
     }
 
@@ -244,7 +260,8 @@ other
     {
         var sample = @"
 <body><img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/10x20/000/fff'/>other</body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(tree.viewHeight == 20, "not match.");
     }
 
@@ -254,7 +271,8 @@ other
     {
         var sample = @"
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     }
 
     [MTest]
@@ -268,7 +286,8 @@ else
 <customimg src='https://dummyimage.com/10x20/000/fff'/>
 </body>
         ";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     }
 
     [MTest]
@@ -282,7 +301,8 @@ something you need is not time, money, but do things fast.
 </customtext></textbg></custombg></customtag>
 else
 </body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     }
 
     [MTest]
@@ -296,7 +316,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 </customtext></textbg></custombg></customtag>
 else
 </body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         while (true)
         {
             if (0 < tree.GetChildren().Count)
@@ -343,7 +364,8 @@ else
             LayoutMachine layoutMachine = null;
 
             layoutMachine = new LayoutMachine(
-                loader
+                loader,
+                new Handler()
             );
 
             var cor = layoutMachine.Layout(
@@ -418,7 +440,8 @@ else
             LayoutMachine layoutMachine = null;
 
             layoutMachine = new LayoutMachine(
-                loader
+                loader,
+                new Handler()
             );
 
             var cor = layoutMachine.Layout(
@@ -468,7 +491,8 @@ else
     {
         var sample = @"
 <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(
             tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[0]/*text of body*/.treeType == TreeType.Content_Text, "not match, type:" + tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[0]/*text of body*/.treeType
         );
@@ -483,7 +507,8 @@ else
     {
         var sample = @"
 <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(
             tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[0]/*text of body*/.offsetY == 6f, "not match, offsetY:" + tree/*root*/.GetChildren()[0]/*body*/.GetChildren()[0]/*text of body*/.offsetY
         );
@@ -510,7 +535,8 @@ else
     <img src='https://dummyimage.com/100.png/07f/fff'/>
 </bottom>
 </itemlayout>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var itemLayout = tree.GetChildren()[0];
         var topleft = itemLayout.GetChildren()[0];
         var topright = itemLayout.GetChildren()[1];
@@ -526,7 +552,8 @@ else
 <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
 <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
 <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(0 < tree.GetChildren().Count, "not match, actual:" + tree.GetChildren().Count);
         True(tree.GetChildren()[0].offsetY.ToString() == "0.04999924", "not match of 1. actual:" + tree.GetChildren()[0].offsetY);
         True(tree.GetChildren()[1].offsetY == 60.8f, "not match of 2. actual:" + tree.GetChildren()[1].offsetY);
@@ -541,7 +568,8 @@ else
 <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
 <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>
 </body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         True(0 < tree.GetChildren().Count, "not match, actual:" + tree.GetChildren().Count);
         True(tree.GetChildren()[0].GetChildren()[0].offsetY.ToString() == "0.04999924", "not match of 1. actual:" + tree.GetChildren()[0].GetChildren()[0].offsetY);
         True(tree.GetChildren()[0].GetChildren()[1].offsetY == 60.8f, "not match of 2. actual:" + tree.GetChildren()[0].GetChildren()[1].offsetY);
@@ -562,7 +590,8 @@ else
 	    </textbg>
     </bg>
 </body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var textBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0];
         var updatetextBox = textBox.GetChildren()[0];
         // Debug.LogError("updatetextBox:" + updatetextBox.viewHeight);
@@ -590,7 +619,8 @@ else
 	    </textbg>
     </bg>
 </body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     }
 
     [MTest]
@@ -602,7 +632,8 @@ else
     <custombg><textbg><customtext>something1</customtext></textbg></custombg>
     <custombg><textbg><customtext>something2</customtext></textbg></custombg>
 </customtag>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var custombgs = tree.GetChildren()[0]/*customtag*/.GetChildren()[0]/*box*/.GetChildren();
         True(custombgs[0].offsetY == 0, "not match. custombgs[0].offsetY:" + custombgs[0].offsetY);
         True(custombgs[1].offsetY == 60.7f, "not match. custombgs[1].offsetY:" + custombgs[1].offsetY);
@@ -625,7 +656,8 @@ else
 	    </textbg>
     </bg>
 </body>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
 
         var pAndUpdateText = tree.GetChildren()[0]/*body*/.GetChildren()[0]/*bg*/.GetChildren()[0]/*textbg*/.GetChildren()[0]/*textbox*/.GetChildren()[0]/*textbox_box*/.GetChildren()[0].GetChildren();
         // foreach (var s in pAndUpdateText) {
@@ -674,7 +706,8 @@ else
     </bg>
 </body>
 ";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
         var textBg = tree.GetChildren()[0].GetChildren()[0].GetChildren()[2];
         True(textBg.offsetY.ToString() == "56.97501", "not match, textBg.offsetY:" + textBg.offsetY);
     }
@@ -690,7 +723,8 @@ else
     <p>hey!</p>
 </body>
 ";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
         var p = tree.GetChildren()[0].GetChildren()[1];
 
         True(p.offsetX == 0 && p.offsetY == 100, "not match. p.offsetY:" + p.offsetY);
@@ -704,7 +738,8 @@ else
     something<br>
     else
 </p>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
 
         True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
@@ -719,7 +754,8 @@ else
     something<br><br>
     else
 </p>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
 
         True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
@@ -732,7 +768,8 @@ else
         var sample = @"
 <p align='center'>aaa</p>";
 
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
 
         True(p[0].offsetX == 38, "not match. custombgs[0].offsetX:" + p[0].offsetX);
@@ -745,7 +782,8 @@ else
         var sample = @"
 <p align='right'>aaa</p>";
 
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var p = tree.GetChildren()[0]/*p*/.GetChildren();
 
         True(p[0].offsetX == 76, "not match. custombgs[0].offsetX:" + p[0].offsetX);
@@ -759,7 +797,8 @@ else
 <p>
     p1<a href=''>a1</a>p2
 </p>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var p1 = tree.GetChildren()[0];
 
         True(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
@@ -776,7 +815,8 @@ else
 </p><p>
     p3
 </p>";
-        TagTree tree = null; yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+        TagTree tree = null;
+        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
         var p1 = tree.GetChildren()[0];
         var p2 = tree.GetChildren()[1];
 

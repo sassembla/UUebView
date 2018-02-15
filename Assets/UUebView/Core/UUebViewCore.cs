@@ -43,15 +43,23 @@ namespace UUebView
         private MaterializeMachine materializeMachine;
         private readonly Action<List<ParseError>> onParseFailed;
 
+        private static IPluggable pluggable;
+
         public UUebViewCore(IUUebView uuebView, ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null, ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null, Action<List<ParseError>> onParseFailed = null)
         {
+            if (pluggable == null)
+            {
+                Debug.Log("とりあえず適当に初期化。実際には外側から渡す。");
+                pluggable = new Handler();
+            }
+
             this.view = uuebView;
 
             resLoader = new ResourceLoader(this.LoadParallel, requestHeader, httpResponseHandlingDelegate);
             this.view.AddChild(resLoader.cacheBox.transform);
 
-            layoutMachine = new LayoutMachine(resLoader);
-            materializeMachine = new MaterializeMachine(resLoader);
+            layoutMachine = new LayoutMachine(resLoader, pluggable);
+            materializeMachine = new MaterializeMachine(resLoader, pluggable);
 
             if (onParseFailed != null)
             {
