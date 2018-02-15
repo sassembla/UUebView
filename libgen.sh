@@ -6,5 +6,5 @@
 	-out:./UUebView.dll \
 	-sdk:2
 
-# TMPro本来のdllを使う必要はない。
+# 下記のものがなくてもコンパイルできるようにしておく。
 # -r:"Assets/TextMesh Pro/Plugins/Runtime DLL/TextMeshPro-2017.2-1.0.56-Runtime.dll" \

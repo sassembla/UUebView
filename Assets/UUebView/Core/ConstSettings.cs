@@ -15,7 +15,7 @@ namespace UUebView
         public const string ROOTVIEW_NAME = "UUebViewRoot";
 
         public const string UUEBTAGS_DEFAULT = "Default";
-        public const string FULLPATH_INFORMATION_RESOURCE = "Assets/UUebViewGeneratedResources/Resources/Views/";
+        public const string FULLPATH_INFORMATION_RESOURCE = "Assets/UUebView/GeneratedResources/Resources/Views/";
 
         public const string FULLPATH_DEFAULT_TAGS = FULLPATH_INFORMATION_RESOURCE + UUEBTAGS_DEFAULT + "/";
         public const string PREFIX_PATH_INFORMATION_RESOURCE = "Views/";
