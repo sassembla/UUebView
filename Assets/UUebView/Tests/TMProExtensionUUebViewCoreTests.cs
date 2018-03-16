@@ -76,7 +76,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -96,7 +96,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromUrl(eventReceiverGameObj, url, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromUrl(eventReceiverGameObj, url, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -120,7 +120,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -158,7 +158,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -183,7 +183,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -209,7 +209,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -235,7 +235,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -260,7 +260,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -295,7 +295,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -330,7 +330,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -360,7 +360,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
             uUebView = view.GetComponent<UUebViewComponent>();
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, null, null, new TMProPlugin());
 
         var shown = false;
         Show(view, () => { shown = true; });
@@ -427,7 +427,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -449,7 +449,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -472,7 +472,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, viewName);
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, viewName, null, new TMProPlugin());
 
         Show(view);
 
@@ -497,7 +497,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -519,7 +519,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -539,7 +539,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -562,7 +562,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(300, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -647,7 +647,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(800, 1000));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(800, 1000), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -673,7 +673,7 @@ public class TMProExtensionUUebViewCoreTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(800, 1000));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(800, 1000), null, null, null, null, new TMProPlugin());
 
         Show(view);
 

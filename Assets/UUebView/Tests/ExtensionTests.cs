@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Miyamasu;
 using UnityEngine;
+using UUebView;
 
 public class ExtensionTests : MiyamasuTestRunner
 {
@@ -50,6 +51,10 @@ public class ExtensionTests : MiyamasuTestRunner
         eventReceiverGameObj = new GameObject("controller");
         eventReceiverGameObj.AddComponent<TestReceiver>();
     }
+    [MTeardown]
+    public void Teardown()
+    {
+    }
 
     [MTest]
     public IEnumerator DefaultText()
@@ -84,7 +89,7 @@ public class ExtensionTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 
@@ -129,7 +134,7 @@ public class ExtensionTests : MiyamasuTestRunner
         {
             done = true;
         };
-        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100));
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(100, 100), null, null, null, null, new TMProPlugin());
 
         Show(view);
 

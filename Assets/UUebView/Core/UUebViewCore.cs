@@ -43,14 +43,12 @@ namespace UUebView
         private MaterializeMachine materializeMachine;
         private readonly Action<List<ParseError>> onParseFailed;
 
-        private static IPluggable pluggable;
 
-        public UUebViewCore(IUUebView uuebView, ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null, ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null, Action<List<ParseError>> onParseFailed = null)
+        public UUebViewCore(IUUebView uuebView, IPluggable plugin = null, ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null, ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null, Action<List<ParseError>> onParseFailed = null)
         {
-            if (pluggable == null)
+            if (plugin == null)
             {
-                Debug.Log("とりあえず適当に初期化。実際には外側から渡す。");
-                pluggable = new Handler();
+                plugin = new DefaultBehaviour();
             }
 
             this.view = uuebView;
@@ -58,8 +56,8 @@ namespace UUebView
             resLoader = new ResourceLoader(this.LoadParallel, requestHeader, httpResponseHandlingDelegate);
             this.view.AddChild(resLoader.cacheBox.transform);
 
-            layoutMachine = new LayoutMachine(resLoader, pluggable);
-            materializeMachine = new MaterializeMachine(resLoader, pluggable);
+            layoutMachine = new LayoutMachine(resLoader, plugin);
+            materializeMachine = new MaterializeMachine(resLoader, plugin);
 
             if (onParseFailed != null)
             {

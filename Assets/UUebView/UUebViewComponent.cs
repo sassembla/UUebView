@@ -56,7 +56,8 @@ namespace UUebView
             ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null,
             ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null,
             string viewName = ConstSettings.ROOTVIEW_NAME,
-            Action<List<ParseError>> onParseFailed = null
+            Action<List<ParseError>> onParseFailed = null,
+            IPluggable plugin = null
         )
         {
             var viewObj = new GameObject("UUebView");
@@ -66,7 +67,8 @@ namespace UUebView
             // viewObjにUUebViewComponentを追加し、UUebViewComponentにコアを追加する。
             // viewObjのUUebViewComponentはuuebViewCoreインスタンスを持っているので、そのコアに外部からさらにイベントを追加することができる。
             var uuebView = viewObj.AddComponent<UUebViewComponent>();
-            var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate, onParseFailed);
+            var uuebViewCore = new UUebViewCore(uuebView, plugin, requestHeader, httpResponseHandlingDelegate, onParseFailed);
+
             uuebView.SetCore(uuebViewCore);
             uuebViewCore.LoadHtml(source, viewRect, 0f, eventReceiverScrollViewGameObj);
 
@@ -80,7 +82,8 @@ namespace UUebView
             ResourceLoader.MyHttpRequestHeaderDelegate requestHeader = null,
             ResourceLoader.MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null,
             string viewName = ConstSettings.ROOTVIEW_NAME,
-            Action<List<ParseError>> onParseFailed = null
+            Action<List<ParseError>> onParseFailed = null,
+            IPluggable plugin = null
         )
         {
             var viewObj = new GameObject("UUebView");
@@ -88,7 +91,8 @@ namespace UUebView
             viewObj.name = viewName;
 
             var uuebView = viewObj.AddComponent<UUebViewComponent>();
-            var uuebViewCore = new UUebViewCore(uuebView, requestHeader, httpResponseHandlingDelegate, onParseFailed);
+            var uuebViewCore = new UUebViewCore(uuebView, plugin, requestHeader, httpResponseHandlingDelegate, onParseFailed);
+
             uuebView.SetCore(uuebViewCore);
             uuebViewCore.DownloadHtml(url, viewRect, eventReceiverGameObj);
 

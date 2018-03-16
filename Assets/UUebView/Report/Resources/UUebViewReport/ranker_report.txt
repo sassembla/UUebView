@@ -1,0 +1,72 @@
+<!DOCTYPE uuebview href='resources://Views/HelpListView/UUebTags'>
+
+<body>
+    <bg>
+        <titlebg>
+            <titlebox>
+                <titletext align='center'>ヘルプ</titletext>
+            </titlebox>
+        </titlebg>
+    </bg>
+
+    <spacerbg/>
+    <br>
+
+    <bg>
+        <heading button='true' id='stage'>
+            <headingbg>
+                <headingbox>
+                    <headingtext align='center'>ステージ</headingtext>
+                </headingbox>
+            </headingbg>
+        </heading>
+    </bg>
+
+    <bg>
+        <subheadingcontainer hidden='true' listen='stage'>
+            <subheading>
+                <subheadingtitle>
+                    <subheadingtitlebox>
+                        <captiontext align='left'>ステージとは1みたいなこの文章が十分に長くて2行に渡る場合、下につくコンテンツはずれなければいけない。そのズレをまず作成してみよう</captiontext>
+                    </subheadingtitlebox>
+                </subheadingtitle>
+                <subheadingdescbox>
+                    <p align='left'>
+                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    </p>
+                    <p align='left'>
+                        caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    </p>
+                </subheadingdescbox>
+                <subheadingdescbox>
+                    <p align='left'>
+                        baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    </p>
+                </subheadingdescbox>
+            </subheading>
+
+            <subheading>
+                <subheadingtitle>
+                    <subheadingtitlebox>
+                        <captiontext align='left'>ステージとは2</captiontext>
+                    </subheadingtitlebox>
+                </subheadingtitle>
+                <subheadingdescbox>
+                    <p align='left'>
+                        bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                        bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    </p>
+                </subheadingdescbox>
+            </subheading>
+        </subheadingcontainer>
+    </bg>
+    <!-- 
+    <bg>
+        <subheadingcontainer hidden='true' listen='stage'>
+        </subheadingcontainer>
+    </bg> -->
+
+</body>

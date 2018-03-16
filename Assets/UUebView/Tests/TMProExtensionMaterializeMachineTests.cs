@@ -43,7 +43,8 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
         rectTrans.pivot = new Vector2(0, 1);
 
         view = rootObj.AddComponent<UUebViewComponent>();
-        core = new UUebView.UUebViewCore(view);
+        core = new UUebView.UUebViewCore(view, new TMProPlugin());
+
         view.SetCore(core);
 
         var canvas = GameObject.Find("Canvas/TMProExtensionMaterializeMachineTestPlace");
@@ -92,7 +93,7 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
 
         TagTree layouted = null;
 
-        var layoutMachine = new LayoutMachine(core.resLoader, new Handler());
+        var layoutMachine = new LayoutMachine(core.resLoader, new TMProPlugin());
 
         var cor2 = layoutMachine.Layout(
             parsedRoot,
@@ -114,7 +115,7 @@ public class TMProExtensionMaterializeMachineTests : MiyamasuTestRunner
     private static int index;
     private IEnumerator Show(TagTree tree)
     {
-        var materializeMachine = new MaterializeMachine(core.resLoader, new Handler());
+        var materializeMachine = new MaterializeMachine(core.resLoader, new TMProPlugin());
 
         var materializeDone = false;
 
