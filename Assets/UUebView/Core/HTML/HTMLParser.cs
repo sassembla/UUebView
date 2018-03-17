@@ -601,6 +601,10 @@ namespace UUebView
                         switch (child.treeType)
                         {
                             case TreeType.CustomLayer:
+                                {
+                                    child.keyValueStore[HTMLAttribute._LAYER_PARENT_TYPE] = "box";
+                                    break;
+                                }
                             case TreeType.CustomBox:
                                 {
                                     child.keyValueStore[HTMLAttribute._LAYER_PARENT_TYPE] = "box";

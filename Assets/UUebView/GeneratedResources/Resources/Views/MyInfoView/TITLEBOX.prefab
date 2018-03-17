@@ -9,17 +9,17 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1017018176460756}
+  m_RootGameObject: {fileID: 1262640802158954}
   m_IsPrefabParent: 1
---- !u!1 &1017018176460756
+--- !u!1 &1262640802158954
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224711154634462108}
-  - component: {fileID: 222145726255406510}
+  - component: {fileID: 224787387392016080}
+  - component: {fileID: 222125095220741640}
   m_Layer: 5
   m_Name: TITLEBOX
   m_TagString: Untagged
@@ -27,18 +27,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!222 &222145726255406510
+--- !u!222 &222125095220741640
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1017018176460756}
---- !u!224 &224711154634462108
+  m_GameObject: {fileID: 1262640802158954}
+--- !u!224 &224787387392016080
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1017018176460756}
+  m_GameObject: {fileID: 1262640802158954}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

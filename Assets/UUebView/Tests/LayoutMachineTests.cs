@@ -100,7 +100,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTML()
     //     {
     //         var sample = @"
-    // <body>something</body>";
+    //     <body>something</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //     }
@@ -109,7 +109,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLHasValidView()
     //     {
     //         var sample = @"
-    // <body>something</body>";
+    //     <body>something</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 16, "not match.");
@@ -119,7 +119,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithSmallTextHasValidView()
     //     {
     //         var sample = @"
-    // <body>over 100px string should be multi lined text with good separation. need some length.</body>";
+    //     <body>over 100px string should be multi lined text with good separation. need some length.</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 118, "not match. tree.viewHeight:" + tree.viewHeight);
@@ -129,7 +129,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithImage()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/100.png/09f/fff'/></body>";
+    //     <body><img src='https://dummyimage.com/100.png/09f/fff'/></body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 100, "not match. tree.viewHeight:" + tree.viewHeight);
@@ -139,7 +139,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithSmallImage()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/10.png/09f/fff'/></body>";
+    //     <body><img src='https://dummyimage.com/10.png/09f/fff'/></body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 10, "not match.");
@@ -149,7 +149,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithSmallImageAndText()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/10.png/09f/fff'/>text</body>";
+    //     <body><img src='https://dummyimage.com/10.png/09f/fff'/>text</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 16, "not match.");
@@ -159,7 +159,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithSmallImageAndSmallText()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
+    //     <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 117, "not match. tree.viewHeight:" + tree.viewHeight);
@@ -170,7 +170,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithWideImageAndText()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/97x10/000/fff'/>something</body>";
+    //     <body><img src='https://dummyimage.com/97x10/000/fff'/>something</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 26, "not match. tree.viewHeight:" + tree.viewHeight);
@@ -180,7 +180,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithTextAndWideImage()
     //     {
     //         var sample = @"
-    // <body>something<img src='https://dummyimage.com/100x10/000/fff'/></body>";
+    //     <body>something<img src='https://dummyimage.com/100x10/000/fff'/></body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 16, "not match.");
@@ -191,7 +191,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithTextAndWideImageAndText()
     //     {
     //         var sample = @"
-    // <body>something<img src='https://dummyimage.com/100x10/000/fff'/>else</body>";
+    //     <body>something<img src='https://dummyimage.com/100x10/000/fff'/>else</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 16 + 16, "not match.");
@@ -201,13 +201,13 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithTextAndWideImageAndTextAndWideImageAndText()
     //     {
     //         var sample = @"
-    // <body>
-    // something
-    // <img src='https://dummyimage.com/100x10/000/fff'/>
-    // else
-    // <img src='https://dummyimage.com/100x20/000/fff'/>
-    // other
-    // </body>";
+    //     <body>
+    //     something
+    //     <img src='https://dummyimage.com/100x10/000/fff'/>
+    //     else
+    //     <img src='https://dummyimage.com/100x20/000/fff'/>
+    //     other
+    //     </body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 16 + 16 + 16, "not match. tree.viewHeight:" + tree.viewHeight);
@@ -217,7 +217,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithWideImageAndTextAndWideImageAndText()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</body>";
+    //     <body><img src='https://dummyimage.com/100x10/000/fff'/>else<img src='https://dummyimage.com/100x20/000/fff'/>other</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 10 + 16 + 16, "not match.");
@@ -228,7 +228,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithTextAndSmallImage()
     //     {
     //         var sample = @"
-    // <body>something<img src='https://dummyimage.com/10x10/000/fff'/></body>";
+    //     <body>something<img src='https://dummyimage.com/10x10/000/fff'/></body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 16, "not match.");
@@ -239,7 +239,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithTextAndSmallImageAndText()
     //     {
     //         var sample = @"
-    // <body>something<img src='https://dummyimage.com/10x10/000/fff'/>b!</body>";
+    //     <body>something<img src='https://dummyimage.com/10x10/000/fff'/>b!</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 16, "not match.");
@@ -249,7 +249,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithTextAndSmallImageAndTextAndWideImageAndText()
     //     {
     //         var sample = @"
-    // <body>something<img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/100x10/000/fff'/>other</body>";
+    //     <body>something<img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/100x10/000/fff'/>other</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 16 + 16 + 16, "not match.");
@@ -259,7 +259,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithSmallImageAndTextAndSmallImageAndText()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/10x20/000/fff'/>other</body>";
+    //     <body><img src='https://dummyimage.com/10x10/000/fff'/>else<img src='https://dummyimage.com/10x20/000/fff'/>other</body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(tree.viewHeight == 20, "not match.");
@@ -270,7 +270,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LoadHTMLWithCustomTagLink()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>";
+    //     <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //     }
@@ -279,13 +279,13 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithCustomTag()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    // <body>
-    // <customtag><custombg><textbg><customtext>something</customtext></textbg></custombg></customtag>
-    // else
-    // <customimg src='https://dummyimage.com/10x20/000/fff'/>
-    // </body>
-    //         ";
+    //     <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
+    //     <body>
+    //     <customtag><custombg><textbg><customtext>something</customtext></textbg></custombg></customtag>
+    //     else
+    //     <customimg src='https://dummyimage.com/10x20/000/fff'/>
+    //     </body>
+    //             ";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //     }
@@ -294,13 +294,13 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithCustomTagSmallText()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    // <body>
-    // <customtag><custombg><textbg><customtext>
-    // something you need is not time, money, but do things fast.
-    // </customtext></textbg></custombg></customtag>
-    // else
-    // </body>";
+    //     <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
+    //     <body>
+    //     <customtag><custombg><textbg><customtext>
+    //     something you need is not time, money, but do things fast.
+    //     </customtext></textbg></custombg></customtag>
+    //     else
+    //     </body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //     }
@@ -309,13 +309,13 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithCustomTagLargeText()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    // <body>
-    // <customtag><custombg><textbg><customtext>
-    // Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    // </customtext></textbg></custombg></customtag>
-    // else
-    // </body>";
+    //     <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
+    //     <body>
+    //     <customtag><custombg><textbg><customtext>
+    //     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    //     </customtext></textbg></custombg></customtag>
+    //     else
+    //     </body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         while (true)
@@ -325,7 +325,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //                 tree = tree.GetChildren()[tree.GetChildren().Count - 1];
     //                 if (tree.offsetY != 0)
     //                 {
-    //                     True(tree.offsetY.ToString() == "799.95", "not match, offsetY:" + tree.offsetY);
+    //                     True(tree.offsetY.ToString() == "799.95", "not match, offsetY:" + tree.offsetY + " expect:" + "799.95");
     //                 }
     //             }
     //             else
@@ -339,7 +339,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator RevertLayoutHTMLWithSmallImageAndSmallText()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
+    //     <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation. need some length.</body>";
 
     //         ParsedTree parsedRoot = null;
     //         {
@@ -414,8 +414,8 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator RevertLayoutHTMLWithSmallImageAndSmallTextAndBr()
     //     {
     //         var sample = @"
-    // <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation.
-    // <br>need some length.</body>";
+    //     <body><img src='https://dummyimage.com/10.png/09f/fff'/>over 100px string should be multi lined text with good separation.
+    //     <br>need some length.</body>";
 
     //         ParsedTree parsedRoot = null;
     //         {
@@ -490,7 +490,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator Order()
     //     {
     //         var sample = @"
-    // <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
+    //     <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(
@@ -506,7 +506,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator Position()
     //     {
     //         var sample = @"
-    // <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
+    //     <body>something1.<img src='https://dummyimage.com/100.png/09f/fff'/></body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(
@@ -518,40 +518,40 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //         );
     //     }
 
-    [MTest]
-    public IEnumerator MultipleBoxConstraints()
-    {
-        var sample = @"
-<!DOCTYPE uuebview href='resources://Views/MultipleBoxConstraints/UUebTags'>
-<itemlayout>
-<topleft>
-    <img src='https://dummyimage.com/100.png/09f/fff'/>
-</topleft>
-<topright>
-    <img src='https://dummyimage.com/100.png/08f/fff'/>
-</topright>
-<content><p>something!</p></content>
-<bottom>
-    <img src='https://dummyimage.com/100.png/07f/fff'/>
-</bottom>
-</itemlayout>";
-        TagTree tree = null;
-        yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
-        var itemLayout = tree.GetChildren()[0];
-        var topleft = itemLayout.GetChildren()[0];
-        var topright = itemLayout.GetChildren()[1];
-        True(topleft.offsetY == 0, "not match, topleft.offsetY:" + topleft.offsetY + " should be 0.");
-        True(topright.offsetY == 0, "not match, topright.offsetY:" + topright.offsetY + " should be 0.");
-    }
+    //     [MTest]
+    //     public IEnumerator MultipleBoxConstraints()
+    //     {
+    //         var sample = @"
+    // <!DOCTYPE uuebview href='resources://Views/MultipleBoxConstraints/UUebTags'>
+    // <itemlayout>
+    // <topleft>
+    //     <img src='https://dummyimage.com/100.png/09f/fff'/>
+    // </topleft>
+    // <topright>
+    //     <img src='https://dummyimage.com/100.png/08f/fff'/>
+    // </topright>
+    // <content><p>something!</p></content>
+    // <bottom>
+    //     <img src='https://dummyimage.com/100.png/07f/fff'/>
+    // </bottom>
+    // </itemlayout>";
+    //         TagTree tree = null;
+    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+    //         var itemLayout = tree.GetChildren()[0];
+    //         var topleft = itemLayout.GetChildren()[0];
+    //         var topright = itemLayout.GetChildren()[1];
+    //         True(topleft.offsetY == 0, "not match, topleft.offsetY:" + topleft.offsetY + " should be 0.");
+    //         True(topright.offsetY == 0, "not match, topright.offsetY:" + topright.offsetY + " should be 0.");
+    //     }
 
 
     //     [MTest]
     //     public IEnumerator LayoutHTMLWithCustomTagMultiple()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    // <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
-    // <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>";
+    //     <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
+    //     <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
+    //     <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(0 < tree.GetChildren().Count, "not match, actual:" + tree.GetChildren().Count);
@@ -563,11 +563,11 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithCustomTagMultipleInBody()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    // <body>
-    // <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
-    // <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>
-    // </body>";
+    //     <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
+    //     <body>
+    //     <customtag><custombg><textbg><customtext>something1</customtext></textbg></custombg></customtag>
+    //     <customtag><custombg><textbg><customtext>something2</customtext></textbg></custombg></customtag>
+    //     </body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         True(0 < tree.GetChildren().Count, "not match, actual:" + tree.GetChildren().Count);
@@ -579,17 +579,17 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutSampleView2_HiddenBreakView()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
-    // <body>
-    //     <bg>
-    //     	<textbg>
-    //     		<textbox>
-    // 	    		<updatetext>koko ni nihongo ga iikanji ni hairu. good thing. long text will make large window. like this.</updatetext>
-    // 	    		<updatetext hidden='true' listen='readmore'>omake!</updatetext>
-    // 	    	</textbox>
-    // 	    </textbg>
-    //     </bg>
-    // </body>";
+    //     <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
+    //     <body>
+    //         <bg>
+    //         	<textbg>
+    //         		<textbox>
+    //     	    		<updatetext>koko ni nihongo ga iikanji ni hairu. good thing. long text will make large window. like this.</updatetext>
+    //     	    		<updatetext hidden='true' listen='readmore'>omake!</updatetext>
+    //     	    	</textbox>
+    //     	    </textbg>
+    //         </bg>
+    //     </body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         var textBox = tree.GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0].GetChildren()[0];
@@ -602,23 +602,23 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator SampleView2()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
-    // <body>
-    //     <bg>
-    //     	<titlebox>
-    //     		<titletext>レモン一個ぶんのビタミンC</titletext>
-    //     	</titlebox>
-    //     	<newbadge></newbadge>
-    //     	<textbg>
-    //     		<textbox>
-    // 	    		<updatetext>1st line.</updatetext>
-    // 	    	</textbox>
-    //             <textbox>
-    // 	    		<updatetext>2nd line.</updatetext>
-    // 	    	</textbox>
-    // 	    </textbg>
-    //     </bg>
-    // </body>";
+    //     <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
+    //     <body>
+    //         <bg>
+    //         	<titlebox>
+    //         		<titletext>レモン一個ぶんのビタミンC</titletext>
+    //         	</titlebox>
+    //         	<newbadge></newbadge>
+    //         	<textbg>
+    //         		<textbox>
+    //     	    		<updatetext>1st line.</updatetext>
+    //     	    	</textbox>
+    //                 <textbox>
+    //     	    		<updatetext>2nd line.</updatetext>
+    //     	    	</textbox>
+    //     	    </textbg>
+    //         </bg>
+    //     </body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //     }
@@ -627,11 +627,11 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithCustomTagMultipleByInnerContentWithParentLayer()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
-    // <customtag>
-    //     <custombg><textbg><customtext>something1</customtext></textbg></custombg>
-    //     <custombg><textbg><customtext>something2</customtext></textbg></custombg>
-    // </customtag>";
+    //     <!DOCTYPE uuebview href='resources://Views/LayoutHTMLWithCustomTag/UUebTags'>
+    //     <customtag>
+    //         <custombg><textbg><customtext>something1</customtext></textbg></custombg>
+    //         <custombg><textbg><customtext>something2</customtext></textbg></custombg>
+    //     </customtag>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
     //         var custombgs = tree.GetChildren()[0]/*customtag*/.GetChildren()[0]/*box*/.GetChildren();
@@ -643,19 +643,19 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     public IEnumerator LayoutHTMLWithDoubleBoxedLayerNeverOverLayout()
     //     {
     //         var sample = @"
-    // <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
-    // <body>
-    //     <bg>
-    //     	<textbg>
-    //     		<textbox>
-    // 	    		<p>koko ni nihongo ga iikanji ni hairu. <br> 2line content! 2line content! 2line content!2 line content! a good thing.<a href='somewhere'>link</a>a long text will make large window. something like this.</p>
-    // 	    		<updatetext>omake! abc d</updatetext>
-    //                 <p>ef ghijklm</p>
-    //                 <updatetext>aaaaaaaaaaaaabcdefghijk</updatetext>
-    // 	    	</textbox>
-    // 	    </textbg>
-    //     </bg>
-    // </body>";
+    //     <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
+    //     <body>
+    //         <bg>
+    //         	<textbg>
+    //         		<textbox>
+    //     	    		<p>koko ni nihongo ga iikanji ni hairu. <br> 2line content! 2line content! 2line content!2 line content! a good thing.<a href='somewhere'>link</a>a long text will make large window. something like this.</p>
+    //     	    		<updatetext>omake! abc d</updatetext>
+    //                     <p>ef ghijklm</p>
+    //                     <updatetext>aaaaaaaaaaaaabcdefghijk</updatetext>
+    //     	    	</textbox>
+    //     	    </textbg>
+    //         </bg>
+    //     </body>";
     //         TagTree tree = null;
     //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
 
@@ -689,10 +689,10 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //         True(pContainer2SecondLine.offsetY.ToString() == "25", "not match. pContainer2SecondLine.offsetY:" + pContainer2SecondLine.offsetY);
     //     }
 
-    //     [MTest]
-    //     public IEnumerator LayoutGroupHeightChanged()
-    //     {
-    //         var sample = @"
+    // [MTest]
+    // public IEnumerator LayoutGroupHeightChanged()
+    // {
+    //     var sample = @"
     // <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
     // <body>
     // 	<bg>
@@ -701,21 +701,22 @@ public class LayoutMachineTests : MiyamasuTestRunner
     // 		</titlebox>
     // 		<newbadge/>
     // 		<newbadge/>
-    //         <textbg>
+    //         <textbg><textbox><p>中身が空だと伸縮しないみたいなやつか？とりあえず適当な分量で膨らませた場合どうなるんだろう、これで4行くらいなんだけど。</p></textbox>
     //         </textbg>
     //     </bg>
     // </body>
     // ";
-    //         TagTree tree = null;
-    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
-    //         var textBg = tree.GetChildren()[0].GetChildren()[0].GetChildren()[2];
-    //         True(textBg.offsetY.ToString() == "56.97501", "not match, textBg.offsetY:" + textBg.offsetY);
-    //     }
 
-    //     [MTest]
-    //     public IEnumerator LayoutAfterLayer()
-    //     {
-    //         var sample = @"
+    //     TagTree tree = null;
+    //     yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
+    //     var textBg = tree.GetChildren()[0].GetChildren()[0].GetChildren()[2];
+    //     True(textBg.offsetY.ToString() == "53.93751", "not match, textBg.offsetY:" + textBg.offsetY + " expected:" + "53.93751");
+    // }
+
+    // [MTest]
+    // public IEnumerator LayoutAfterLayer()
+    // {
+    //     var sample = @"
     // <!DOCTYPE uuebview href='resources://Views/MyInfoView/UUebTags'>
     // <body>
     // 	<bg>
@@ -723,106 +724,106 @@ public class LayoutMachineTests : MiyamasuTestRunner
     //     <p>hey!</p>
     // </body>
     // ";
-    //         TagTree tree = null;
-    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
-    //         var p = tree.GetChildren()[0].GetChildren()[1];
+    //     TagTree tree = null;
+    //     yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; }, 300);
+    //     var p = tree.GetChildren()[0].GetChildren()[1];
 
-    //         True(p.offsetX == 0 && p.offsetY == 100, "not match. p.offsetY:" + p.offsetY);
-    //     }
+    //     True(p.offsetX == 0 && p.offsetY == 100, "not match. p.offsetY:" + p.offsetY);
+    // }
 
-    //     [MTest]
-    //     public IEnumerator BrSupport()
-    //     {
-    //         var sample = @"
+    // [MTest]
+    // public IEnumerator BrSupport()
+    // {
+    //     var sample = @"
     // <p>
     //     something<br>
     //     else
     // </p>";
-    //         TagTree tree = null;
-    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
-    //         var p = tree.GetChildren()[0]/*p*/.GetChildren();
+    //     TagTree tree = null;
+    //     yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+    //     var p = tree.GetChildren()[0]/*p*/.GetChildren();
 
-    //         True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
-    //         True(p[2].offsetY == 16f, "not match. custombgs[2].offsetY:" + p[2].offsetY);
-    //     }
+    //     True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+    //     True(p[2].offsetY == 16f, "not match. custombgs[2].offsetY:" + p[2].offsetY);
+    // }
 
-    //     [MTest]
-    //     public IEnumerator BrBrSupport()
-    //     {
-    //         var sample = @"
+    // [MTest]
+    // public IEnumerator BrBrSupport()
+    // {
+    //     var sample = @"
     // <p>
     //     something<br><br>
     //     else
     // </p>";
-    //         TagTree tree = null;
-    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
-    //         var p = tree.GetChildren()[0]/*p*/.GetChildren();
+    //     TagTree tree = null;
+    //     yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+    //     var p = tree.GetChildren()[0]/*p*/.GetChildren();
 
-    //         True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
-    //         True(p[3].offsetY == 32f, "not match. custombgs[3].offsetY:" + p[3].offsetY);
-    //     }
+    //     True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+    //     True(p[3].offsetY == 32f, "not match. custombgs[3].offsetY:" + p[3].offsetY);
+    // }
 
-    //     [MTest]
-    //     public IEnumerator LayoutCenterAlignSupport()
-    //     {
-    //         var sample = @"
+    // [MTest]
+    // public IEnumerator LayoutCenterAlignSupport()
+    // {
+    //     var sample = @"
     // <p align='center'>aaa</p>";
 
-    //         TagTree tree = null;
-    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
-    //         var p = tree.GetChildren()[0]/*p*/.GetChildren();
+    //     TagTree tree = null;
+    //     yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+    //     var p = tree.GetChildren()[0]/*p*/.GetChildren();
 
-    //         True(p[0].offsetX == 38, "not match. custombgs[0].offsetX:" + p[0].offsetX);
-    //         True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
-    //     }
+    //     True(p[0].offsetX == 38, "not match. custombgs[0].offsetX:" + p[0].offsetX);
+    //     True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+    // }
 
-    //     [MTest]
-    //     public IEnumerator LayoutRightAlignSupport()
-    //     {
-    //         var sample = @"
+    // [MTest]
+    // public IEnumerator LayoutRightAlignSupport()
+    // {
+    //     var sample = @"
     // <p align='right'>aaa</p>";
 
-    //         TagTree tree = null;
-    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
-    //         var p = tree.GetChildren()[0]/*p*/.GetChildren();
+    //     TagTree tree = null;
+    //     yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+    //     var p = tree.GetChildren()[0]/*p*/.GetChildren();
 
-    //         True(p[0].offsetX == 76, "not match. custombgs[0].offsetX:" + p[0].offsetX);
-    //         True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
-    //     }
+    //     True(p[0].offsetX == 76, "not match. custombgs[0].offsetX:" + p[0].offsetX);
+    //     True(p[0].offsetY == 0, "not match. custombgs[0].offsetY:" + p[0].offsetY);
+    // }
 
-    //     [MTest]
-    //     public IEnumerator PSupport()
-    //     {
-    //         var sample = @"
+    // [MTest]
+    // public IEnumerator PSupport()
+    // {
+    //     var sample = @"
     // <p>
     //     p1<a href=''>a1</a>p2
     // </p>";
-    //         TagTree tree = null;
-    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
-    //         var p1 = tree.GetChildren()[0];
+    //     TagTree tree = null;
+    //     yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+    //     var p1 = tree.GetChildren()[0];
 
-    //         True(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
-    //     }
+    //     True(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
+    // }
 
-    //     [MTest]
-    //     public IEnumerator PSupport2()
-    //     {
-    //         Debug.LogWarning("保留。");
-    //         yield break;
-    //         var sample = @"
+    // [MTest]
+    // public IEnumerator PSupport2()
+    // {
+    //     Debug.LogWarning("保留。");
+    //     yield break;
+    //     var sample = @"
     // <p>
     //     p1<a href=''>a1</a>p2
     // </p><p>
     //     p3
     // </p>";
-    //         TagTree tree = null;
-    //         yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
-    //         var p1 = tree.GetChildren()[0];
-    //         var p2 = tree.GetChildren()[1];
+    //     TagTree tree = null;
+    //     yield return CreateTagTree(sample, tagTreeSource => { tree = tagTreeSource; });
+    //     var p1 = tree.GetChildren()[0];
+    //     var p2 = tree.GetChildren()[1];
 
-    //         True(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
+    //     True(p1.GetChildren().Count == 3, "not match, p1.GetChildren().Count:" + p1.GetChildren().Count);
 
-    //         True(p1.offsetY == 0, "not match. p1.offsetY:" + p1.offsetY);
-    //         True(p2.offsetY == 16f, "not match. p2.offsetY:" + p2.offsetY);
-    //     }
+    //     True(p1.offsetY == 0, "not match. p1.offsetY:" + p1.offsetY);
+    //     True(p2.offsetY == 16f, "not match. p2.offsetY:" + p2.offsetY);
+    // }
 }

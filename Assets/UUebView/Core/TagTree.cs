@@ -260,16 +260,65 @@ namespace UUebView
         public static Rect GetChildViewRectFromParentRectTrans(float parentWidth, float parentHeight, BoxPos pos, out float right, out float bottom)
         {
             // アンカーからwidthとheightを出す。
+            Debug.Log("pos:" + pos + " parentWidth:" + parentWidth + " parentHeight:" + parentHeight);
+            /*
+                サンプルとして次のようなアンカーを考える。
 
+                pWidth = 261.9
+                pHeight = 54.5
 
-            // 右下の余白のパラメータをセット
-            right = (parentWidth * (1 - pos.anchorMax.x)) + (-pos.offsetMax.x);
-            bottom = (parentHeight * (1 - pos.anchorMax.y)) + (-pos.offsetMax.y);
+                offsetMin:(
+                    4.5, // xの左からの距離
 
+                    -49.6 // yの下への距離(これが計算結果で入るっぽい)
+                ) 
+                offsetMax:(
+                    -48.5, // xの右からの距離
+
+                    -4.6 // yの上からの距離
+                ) 
+                pivot:(0.5, 0.5) 
+                anchorMin:(
+                    0.0, // xの左側のアンカー位置、これで左端ジャストになる
+                    1.0 // yの下アンカー位置、これで上辺について来る形になる。
+                ) 
+                anchorMax:(
+                    1.0, // xの右側のアンカー位置、これで右端ジャストに追随する。
+                    1.0 // yの上アンカーの位置、これで上辺について来る形になる。
+                )
+             */
+            /*
+                parentWidth:280 
+                parentHeight:100
+
+                offsetMin:(
+                    -67.9, 
+                    -30.5
+                )
+                offsetMax:(
+                     -10.9, 
+                     -7.1
+                ) 
+                pivot:(0.5, 0.5) 
+                anchorMin:(// 右上をアンカーとした状態、
+                    1.0, 
+                    1.0
+                ) 
+                anchorMax:(
+                    1.0, 
+                    1.0
+                ) 
+             */
 
             // アンカー 画面端からの、親のサイズを元にした比例距離
-            var anchorWidth = (parentWidth * pos.anchorMin.x) + (parentWidth * (1 - pos.anchorMax.x));
-            var anchorHeight = (parentHeight * pos.anchorMin.y) + (parentHeight * (1 - pos.anchorMax.y));
+            var anchorWidth = parentWidth * (1 - (pos.anchorMax.x - pos.anchorMin.x));
+            var anchorHeight = parentHeight * (1 - (pos.anchorMax.y - pos.anchorMin.y));
+
+            // 右下の余白のパラメータをセット
+            right = anchorWidth - pos.offsetMax.x;
+            bottom = anchorHeight + pos.offsetMin.y;
+
+            Debug.Log("right:" + right + " bottom:" + bottom + " parentHeight:" + parentHeight + " pos.anchorMax.y:" + pos.anchorMax.y);
 
             // width, height 親の画面サイズからアンカーによる固定幅を引き、さらにオフセット値を引く。(offsetMaxには-が入るため足す形になる)
             var viewWidth = parentWidth - anchorWidth - pos.offsetMin.x + pos.offsetMax.x;

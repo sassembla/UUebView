@@ -160,6 +160,9 @@ namespace UUebView
             カスタムタグのレイヤーのレイアウトを行う。
             customTagLayer/box/boxContents(layerとか) という構造になっていて、boxはlayer内に必ず規定のポジションでレイアウトされる。
             ここだけ相対的なレイアウトが確実に崩れる。
+
+            layer > box > layer みたいなケースがあり、layerで置いてる要素はすべてbox、
+            box内にはlayerを含むbox以外の要素が来る。
          */
         private IEnumerator<ChildPos> DoLayerLayout(TagTree layerTree, ViewCursor parentBoxViewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null)
         {
@@ -168,9 +171,32 @@ namespace UUebView
             float rightAnchorWidth = 0;
             float bottomAnchorHeight = 0;
 
+            /*
+                親がboxであるLayerは、親のサイズを元にサイズを取得する。ただし、上下のアンカーサイズについては再現する。
+             */
             if (layerTree.keyValueStore.ContainsKey(HTMLAttribute._LAYER_PARENT_TYPE))
             {
-                // 親がboxなので、boxのoffsetYとサイズを継承する。offsetXは常に0で来る。
+                // 親がboxなLayerなので、boxのoffsetYとサイズを継承する。offsetXは常に0で来る。
+
+                // /*
+                //     "offsetMin": {//左下からの位置。
+                //         "x": 11.150009155273438,
+                //         "y": 11.949996948242188
+                //     },
+                //     "offsetMax": {// 右上からの位置。このコーナーの値は必ず-で入るが、実際には+の数値。
+                //         "x": -6.9499969482421879,
+                //         "y": -33.55000305175781
+                //     },
+                //  */
+
+                // var boxPos = resLoader.GetUnboxedLayerSize(layerTree.tagValue);
+                // // Debug.Log("boxPos:" + boxPos);
+
+                // // このレイヤーを敷いた下にはoffsetMinの幅が入る。yの上幅の値はboxの時点で発生しているため無視していい。
+                // // なんか設計に問題がある気がするんだよな、boxの高さを生成する部分か。boxの左上インデックスが指定されてることと、右下をここで吸収しようとしてることが破綻の原因な気がする。boxどうなってるんだっけな、、
+                // bottomAnchorHeight = boxPos.offsetMin.y;
+
+                Debug.Log("1.boxed layer tag:" + Debug_GetTagStrAndType(layerTree) + " bottomAnchorHeight:" + bottomAnchorHeight);
 
                 // layerのコンテナとしての特性として、xには常に0が入る = 左詰めでレイアウトが開始される。
                 basePos = new ViewCursor(0, parentBoxViewCursor.offsetY, parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight);
@@ -183,6 +209,7 @@ namespace UUebView
 
                 // 親のサイズから、今回レイヤーコンテンツを詰める箱を作り出す
                 var rect = TagTree.GetChildViewRectFromParentRectTrans(parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight, boxPos, out rightAnchorWidth, out bottomAnchorHeight);
+                Debug.Log("2.unboxed layer tag:" + Debug_GetTagStrAndType(layerTree) + " bottomAnchorHeight:" + bottomAnchorHeight + " rightAnchorWidth:" + rightAnchorWidth);
 
                 // 幅が、このレイヤーが入る最低サイズ未満なので、改行での挿入を促す。
                 if (rect.width <= 0)
@@ -198,17 +225,22 @@ namespace UUebView
 
             /*
                 レイヤーなので、prefabをロードして、原点位置は0,0、初期サイズは親サイズ、という形で生成する。
-                ここで、各childは干渉し合わないgroupIdを持っているので、その単位ごとに描画を行う。
+                ここで、各childは干渉し合わないようにgroupIdを持っているので、その単位ごとにレイアウトを行う。
 
-                同じgroupID内では、レイアウトは干渉されない。
+                同じgroupID内では高さの変更が必要ない。
             */
             var children = layerTree.GetChildren();
 
 
-            var nextIndexY = 0f;
+            var nextGroupIndexY = 0f;
             var collisionGrouId = 0;
+
+            var resultPosX = 0f;
             var resultPosY = 0f;
 
+            /*
+                child = すべてbox を整列する。
+             */
             for (var i = 0; i < children.Count; i++)
             {
                 var boxTree = children[i];
@@ -218,44 +250,52 @@ namespace UUebView
                 */
                 var boxRect = boxTree.keyValueStore[HTMLAttribute._BOX] as BoxPos;
 
-                float a;
-                var childBoxViewRect = TagTree.GetChildViewRectFromParentRectTrans(basePos.viewWidth, basePos.viewHeight, boxRect, out a, out a);
+                /*
+                    boxのrectを親のサイズ指定を元に生成する。
+                 */
+                float right;
+                float bottom;
+                var childBoxViewRect = TagTree.GetChildViewRectFromParentRectTrans(basePos.viewWidth, basePos.viewHeight, boxRect, out right, out bottom);
+
 
                 /*
-                    collisionGroupによる区切りで、コンテンツ帯ごとの高さを出し、
-                    最も下にあるコンテンツの伸び幅を次の縦並びグループの開始オフセット位置追加値としてセットする。
+                    collisionGroupによる区切りを更新
                 */
                 var boxCollisionGroupId = (int)boxTree.keyValueStore[HTMLAttribute._COLLISION];
                 // Debug.LogError("boxCollisionGroupId:" + boxCollisionGroupId);
 
+
                 /*
-                    collisionGroupが変動した場合、直前までのコンテンツで高さが一旦決定される。
-                    additionalHeightはどんどん上書きされる前提。
+                    collisionGroupが変動した場合、直前までのコンテンツの高さが決定される。
+                    レイアウト情報よりも高さが増えている場合(だいたいそうなるが)次のグループの開始インデックスを差分でずらす。
                  */
                 float additional = 0f;
                 if (collisionGrouId != boxCollisionGroupId)
                 {
-                    // Debug.LogError("tag:" + Debug_GetTagStrAndType(boxTree) + " group changed. nextIndexY:" + nextIndexY + " vs childBoxViewRect.y:" + childBoxViewRect.y);
+                    // Debug.LogError("tag:" + Debug_GetTagStrAndType(boxTree) + " group changed. nextGroupIndexY:" + nextGroupIndexY + " vs childBoxViewRect.y:" + childBoxViewRect.y);
 
                     /*
                         高さが干渉するグループごとに分解してある、そのグループが変わった瞬間。
                      */
-                    if (nextIndexY <= childBoxViewRect.y)
+                    if (nextGroupIndexY <= childBoxViewRect.y)
                     {
-                        // もしもこのchildBoxの元来のyがnextIndexYよりも大きければ、nextIndexYにその値を指定するため、additionalHeightを0にする。
-                        nextIndexY = 0;
+                        // もしも新グループのchildBoxのyがnextGroupIndexYよりも大きければ、特に可算する値は必要ないため
+                        // additionalは0のまま通過する。
                     }
                     else
                     {
-                        // もしも childBoxViewRect.y < nextIndexY であれば、その差分にセットする。
-                        nextIndexY = nextIndexY - childBoxViewRect.y;
-                        additional = nextIndexY;
+                        // 新グループのchildBoxのyがnextGroupIndexYよりも小さいので、直前のグループがめりこんできている。
+                        // 前のグループがめり込んだぶん = nextGroupIndexY から childBoxViewRect.y を引いた値をセットし、additionalとしてレイアウトに使用する。
+                        additional = nextGroupIndexY - childBoxViewRect.y;
                     }
 
                     collisionGrouId = boxCollisionGroupId;
                 }
 
-
+                /*
+                    boxの開始位置をセットする。
+                    additionalは直前の別グループの高さが超過した場合に発生する、デフォルト開始位置との差分の値。
+                 */
                 var childView = new ViewCursor(
                     childBoxViewRect.x,
                     childBoxViewRect.y + additional,
@@ -263,7 +303,6 @@ namespace UUebView
                     childBoxViewRect.height
                 );
 
-                // Debug.Log("DoLayerLayout childView:" + childView);
 
                 var cor = LayoutBoxedContents(boxTree, childView);
 
@@ -279,11 +318,28 @@ namespace UUebView
                 // fix position.
                 var childCursor = cor.Current;
 
-                // childの下端を出す
+                Debug.Log("box tag:" + Debug_GetTagStrAndType(boxTree) + " childCursor:" + childCursor + " right:" + right);
+
+                // boxのコンテンツのサイズに応じて右下のぶんの余白を足す。
+                childCursor.viewWidth += right;
+                childCursor.viewHeight += bottom;
+
+                // childの端を出す。
+                var currentChildEndPosX = childCursor.offsetX + childCursor.viewWidth;
                 var currentChildEndPosY = childCursor.offsetY + childCursor.viewHeight;
 
-                // 同じグループ内での次のオブジェクトのインデックスを設定する
-                nextIndexY = currentChildEndPosY;
+                // Debug.Log("box tag:" + Debug_GetTagStrAndType(layerTree) + " currentChildEndPosY:" + currentChildEndPosY + " vs resultPosY:" + resultPosY + " vs basePos.viewHeight:" + basePos.viewHeight);// ここの出し方がミスってる気がする
+
+                // 次に別グループが来た場合のインデックスを設定する、この値は同一のグループ内では無視される。
+                nextGroupIndexY = currentChildEndPosY;
+
+                Debug.Log("box tag:" + Debug_GetTagStrAndType(boxTree) + " resultPosX:" + resultPosX + " currentChildEndPosX:" + currentChildEndPosX);
+
+                // 最も右のポイントが更新されたらセット
+                if (resultPosX < currentChildEndPosX)
+                {
+                    resultPosX = currentChildEndPosX;
+                }
 
                 // 最も下のポイントが更新されたらセット。
                 if (resultPosY < currentChildEndPosY)
@@ -292,21 +348,29 @@ namespace UUebView
                 }
             }
 
-            // 基礎高さと増加分高さを比較して、高い方。
+            // ベース高さと結果高さを比較して、高い方を扱う。
+            var newWidth = Mathf.Max(basePos.viewWidth, resultPosX);
             var newHeight = Mathf.Max(basePos.viewHeight, resultPosY);
+
+
 
             // treeに位置をセットしてposを返す
 
-            // layerにセットするパラメータは、レイヤー自体のレイアウトに使用する。余白を含めたオフセット、幅が使用される。
-            var childPos = layerTree.SetPos(basePos.offsetX, basePos.offsetY, basePos.viewWidth, newHeight);
-
-            // このコンテンツを表示するのに消費したポジションとして、親のオフセットから開始して、このコンテンツの余白までを含めたサイズを指定する。
-            var pos = new ChildPos(
-                parentBoxViewCursor.offsetX,
-                parentBoxViewCursor.offsetY,
-                basePos.offsetX + basePos.viewWidth + rightAnchorWidth,
-                newHeight + bottomAnchorHeight
+            // このレイヤーの位置とサイズを決定する。
+            var pos = layerTree.SetPos(
+                basePos.offsetX,
+                basePos.offsetY,
+                newWidth,
+                newHeight
             );
+
+            Debug.Log("tag:" + Debug_GetTagStrAndType(layerTree) + newWidth);
+
+            // 余白が存在するため、親へと返すサイズ感を別途設定する。この値には右下の余白部分を含めた値をセットする。
+            pos.viewWidth += rightAnchorWidth;
+            pos.viewHeight += bottomAnchorHeight;
+
+            Debug.Log("tag:" + Debug_GetTagStrAndType(layerTree) + " resultPosY:" + resultPosY + " bottomAnchorHeight:" + bottomAnchorHeight + " result pos:" + pos);
 
             yield return pos;
         }
@@ -423,6 +487,9 @@ namespace UUebView
             yield return imgTree.SetPos(contentViewCursor.offsetX, contentViewCursor.offsetY, imageWidth, imageHeight);
         }
 
+        /**
+            コンテナ(タグ)の内容のレイアウトを行う。
+         */
         private IEnumerator<ChildPos> DoContainerLayout(TagTree containerTree, ViewCursor containerViewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null)
         {
             /*
@@ -816,7 +883,19 @@ namespace UUebView
 
                         // 子供の設置位置を取得
                         var layoutedPos = cor.Current;
-                        // Debug.LogError("layoutedPos:" + layoutedPos);
+                        // Debug.Log("レイアウト済みの位置情報 layoutedPos:" + layoutedPos);
+
+                        // update most right point.
+                        if (mostRightPoint < layoutedPos.offsetX + layoutedPos.viewWidth)
+                        {
+                            mostRightPoint = layoutedPos.offsetX + layoutedPos.viewWidth;
+                        }
+
+                        // update most bottom point.
+                        if (mostBottomPoint < layoutedPos.offsetY + layoutedPos.viewHeight)
+                        {
+                            mostBottomPoint = layoutedPos.offsetY + layoutedPos.viewHeight;
+                        }
 
                         // 次のコンテンツの開始位置を取得
                         var nextPos = ChildPos.NextRightCursor(layoutedPos, containerViewCursor.viewWidth);
@@ -1170,13 +1249,15 @@ namespace UUebView
                 */
 
                 // レイアウトが済んだchildの位置を受け取り、改行
-                // Debug.LogError("layoutbox 改行");
                 childViewCursor = ViewCursor.NextLine(cor.Current.offsetY + cor.Current.viewHeight, boxView.viewWidth, boxView.viewHeight);
 
                 // 現在の子供のレイアウトが終わっていて、なおかつライン処理、改行が済んでいる。
+                // Debug.Log("childViewCursor:" + childViewCursor);
             }
 
-            // 最終コンテンツのoffsetを使ってboxの高さをセット
+            // Debug.Log("box childViewCursor.offsetY:" + childViewCursor.offsetY);
+
+            // 最終コンテンツのoffsetYを使ってboxの高さをセット
             // treeに位置をセットしてposを返す
             yield return boxTree.SetPos(boxView.offsetX, boxView.offsetY, boxView.viewWidth, childViewCursor.offsetY);
         }
