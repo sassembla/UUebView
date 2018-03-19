@@ -156,6 +156,8 @@ namespace UUebView
             }
         }
 
+        public static int indent = 0;
+
         /**
             カスタムタグのレイヤーのレイアウトを行う。
             customTagLayer/box/boxContents(layerとか) という構造になっていて、boxはlayer内に必ず規定のポジションでレイアウトされる。
@@ -171,32 +173,15 @@ namespace UUebView
             float rightAnchorWidth = 0;
             float bottomAnchorHeight = 0;
 
+            // Debug.Log(indent + "start layer tag:" + Debug_GetTagStrAndType(layerTree));
+
+            indent++;
             /*
                 親がboxであるLayerは、親のサイズを元にサイズを取得する。ただし、上下のアンカーサイズについては再現する。
              */
             if (layerTree.keyValueStore.ContainsKey(HTMLAttribute._LAYER_PARENT_TYPE))
             {
                 // 親がboxなLayerなので、boxのoffsetYとサイズを継承する。offsetXは常に0で来る。
-
-                // /*
-                //     "offsetMin": {//左下からの位置。
-                //         "x": 11.150009155273438,
-                //         "y": 11.949996948242188
-                //     },
-                //     "offsetMax": {// 右上からの位置。このコーナーの値は必ず-で入るが、実際には+の数値。
-                //         "x": -6.9499969482421879,
-                //         "y": -33.55000305175781
-                //     },
-                //  */
-
-                // var boxPos = resLoader.GetUnboxedLayerSize(layerTree.tagValue);
-                // // Debug.Log("boxPos:" + boxPos);
-
-                // // このレイヤーを敷いた下にはoffsetMinの幅が入る。yの上幅の値はboxの時点で発生しているため無視していい。
-                // // なんか設計に問題がある気がするんだよな、boxの高さを生成する部分か。boxの左上インデックスが指定されてることと、右下をここで吸収しようとしてることが破綻の原因な気がする。boxどうなってるんだっけな、、
-                // bottomAnchorHeight = boxPos.offsetMin.y;
-
-                Debug.Log("1.boxed layer tag:" + Debug_GetTagStrAndType(layerTree) + " bottomAnchorHeight:" + bottomAnchorHeight);
 
                 // layerのコンテナとしての特性として、xには常に0が入る = 左詰めでレイアウトが開始される。
                 basePos = new ViewCursor(0, parentBoxViewCursor.offsetY, parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight);
@@ -209,7 +194,6 @@ namespace UUebView
 
                 // 親のサイズから、今回レイヤーコンテンツを詰める箱を作り出す
                 var rect = TagTree.GetChildViewRectFromParentRectTrans(parentBoxViewCursor.viewWidth, parentBoxViewCursor.viewHeight, boxPos, out rightAnchorWidth, out bottomAnchorHeight);
-                Debug.Log("2.unboxed layer tag:" + Debug_GetTagStrAndType(layerTree) + " bottomAnchorHeight:" + bottomAnchorHeight + " rightAnchorWidth:" + rightAnchorWidth);
 
                 // 幅が、このレイヤーが入る最低サイズ未満なので、改行での挿入を促す。
                 if (rect.width <= 0)
@@ -243,7 +227,9 @@ namespace UUebView
              */
             for (var i = 0; i < children.Count; i++)
             {
+                indent++;
                 var boxTree = children[i];
+                // Debug.Log(indent + "box tag:" + Debug_GetTagStrAndType(boxTree));
 
                 /*
                     位置情報はkvに入っているが、親のviewの値を使ってレイアウト後の位置に関する数値を出す。
@@ -256,7 +242,7 @@ namespace UUebView
                 float right;
                 float bottom;
                 var childBoxViewRect = TagTree.GetChildViewRectFromParentRectTrans(basePos.viewWidth, basePos.viewHeight, boxRect, out right, out bottom);
-
+                // Debug.Log(indent + "box tag:" + Debug_GetTagStrAndType(boxTree) + " right:" + right + " ここの値がおかしい。");
 
                 /*
                     collisionGroupによる区切りを更新
@@ -318,22 +304,30 @@ namespace UUebView
                 // fix position.
                 var childCursor = cor.Current;
 
-                Debug.Log("box tag:" + Debug_GetTagStrAndType(boxTree) + " childCursor:" + childCursor + " right:" + right);
+                /*
+                    boxのコンテンツのサイズに応じて右下のぶんの余白を足す用意をするが、基本的に一番下のコンテンツ以外はまともな右下余白を持たない。
+                    最後のboxでのみ効果を出す。
+                */
+                if (i == children.Count - 1)
+                {
+                    childCursor.viewWidth += right;
+                    childCursor.viewHeight += bottom;
+                }
 
-                // boxのコンテンツのサイズに応じて右下のぶんの余白を足す。
-                childCursor.viewWidth += right;
-                childCursor.viewHeight += bottom;
+                // Debug.Log(indent + "box tag:" + Debug_GetTagStrAndType(boxTree) + " childCursor.offsetX:" + childCursor.offsetX + " childCursor.viewWidth:" + childCursor.viewWidth);
 
                 // childの端を出す。
                 var currentChildEndPosX = childCursor.offsetX + childCursor.viewWidth;
                 var currentChildEndPosY = childCursor.offsetY + childCursor.viewHeight;
 
-                // Debug.Log("box tag:" + Debug_GetTagStrAndType(layerTree) + " currentChildEndPosY:" + currentChildEndPosY + " vs resultPosY:" + resultPosY + " vs basePos.viewHeight:" + basePos.viewHeight);// ここの出し方がミスってる気がする
+                // Debug.Log(indent + "layer tag:" + Debug_GetTagStrAndType(layerTree) + " currentChildEndPosY:" + currentChildEndPosY + " bottom:" + bottom);// bottomが高すぎる。70とかある。
 
                 // 次に別グループが来た場合のインデックスを設定する、この値は同一のグループ内では無視される。
                 nextGroupIndexY = currentChildEndPosY;
 
-                Debug.Log("box tag:" + Debug_GetTagStrAndType(boxTree) + " resultPosX:" + resultPosX + " currentChildEndPosX:" + currentChildEndPosX);
+                // Debug.Log(indent + "box tag:" + Debug_GetTagStrAndType(boxTree) + " nextGroupIndexY:" + nextGroupIndexY);
+
+
 
                 // 最も右のポイントが更新されたらセット
                 if (resultPosX < currentChildEndPosX)
@@ -346,13 +340,13 @@ namespace UUebView
                 {
                     resultPosY = currentChildEndPosY;
                 }
+                indent--;
             }
 
             // ベース高さと結果高さを比較して、高い方を扱う。
+            // Debug.Log(indent + "tag:" + Debug_GetTagStrAndType(layerTree) + " basePos.viewWidth:" + basePos.viewWidth + " resultPosX:" + resultPosX);
             var newWidth = Mathf.Max(basePos.viewWidth, resultPosX);
             var newHeight = Mathf.Max(basePos.viewHeight, resultPosY);
-
-
 
             // treeに位置をセットしてposを返す
 
@@ -360,19 +354,24 @@ namespace UUebView
             var pos = layerTree.SetPos(
                 basePos.offsetX,
                 basePos.offsetY,
-                newWidth,
+                newWidth,// ここがおかしい。
                 newHeight
             );
 
-            Debug.Log("tag:" + Debug_GetTagStrAndType(layerTree) + newWidth);
+            // Debug.Log(indent + "tag:" + Debug_GetTagStrAndType(layerTree) + " pos:" + pos);
 
             // 余白が存在するため、親へと返すサイズ感を別途設定する。この値には右下の余白部分を含めた値をセットする。
             pos.viewWidth += rightAnchorWidth;
             pos.viewHeight += bottomAnchorHeight;
 
-            Debug.Log("tag:" + Debug_GetTagStrAndType(layerTree) + " resultPosY:" + resultPosY + " bottomAnchorHeight:" + bottomAnchorHeight + " result pos:" + pos);
+            NumToTab();
+            // Debug.Log(indent + "end layer tag:" + Debug_GetTagStrAndType(layerTree));
 
             yield return pos;
+        }
+        private void NumToTab()
+        {
+            indent--;
         }
 
         private IEnumerator<ChildPos> DoEmptyLayerLayout(TagTree emptyLayerTree, ViewCursor viewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null)
@@ -1199,7 +1198,8 @@ namespace UUebView
          */
         private IEnumerator<ChildPos> LayoutBoxedContents(TagTree boxTree, ViewCursor boxView)
         {
-            // Debug.LogError("boxTree:" + GetTagStr(boxTree.tagValue) + " boxView:" + boxView);
+            indent++;
+            // Debug.Log(indent + "start boxTree:" + Debug_GetTagStrAndType(boxTree));
 
             var containerChildren = boxTree.GetChildren();
             var childCount = containerChildren.Count;
@@ -1255,6 +1255,8 @@ namespace UUebView
                 // Debug.Log("childViewCursor:" + childViewCursor);
             }
 
+            // Debug.Log(indent + "end box:" + Debug_GetTagStrAndType(boxTree));
+            indent--;
             // Debug.Log("box childViewCursor.offsetY:" + childViewCursor.offsetY);
 
             // 最終コンテンツのoffsetYを使ってboxの高さをセット

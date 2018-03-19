@@ -597,6 +597,8 @@ public class MaterializeMachineTests : MiyamasuTestRunner
         		<titlebox>
         			<titletext>Sample</titletext>
         		</titlebox>
+        		<newbadge/>
+        		<newbadge/>
                 <textbg>
                     <textbox><p>中身が空だと伸縮しないみたいなやつか？とりあえず適当な分量で膨らませた場合どうなるんだろう、これで4行くらいなんだけど。</p></textbox>
                 </textbg>

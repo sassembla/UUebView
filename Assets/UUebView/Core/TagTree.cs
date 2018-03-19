@@ -256,79 +256,71 @@ namespace UUebView
 
         /**
             画面幅、高さから、uGUIの計算を行って実際のレイアウト時のパラメータを算出する。
+            パラメータとして渡って来るboxPosには、親のサイズに対してのレイアウト値が含まれた状態。
+            
          */
-        public static Rect GetChildViewRectFromParentRectTrans(float parentWidth, float parentHeight, BoxPos pos, out float right, out float bottom)
+        public static Rect GetChildViewRectFromParentRectTrans(float parentWidth, float parentHeight, BoxPos pos, out float rightPadding, out float bottomPadding)
         {
-            // アンカーからwidthとheightを出す。
-            Debug.Log("pos:" + pos + " parentWidth:" + parentWidth + " parentHeight:" + parentHeight);
             /*
-                サンプルとして次のようなアンカーを考える。
+                出せるものは次の要素。
+                ・要素の起点位置(左上オフセット)
+                ・要素のサイズ
+                ・要素のパディング(右下オフセット)
 
-                pWidth = 261.9
-                pHeight = 54.5
+                基本的に、親のサイズに対して各数値が決まる。
 
-                offsetMin:(
-                    4.5, // xの左からの距離
+                まず左下のポイントが定まる。これは、anchorMinがどこを指すかに影響される。
+                xが0の場合、offsetMinは左からの値になる。
+                xが1の場合、offsetMinは右からの値になる。
 
-                    -49.6 // yの下への距離(これが計算結果で入るっぽい)
-                ) 
-                offsetMax:(
-                    -48.5, // xの右からの距離
+                アンカー座標系(右上に加算される系)において、
 
-                    -4.6 // yの上からの距離
-                ) 
-                pivot:(0.5, 0.5) 
-                anchorMin:(
-                    0.0, // xの左側のアンカー位置、これで左端ジャストになる
-                    1.0 // yの下アンカー位置、これで上辺について来る形になる。
-                ) 
-                anchorMax:(
-                    1.0, // xの右側のアンカー位置、これで右端ジャストに追随する。
-                    1.0 // yの上アンカーの位置、これで上辺について来る形になる。
-                )
+                左下のX位置
+                    anchorMinXという値が置けて、
+                    anchorMinX = width * anchorMin.x(0で左端、1で右端になる)
+                    左下のX位置は、(width * anchorMin.x) + offsetMin.x になる。
+
+                左下のY位置
+                    anchorMinYという値が置けて、
+                    anchorMinY = height * anchorMin.y(0で下端、1で上端になる)
+                    左下のYの位置は、(height * anchorMin.y) + offsetMin.y になる。
+
+                右上のX位置
+                    anchorMaxXという値が置けて、
+                    anchorMaxX = width * anchorMax.x(0で左端、1で右端になる)
+                    右上のX位置は、(width * anchorMax.x) + offsetMax.x になる。
+
+                右上のY位置
+                    anchorMaxYという値が置けて、
+                    anchorMaxY = height * anchorMax.y(0で下端、1で上端になる)
+                    右上のYの位置は、(height * anchorMax.y) + offsetMax.y になる。
+
+                となる。
+
+                これらの値によって、anchorによって決められた描画位置とサイズが得られる。
+
+                y値は調整が必要で、下から上の変な系になっているため、実際のparentHeightから引く、という形になる。
+                
+                また、heightは、下からの系なので、常にbottomY > topYとなるため、bottomY - topYとなる。
              */
+            var leftX = (parentWidth * pos.anchorMin.x) + pos.offsetMin.x;
+            var rightX = (parentWidth * pos.anchorMax.x) + pos.offsetMax.x;
+            var bottomY = parentHeight - ((parentHeight * pos.anchorMin.y) + pos.offsetMin.y);
+            var topY = parentHeight - ((parentHeight * pos.anchorMax.y) + pos.offsetMax.y);
+
+            var viewWidth = rightX - leftX;
+            var viewHeight = bottomY - topY;
+
             /*
-                parentWidth:280 
-                parentHeight:100
-
-                offsetMin:(
-                    -67.9, 
-                    -30.5
-                )
-                offsetMax:(
-                     -10.9, 
-                     -7.1
-                ) 
-                pivot:(0.5, 0.5) 
-                anchorMin:(// 右上をアンカーとした状態、
-                    1.0, 
-                    1.0
-                ) 
-                anchorMax:(
-                    1.0, 
-                    1.0
-                ) 
+                右下の余白
+                    この値を実際に採用するかは、boxを並べる側で判断する。
              */
+            rightPadding = parentWidth - (leftX + viewWidth);
+            bottomPadding = parentHeight - (topY + viewHeight);
 
-            // アンカー 画面端からの、親のサイズを元にした比例距離
-            var anchorWidth = parentWidth * (1 - (pos.anchorMax.x - pos.anchorMin.x));
-            var anchorHeight = parentHeight * (1 - (pos.anchorMax.y - pos.anchorMin.y));
+            // Debug.Log("leftX:" + leftX + " rightX:" + rightX + " topY:" + topY + " bottomY:" + bottomY + " width:" + viewWidth + " height:" + viewHeight + " rightPadding:" + rightPadding + " bottomPadding:" + bottomPadding);
 
-            // 右下の余白のパラメータをセット
-            right = anchorWidth - pos.offsetMax.x;
-            bottom = anchorHeight + pos.offsetMin.y;
-
-            Debug.Log("right:" + right + " bottom:" + bottom + " parentHeight:" + parentHeight + " pos.anchorMax.y:" + pos.anchorMax.y);
-
-            // width, height 親の画面サイズからアンカーによる固定幅を引き、さらにオフセット値を引く。(offsetMaxには-が入るため足す形になる)
-            var viewWidth = parentWidth - anchorWidth - pos.offsetMin.x + pos.offsetMax.x;
-            var viewHeight = parentHeight - anchorHeight - pos.offsetMin.y + pos.offsetMax.y;
-
-            // 左上原点を出す。
-            var offsetX = (parentWidth * pos.anchorMin.x) + pos.offsetMin.x;
-            var offsetY = (parentHeight * (1 - pos.anchorMax.y)) - (pos.offsetMax.y);
-
-            var resultRect = new Rect(offsetX, offsetY, viewWidth, viewHeight);
+            var resultRect = new Rect(leftX, topY, viewWidth, viewHeight);
             return resultRect;
         }
 
