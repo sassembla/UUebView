@@ -74,7 +74,7 @@ namespace UUebView
             generator.Invalidate();
 
             // set content to prefab.
-
+            var defaultText = textComponent.text;
             textComponent.text = text;
 
             var setting = textComponent.GetGenerationSettings(new Vector2(textViewCursor.viewWidth, float.PositiveInfinity));
@@ -134,12 +134,14 @@ namespace UUebView
 
 
                     var charHeight = GetCharHeight(bodyContent, textComponent);
+                    textComponent.text = defaultText;
                     yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, charHeight);
                     yield break;
                 }
 
                 // 行なかで、1行目のコンテンツがまるきり入らなかった。
                 // よって、改行を行なって次の行からコンテンツを開始する。
+                textComponent.text = defaultText;
                 insertion(InsertType.RetryWithNextLine, null);
                 yield break;
             }
@@ -201,6 +203,7 @@ namespace UUebView
                     }
 
                     rectTrans.sizeDelta = defaultSize;
+                    textComponent.text = defaultText;
 
                     // このビューのポジションをセット
                     yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, totalHeight);
@@ -213,6 +216,8 @@ namespace UUebView
 
                     // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                     insertion(InsertType.TailInsertedToLine, textTree);
+
+                    textComponent.text = defaultText;
 
                     yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                 }
@@ -239,6 +244,8 @@ namespace UUebView
                     // 次のコンテンツを新しい行から開始する。
                     insertion(InsertType.InsertContentToNextLine, nextLineContent);
 
+                    textComponent.text = defaultText;
+
                     yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, currentLineWidth, currentLineHeight);
                 }
                 else
@@ -251,6 +258,7 @@ namespace UUebView
                     // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                     insertion(InsertType.TailInsertedToLine, textTree);
 
+                    textComponent.text = defaultText;
                     // Debug.LogError("newViewCursor:" + newViewCursor);
                     yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
                 }
