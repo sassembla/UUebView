@@ -76,6 +76,7 @@ namespace UUebView
             // set content to prefab.
 
             textComponent.text = text;
+
             var setting = textComponent.GetGenerationSettings(new Vector2(textViewCursor.viewWidth, float.PositiveInfinity));
             generator.Populate(text, setting);
 
@@ -171,6 +172,35 @@ namespace UUebView
                         var lineHeight = (line.height * textComponent.lineSpacing);
                         totalHeight += lineHeight;
                     }
+
+                    // Debug.Log("ここの値が計算上合わないみたいなやつがあって、もうcomponentにやらせてみよう。 totalHeight:" + totalHeight);
+
+                    // 実際に最終行までの文字列を取得して、textComponentにセットし、preferredHeightを得る。
+                    var lastLineFirstStrIndex = generator.lines[generator.lineCount - 1].startCharIdx;
+                    var subText = text.Substring(0, lastLineFirstStrIndex);
+
+
+                    textComponent.text = subText;
+                    var rectTrans = textComponent.GetComponent<RectTransform>();
+                    var defaultSize = rectTrans.sizeDelta;
+                    rectTrans.sizeDelta = new Vector2(textViewCursor.viewWidth, float.PositiveInfinity);
+
+                    // Debug.Log("vs textComponent:" + textComponent.preferredHeight);
+
+                    // この値は、linespacingによる下余白を剥奪する。文字はしっかりと出るが余白がない状態になってしまい、
+                    // linespacingを編集するのが前提のフォントだと、そのlinespacingの余白を失った状態の高さを出してしまう。
+
+
+                    // ここでトリッキーな手として、レイアウトで計算した高さ or preferredHeight のどちらか高い方を使う。
+                    // linespacingをいじる場合、大体のケースが、totalHeightのほうが高いという結果に落ちつくと思うが、
+                    // linespacingをいじらない場合、preferredHeightのほうが高い = totalHeightのままだと見切れる、という状態が発生する。
+                    // そういうケースのどちらにもに対して、でかい方を採用することで「低すぎる」という問題を回避する。
+                    if (totalHeight < textComponent.preferredHeight)
+                    {
+                        totalHeight = textComponent.preferredHeight;
+                    }
+
+                    rectTrans.sizeDelta = defaultSize;
 
                     // このビューのポジションをセット
                     yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, textViewCursor.viewWidth, totalHeight);
