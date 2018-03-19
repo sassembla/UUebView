@@ -85,7 +85,20 @@ public class TestReceiver : MonoBehaviour, IUUebViewEventHandler
 
     private IEnumerator Rotate(Image img)
     {
+        if (img == null)
+        {
+            yield break;
+        }
+
         var rectTrans = img.GetComponent<RectTransform>();
+        if (rectTrans != null)
+        {
+            // pass.
+        }
+        else
+        {
+            yield break;
+        }
         var count = 0;
         var max = 18;
         var diff = new Vector3(0, 0, -(180f / max));

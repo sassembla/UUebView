@@ -173,7 +173,7 @@ namespace UUebView
             float rightAnchorWidth = 0;
             float bottomAnchorHeight = 0;
 
-            // Debug.Log(indent + "start layer tag:" + Debug_GetTagStrAndType(layerTree));
+            Debug.Log(indent + "start layer tag:" + Debug_GetTagStrAndType(layerTree));
 
             indent++;
             /*
@@ -310,11 +310,12 @@ namespace UUebView
                 */
                 if (i == children.Count - 1)
                 {
+                    Debug.Log("最終コンテンツ bottom:" + bottom);
                     childCursor.viewWidth += right;
                     childCursor.viewHeight += bottom;
                 }
 
-                // Debug.Log(indent + "box tag:" + Debug_GetTagStrAndType(boxTree) + " childCursor.offsetX:" + childCursor.offsetX + " childCursor.viewWidth:" + childCursor.viewWidth);
+                Debug.Log(indent + "box tag:" + Debug_GetTagStrAndType(boxTree) + " childCursor.offsetY:" + childCursor.offsetY + " childCursor.viewHeight:" + childCursor.viewHeight + " bottom:" + bottom);
 
                 // childの端を出す。
                 var currentChildEndPosX = childCursor.offsetX + childCursor.viewWidth;
@@ -338,13 +339,15 @@ namespace UUebView
                 // 最も下のポイントが更新されたらセット。
                 if (resultPosY < currentChildEndPosY)
                 {
+                    Debug.Log("更新 resultPosY:" + resultPosY + " vs currentChildEndPosY:" + currentChildEndPosY);
                     resultPosY = currentChildEndPosY;
                 }
                 indent--;
             }
 
             // ベース高さと結果高さを比較して、高い方を扱う。
-            // Debug.Log(indent + "tag:" + Debug_GetTagStrAndType(layerTree) + " basePos.viewWidth:" + basePos.viewWidth + " resultPosX:" + resultPosX);
+            // ここのresultPosYが低い。
+            Debug.Log(indent + "tag:" + Debug_GetTagStrAndType(layerTree) + " basePos.viewHeight:" + basePos.viewHeight + " resultPosY:" + resultPosY);
             var newWidth = Mathf.Max(basePos.viewWidth, resultPosX);
             var newHeight = Mathf.Max(basePos.viewHeight, resultPosY);
 
@@ -358,14 +361,14 @@ namespace UUebView
                 newHeight
             );
 
-            // Debug.Log(indent + "tag:" + Debug_GetTagStrAndType(layerTree) + " pos:" + pos);
+            Debug.Log(indent + "tag:" + Debug_GetTagStrAndType(layerTree) + " pos:" + pos);
 
             // 余白が存在するため、親へと返すサイズ感を別途設定する。この値には右下の余白部分を含めた値をセットする。
             pos.viewWidth += rightAnchorWidth;
             pos.viewHeight += bottomAnchorHeight;
 
             NumToTab();
-            // Debug.Log(indent + "end layer tag:" + Debug_GetTagStrAndType(layerTree));
+            Debug.Log(indent + "end layer tag:" + Debug_GetTagStrAndType(layerTree) + " pos:" + pos);
 
             yield return pos;
         }
