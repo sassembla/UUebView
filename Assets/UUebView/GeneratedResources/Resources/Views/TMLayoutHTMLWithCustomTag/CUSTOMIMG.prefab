@@ -9,19 +9,19 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1805538319412344}
+  m_RootGameObject: {fileID: 1454421519720870}
   m_IsPrefabParent: 1
---- !u!1 &1805538319412344
+--- !u!1 &1454421519720870
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224497003665567158}
-  - component: {fileID: 222683705242714110}
-  - component: {fileID: 114560787089234542}
-  - component: {fileID: 54870191356469838}
+  - component: {fileID: 224813227208471366}
+  - component: {fileID: 222866571304877246}
+  - component: {fileID: 114706748241426348}
+  - component: {fileID: 54380826841497828}
   m_Layer: 5
   m_Name: CUSTOMIMG
   m_TagString: Untagged
@@ -29,12 +29,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!54 &54870191356469838
+--- !u!54 &54380826841497828
 Rigidbody:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1805538319412344}
+  m_GameObject: {fileID: 1454421519720870}
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
@@ -44,12 +44,12 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &114560787089234542
+--- !u!114 &114706748241426348
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1805538319412344}
+  m_GameObject: {fileID: 1454421519720870}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
@@ -71,18 +71,18 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!222 &222683705242714110
+--- !u!222 &222866571304877246
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1805538319412344}
---- !u!224 &224497003665567158
+  m_GameObject: {fileID: 1454421519720870}
+--- !u!224 &224813227208471366
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1805538319412344}
+  m_GameObject: {fileID: 1454421519720870}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

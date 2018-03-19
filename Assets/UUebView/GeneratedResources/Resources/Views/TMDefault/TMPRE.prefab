@@ -9,18 +9,18 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1202801928113158}
+  m_RootGameObject: {fileID: 1169262036052212}
   m_IsPrefabParent: 1
---- !u!1 &1202801928113158
+--- !u!1 &1169262036052212
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 224636813283290202}
-  - component: {fileID: 222237480799140890}
-  - component: {fileID: 114943666144115906}
+  - component: {fileID: 224161507903604048}
+  - component: {fileID: 222889143112461340}
+  - component: {fileID: 114377615746644016}
   m_Layer: 0
   m_Name: TMPRE
   m_TagString: Untagged
@@ -28,12 +28,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114943666144115906
+--- !u!114 &114377615746644016
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1202801928113158}
+  m_GameObject: {fileID: 1169262036052212}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1453722849, guid: 89f0137620f6af44b9ba852b4190e64e, type: 3}
@@ -113,7 +113,7 @@ MonoBehaviour:
   m_pageToDisplay: 1
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
-    textComponent: {fileID: 114943666144115906}
+    textComponent: {fileID: 114377615746644016}
     characterCount: 0
     spriteCount: 0
     spaceCount: 0
@@ -140,18 +140,18 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &222237480799140890
+--- !u!222 &222889143112461340
 CanvasRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1202801928113158}
---- !u!224 &224636813283290202
+  m_GameObject: {fileID: 1169262036052212}
+--- !u!224 &224161507903604048
 RectTransform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1202801928113158}
+  m_GameObject: {fileID: 1169262036052212}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
