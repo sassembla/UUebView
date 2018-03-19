@@ -87,7 +87,7 @@ namespace UUebView
             // 0行だったら、入らなかったということなので、改行をしてもらってリトライを行う。
             if (lineCount == 0 && !string.IsNullOrEmpty(textComponent.text))
             {
-                Debug.LogError("このケース存在しないかも。");
+                // Debug.LogError("このケース存在しないかも。");
                 insertion(InsertType.RetryWithNextLine, null);
                 yield break;
             }
@@ -164,11 +164,12 @@ namespace UUebView
 
                     // 最終行以外はハコ型に収まった状態なので、ハコとして出力する。
                     // 最終一つ前までの高さを出して、このコンテンツの高さとして扱う。
-                    var totalHeight = 0f + generator.lineCount - 1;// lineの高さだけを足すと、必ずlineCount-1ぶんだけ不足する。この挙動は謎。
+                    var totalHeight = 0f;
                     for (var i = 0; i < generator.lineCount - 1; i++)
                     {
                         var line = generator.lines[i];
-                        totalHeight += (line.height * textComponent.lineSpacing);
+                        var lineHeight = (line.height * textComponent.lineSpacing);
+                        totalHeight += lineHeight;
                     }
 
                     // このビューのポジションをセット

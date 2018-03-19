@@ -338,55 +338,8 @@ namespace UUebView
                     この値を実際に採用するかは、boxを並べる側で判断する。
              */
             rightPadding = parentWidth - (leftX + viewWidth);
-            if (rightPadding < 0)
-            {
-                rightPadding = 0f;
-            }
 
             bottomPadding = parentHeight - (topY + viewHeight);
-            if (bottomPadding < 0)
-            {
-                if (bottomPadding.ToString() == "-317.7")
-                {
-                    Debug.LogWarning("bottomPadding:" + bottomPadding + " negativeに入った、条件は:" + pos + " vs parentHeight:" + parentHeight);
-                    /*
-                        bottomPadding:-317.7 
-                        offsetMin:(-760.0, -407.7) 
-                        offsetMax:(760.0, -9.9) 
-                        pivot:(0.5, 0.5) 
-                        anchorMin:(0.5, 1.0) 
-                        anchorMax:(0.5, 1.0) vs 
-
-                        parentHeight:90 なので、上辺からの扱いか。 yのoffsetYすげーな。上からなので、下に407潜ると。
-                        この時のtopYとかbottomYどうなってんだろ。そのへんから間違ってる気がする。
-
-                        topY:9.900024 bottomY:407.7
-
-                        parentHeight - ((parentHeight * pos.anchorMin.y) + pos.offsetMin.y)
-                        90 - 
-                            (parentHeight * pos.anchorMin.y) + pos.offsetMin.y
-                            90 * 1 -407 - 90 ふむ、、、
-                        
-                        bottomYは407になる。
-                        これがそもそも間違ってる気がしないでもない。ビューをはるかに超えるoffsetYってなんなの。
-
-                        で、topYは、parentHeight - ((parentHeight * pos.anchorMax.y) + pos.offsetMax.y);
-                        90 - 
-                            (1 * 90 - 9.9) で、9.9になる。ふむ。
-
-                        viewHeightがいい感じにheightを超えてるんだよね。入れただけで超えるってそうとうなアレだと思うんだけど。
-
-                        viewHeightは397.8になる。親が90なのに。ふむ。
-
-                        -407が入ってるのが最初から異常値みたいな感じか。
-                        
-                        であれば、ここでやるべきなのは、最初にtopとbottomを出した時に、異常値を丸める事かもしれない。明らかにheightよりも高い範囲に行った場合、それを丸めるみたいな。
-
-                     */
-                    Debug.LogWarning("topY:" + topY + " bottomY:" + bottomY + " viewHeight:" + viewHeight);
-                }
-                bottomPadding = 0f;
-            }
 
             // Debug.Log("leftX:" + leftX + " rightX:" + rightX + " topY:" + topY + " bottomY:" + bottomY + " width:" + viewWidth + " height:" + viewHeight + " rightPadding:" + rightPadding + " bottomPadding:" + bottomPadding);
             // Debug.LogWarning("parentHeight:" + parentHeight + " topY:" + topY + " viewHeight:" + viewHeight + " bottomPadding:" + bottomPadding);

@@ -131,8 +131,6 @@ namespace UUebView
                     var bodyContent = string.Empty;
                     var lastLineContent = string.Empty;
 
-                    // TMProの場合、レイアウト時に文字を改行する場所と、実際にコンテンツを放り込んでしまって改行される箇所にズレがある。
-                    // よってこの時点で、改行を含んだ文字列へと強制的に変更する。
                     for (var i = 0; i < tmLineCount; i++)
                     {
                         var lineInfo = tmGeneratorLines[i];
@@ -143,7 +141,7 @@ namespace UUebView
                             continue;
                         }
 
-                        bodyContent += lineText;// + "\n"
+                        bodyContent += lineText;
                     }
 
 
