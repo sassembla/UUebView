@@ -22,10 +22,11 @@ namespace UUebView
         public float GetDefaultHeightOfContainerText(Component textComponentSrc)
         {
             var textComponent = (Text)textComponentSrc;
+            var defaultStr = textComponent.text;
             textComponent.text = "A";
 
             var defaultHeight = textComponent.preferredHeight;
-            textComponent.text = string.Empty;
+            textComponent.text = defaultStr;
 
             return defaultHeight;
         }
