@@ -1,0 +1,14 @@
+<!DOCTYPE uuebview href='resources://Views/MaintenanceView/UUebTags'>
+<body>
+<bg>
+<titleimagebox/>
+<textbox>
+        <p align='center'>
+            <br>日ごろより「ファイトクラブ」をご利用いただきまして、誠にありがとうございます。<br>
+            現在、緊急メンテナンスを行っております。<br><br>
+            お客様にはご迷惑をお掛けし申し訳ございません。<br>
+            何卒ご理解とご協力をお願い申し上げます。
+        </p>
+</textbox>
+</bg>
+</body>
