@@ -45,7 +45,7 @@ namespace UUebView
 
         public IEnumerator ParseRoot(string source, Action<ParsedTree> parsed)
         {
-            var lines = source.Split('\n');
+            var lines = source.Replace("\r\n", "\n").Split('\n');
             for (var i = 0; i < lines.Length; i++)
             {
                 lines[i] = lines[i].TrimStart();
