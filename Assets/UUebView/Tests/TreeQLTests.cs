@@ -37,8 +37,7 @@ public class TreeQLTests : MiyamasuTestRunner
         baseObjRect.pivot = new Vector2(0, 1);
 
 
-        baseObj.transform.SetParent(
-            canvas.transform, false);
+        baseObj.transform.SetParent(canvas.transform, false);
 
         view.transform.SetParent(baseObj.transform, false);
 
