@@ -407,7 +407,7 @@ namespace UUebView
             }
 
             // copiedChildListをy順にソートする。
-            var sortedCopiedChildList = copiedChildList.OrderByDescending(go => go.GetComponent<RectTransform>().anchoredPosition.y).ToList();
+            var sortedCopiedChildList = copiedChildList;//.OrderBy(go => go.GetComponent<RectTransform>().anchoredPosition.y).ToList();
 
             using (new GameObjectDeleteUsing(sortedCopiedChildList.ToArray()))
             {
