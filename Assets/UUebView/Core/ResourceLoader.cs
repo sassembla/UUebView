@@ -60,7 +60,7 @@ namespace UUebView
 
 
 
-
+        private string basePath;
         public readonly GameObject cacheBox;
         public readonly Action<IEnumerator> LoadParallel;
 
@@ -104,6 +104,11 @@ namespace UUebView
             {
                 this.httpResponseHandlingDelegate = BasicResponseHandlingDelegate;
             }
+        }
+
+        public void SetBasePath(string basePath)
+        {
+            this.basePath = basePath;
         }
 
         public IEnumerator<string> DownloadHTMLFromWeb(string url, Action<ContentType, int, string> failed)
@@ -558,9 +563,9 @@ namespace UUebView
                             
                             ^http://		http scheme => load asset from web.
                             ^https://		https scheme => load asset from web.
+                            ^./             relative path => load asset from web.
                             ^assetbundle://	assetbundle scheme => load asset from assetBundle.
                             ^resources://   resources scheme => (Resources/)somewhere/resource path.
-                            ^./				relative path => (Resources/)somewhere/resource path.
                     */
                     var schemeAndPath = uriSource.Split(new char[] { '/' }, 2);
                     var scheme = schemeAndPath[0];
@@ -577,6 +582,35 @@ namespace UUebView
                         case "http:":
                             {
                                 cor = LoadImageFromWeb(uriSource);
+                                break;
+                            }
+                        case ".":
+                            {
+                                if (uriSource[1] != '/')
+                                {
+                                    throw new Exception("unsupported scheme:" + scheme);
+                                }
+
+                                switch (basePath)
+                                {
+                                    case "":
+                                        {
+                                            var modifiedUriSource = uriSource.Substring(2);
+                                            cor = LoadImageFromResources(modifiedUriSource);
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            if (string.IsNullOrEmpty(basePath))
+                                            {
+                                                throw new Exception("unknown error, basePath is empty.");
+                                            }
+
+                                            var modifiedUriSource = basePath + "/" + uriSource.Substring(2);
+                                            cor = LoadImageFromWeb(modifiedUriSource);
+                                            break;
+                                        }
+                                }
                                 break;
                             }
                         case "resources:":

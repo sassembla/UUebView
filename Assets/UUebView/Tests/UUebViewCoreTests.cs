@@ -682,4 +682,44 @@ public class UUebViewCoreTests : MiyamasuTestRunner
             () => done, () => { throw new TimeoutException("too late."); }, 5
         );
     }
+
+
+    [MTest]
+    public IEnumerator RelativeResourcesPathSupport()
+    {
+        var source = @"
+<img src='./somewhere/a.jpg'/>";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromHTML(eventReceiverGameObj, source, new Vector2(800, 1000));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 5
+        );
+    }
+
+    [MTest]
+    public IEnumerator RelativeWebPathSupport()
+    {
+        var url = @"https://raw.githubusercontent.com/sassembla/UUebView-freeversion/master/TestResources/index.html";
+        var done = false;
+
+        eventReceiverGameObj.GetComponent<TestReceiver>().OnLoaded = ids =>
+        {
+            done = true;
+        };
+        view = UUebView.UUebViewComponent.GenerateSingleViewFromUrl(eventReceiverGameObj, url, new Vector2(800, 1000));
+
+        Show(view);
+
+        yield return WaitUntil(
+            () => done, () => { throw new TimeoutException("too late."); }, 5
+        );
+    }
 }

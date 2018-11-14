@@ -160,6 +160,7 @@ namespace UUebView
 
         public void LoadHtml(string source, Vector2 viewRect, float offsetY, GameObject eventReceiverGameObj = null)
         {
+            resLoader.SetBasePath(string.Empty);
             viewState = ViewState.Loading;
 
             if (this.viewRect != viewRect)
@@ -179,6 +180,8 @@ namespace UUebView
 
         public void DownloadHtml(string url, Vector2 viewRect, GameObject eventReceiverGameObj = null)
         {
+            var urlBasePath = new Uri(url);
+            resLoader.SetBasePath(urlBasePath.Scheme + "://" + urlBasePath.Authority + Path.GetDirectoryName(urlBasePath.LocalPath));
             viewState = ViewState.Loading;
 
             if (eventReceiverGameObj != null)
