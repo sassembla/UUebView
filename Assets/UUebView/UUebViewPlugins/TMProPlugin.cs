@@ -289,6 +289,7 @@ namespace UUebView
                     }
 
                     var tmGo = GameObject.Instantiate(prefab, targetCanvas.transform);// 必須
+                    Debug.Log("tmGo:" + tmGo);
                     tmGoComponent = tmGo.GetComponent<TMPro.TextMeshProUGUI>();
                     tmGoComponent.text = string.Empty;
                 }
