@@ -314,17 +314,25 @@ namespace UUebView
             }
         }
 
-        void IPluggable.SetText(GameObject targetGameObject, string text)
+        void IPluggable.SetText(GameObject targetGameObject, string text, bool shouldFlow)
         {
             var textComponent = targetGameObject.GetComponent<Text>();
             if (textComponent != null)
             {
                 textComponent.text = text;
+                if (shouldFlow)
+                {
+                    textComponent.horizontalOverflow = HorizontalWrapMode.Overflow;
+                }
             }
             else
             {
                 var textComponentPro = targetGameObject.GetComponent<TMPro.TextMeshProUGUI>();
                 textComponentPro.text = text;
+                if (shouldFlow)
+                {
+                    textComponentPro.overflowMode = TMPro.TextOverflowModes.Overflow;
+                }
             }
         }
     }

@@ -979,7 +979,7 @@ namespace UUebView
         /**
             列挙されたコンポーネント型をプレファブから取得試行してあったものを返す。
          */
-        private IEnumerator<Component> GetTextComponent(TagTree textTree, string text = null)
+        private IEnumerator<Component> GetTextComponent(TagTree textTree)
         {
             var cor = resLoader.LoadPrefab(textTree.tagValue, textTree.treeType);
 
@@ -1004,7 +1004,7 @@ namespace UUebView
         {
             var text = textTree.keyValueStore[HTMLAttribute._CONTENT] as string;
 
-            var textComponentCor = GetTextComponent(textTree, text);
+            var textComponentCor = GetTextComponent(textTree);
 
             while (textComponentCor.MoveNext())
             {

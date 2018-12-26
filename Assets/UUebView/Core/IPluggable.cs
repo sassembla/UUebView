@@ -9,6 +9,6 @@ namespace UUebView
         IEnumerator<ChildPos> TextLayoutCoroutine(Component sourceComponent, TagTree textTree, string text, ViewCursor textViewCursor, Func<InsertType, TagTree, ViewCursor> insertion = null);
         float GetDefaultHeightOfContainerText(Component textComponent);
         Component TextComponent(GameObject prefab, string tagsName);
-        void SetText(GameObject targetGameObject, string text);
+        void SetText(GameObject targetGameObject, string text, bool shouldFlow);
     }
 }

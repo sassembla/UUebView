@@ -200,6 +200,7 @@ namespace UUebView
             switch (tree.treeType)
             {
                 case TreeType.Content_Img:
+                case TreeType.CustomLayer:
                     {
                         if (tree.viewHeight == 0)
                         {
@@ -230,7 +231,7 @@ namespace UUebView
                             var text = tree.keyValueStore[HTMLAttribute._CONTENT] as string;
                             if (!string.IsNullOrEmpty(text))
                             {
-                                pluggable.SetText(newGameObject, text);
+                                pluggable.SetText(newGameObject, text, tree.keyValueStore.ContainsKey(HTMLAttribute._DONE));
                             }
                         }
 
