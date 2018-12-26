@@ -231,7 +231,7 @@ namespace UUebView
                             var text = tree.keyValueStore[HTMLAttribute._CONTENT] as string;
                             if (!string.IsNullOrEmpty(text))
                             {
-                                pluggable.SetText(newGameObject, text, tree.keyValueStore.ContainsKey(HTMLAttribute._DONE));
+                                pluggable.SetText(newGameObject, text, tree.keyValueStore.ContainsKey(HTMLAttribute._IS_SINGLE_LINE));
                             }
                         }
 

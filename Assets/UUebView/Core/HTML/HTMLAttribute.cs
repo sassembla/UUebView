@@ -8,7 +8,8 @@ namespace UUebView
 
         // system.
         _CONTENT,
-        _DONE,
+        _IS_SINGLE_LINE,
+
         _BOX,
         _COLLISION,
         _ONLAYOUT_PRESET_X,

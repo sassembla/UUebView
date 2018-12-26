@@ -221,7 +221,7 @@ namespace UUebView
 
                     // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                     insertion(InsertType.TailInsertedToLine, textTree);
-                    textTree.keyValueStore[HTMLAttribute._DONE] = true;
+                    textTree.keyValueStore[HTMLAttribute._IS_SINGLE_LINE] = true;
 
                     textComponent.text = defaultText;
                     yield return textTree.SetPos(textViewCursor.offsetX, textViewCursor.offsetY, width, height);
@@ -237,7 +237,7 @@ namespace UUebView
                     // 複数行が途中から出ている状態で、まず折り返しているところまでを分離して、後続の文章を新規にstringとしてinsertする。
                     var currentLineContent = text.Substring(0, generator.lines[1].startCharIdx);
                     textTree.keyValueStore[HTMLAttribute._CONTENT] = currentLineContent;
-                    textTree.keyValueStore[HTMLAttribute._DONE] = true;
+                    textTree.keyValueStore[HTMLAttribute._IS_SINGLE_LINE] = true;
 
                     // get preferredWidht of text from trimmed line.
                     textComponent.text = currentLineContent;
@@ -263,7 +263,7 @@ namespace UUebView
                     // Debug.LogError("行中の単一行 text:" + text + " textViewCursor:" + textViewCursor);
                     // 最終行かどうかの判断はここでできないので、単一行の入力が終わったことを親コンテナへと通知する。
                     insertion(InsertType.TailInsertedToLine, textTree);
-                    textTree.keyValueStore[HTMLAttribute._DONE] = true;
+                    textTree.keyValueStore[HTMLAttribute._IS_SINGLE_LINE] = true;
 
                     textComponent.text = defaultText;
                     // Debug.LogError("newViewCursor:" + newViewCursor);
