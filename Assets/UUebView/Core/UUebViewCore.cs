@@ -181,7 +181,11 @@ namespace UUebView
         public void DownloadHtml(string url, Vector2 viewRect, GameObject eventReceiverGameObj = null)
         {
             var urlBasePath = new Uri(url);
-            resLoader.SetBasePath(urlBasePath.Scheme + "://" + urlBasePath.Authority + Path.GetDirectoryName(urlBasePath.LocalPath));
+
+            var fileParentPathBase = urlBasePath.LocalPath.Split('/');
+            var fileParentPath = string.Join("/", fileParentPathBase, 0, fileParentPathBase.Length - 1);
+
+            resLoader.SetBasePath(urlBasePath.Scheme + "://" + urlBasePath.Authority + fileParentPath);
             viewState = ViewState.Loading;
 
             if (eventReceiverGameObj != null)
