@@ -39,6 +39,7 @@ namespace UUebView
         private Dictionary<string, List<TagTree>> listenerDict = new Dictionary<string, List<TagTree>>();
         public readonly IUUebView view;
         public readonly ResourceLoader resLoader;
+        public readonly DefaultImageDownloader defaultImageDownloader;
         private LayoutMachine layoutMachine;
         private MaterializeMachine materializeMachine;
         private readonly Action<List<ParseError>> onParseFailed;
@@ -55,6 +56,8 @@ namespace UUebView
 
             resLoader = new ResourceLoader(this.LoadParallel, requestHeader, httpResponseHandlingDelegate);
             this.view.AddChild(resLoader.cacheBox.transform);
+
+            defaultImageDownloader = new DefaultImageDownloader(this.LoadParallel, resLoader);
 
             layoutMachine = new LayoutMachine(resLoader, plugin);
             materializeMachine = new MaterializeMachine(resLoader, plugin);
@@ -279,7 +282,7 @@ namespace UUebView
         {
             IEnumerator reload = null;
 
-            var parser = new HTMLParser(resLoader);
+            var parser = new HTMLParser(resLoader, defaultImageDownloader);
             var parse = parser.ParseRoot(
                 source,
                 parsedTagTree =>
@@ -427,6 +430,8 @@ namespace UUebView
         public void Reload()
         {
             resLoader.Reset();
+            defaultImageDownloader.Reset();
+
             CoroutineExecutor(Load(layoutedTree, viewRect, 0f, eventReceiverGameObj));
         }
 
@@ -654,7 +659,7 @@ namespace UUebView
 
             TagTree.CorrectTrees(layoutedTree);
 
-            var parser = new HTMLParser(resLoader);
+            var parser = new HTMLParser(resLoader, defaultImageDownloader);
             var parse = parser.ParseRoot(
                 htmlContent,
                 parsedTagTree =>

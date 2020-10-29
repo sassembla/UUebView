@@ -16,7 +16,7 @@ public class HTMLParserTests : MiyamasuTestRunner
     private HTMLParser parser;
 
     private ResourceLoader loader;
-
+    private DefaultImageDownloader defaultImageDownloader;
     private UUebView.UUebViewComponent executor;
 
     [MSetup]
@@ -27,8 +27,9 @@ public class HTMLParserTests : MiyamasuTestRunner
         var core = new UUebView.UUebViewCore(executor);
         executor.SetCore(core);
         loader = new ResourceLoader(executor.Core.CoroutineExecutor);
+        defaultImageDownloader = new DefaultImageDownloader(executor.Core.CoroutineExecutor, loader);
 
-        parser = new HTMLParser(loader);
+        parser = new HTMLParser(loader, defaultImageDownloader);
     }
 
     [MTeardown]

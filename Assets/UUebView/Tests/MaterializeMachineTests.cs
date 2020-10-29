@@ -61,7 +61,7 @@ public class MaterializeMachineTests : MiyamasuTestRunner
         rectTrans.anchoredPosition = new Vector2(100 * index, 0);
         index++;
 
-        parser = new HTMLParser(core.resLoader);
+        parser = new HTMLParser(core.resLoader, core.defaultImageDownloader);
     }
 
     private IEnumerator CreateLayoutedTree(string sampleHtml, Action<TagTree> onLayouted, float width = 100)
