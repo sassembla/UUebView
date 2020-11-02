@@ -35,10 +35,12 @@ namespace UUebView
     public class HTMLParser
     {
         private readonly ResourceLoader resLoader;
+        private readonly DefaultImageDownloader defaultImageDownloader;
 
-        public HTMLParser(ResourceLoader resLoader)
+        public HTMLParser(ResourceLoader resLoader, DefaultImageDownloader defaultImageDownloader)
         {
             this.resLoader = resLoader;
+            this.defaultImageDownloader = defaultImageDownloader;
         }
 
         private Action<int, string> parseFailed;
@@ -61,6 +63,12 @@ namespace UUebView
             var cor = Parse(root, string.Join(string.Empty, lines));
 
             while (cor.MoveNext())
+            {
+                yield return null;
+            }
+
+            // defaultImageLoaderはHTMLParserに依存しているのでここで読み込み完了まで待つ
+            while (defaultImageDownloader.IsRunning())
             {
                 yield return null;
             }
@@ -317,6 +325,24 @@ namespace UUebView
 
                                                 // Debug.LogError("data[tempCharIndex]:" + data[tempCharIndex]);
                                                 var treeType = resLoader.GetTreeType(tag);
+
+                                                // Content_Imgかつデフォルトのimgタグの場合は事前に画像読み込みを行う
+                                                switch (treeType)
+                                                {
+                                                    case TreeType.Content_Img:
+                                                        // デフォルトのimgタグかチェックする
+                                                        // SRC keyを含んでいなかった場合は特に何もせずにスルー、エラー処理はLayoutMachineに任せる
+                                                        if (resLoader.IsDefaultTag(tag) && kv.ContainsKey(HTMLAttribute.SRC))
+                                                        {
+                                                            // SRCを含んでいるので事前画像読み込みリクエストを行う
+                                                            defaultImageDownloader.RequestLoadImage(kv[HTMLAttribute.SRC] as string);
+                                                        }
+                                                        break;
+
+                                                    default:
+                                                        // treeTypeやtagが条件を満たしていなかった場合には何もせず次の処理へ
+                                                        break;
+                                                }
 
                                                 /*
                                                     single close tag found.

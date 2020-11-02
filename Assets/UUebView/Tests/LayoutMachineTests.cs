@@ -16,6 +16,7 @@ public class LayoutMachineTests : MiyamasuTestRunner
     private HTMLParser parser;
 
     private ResourceLoader loader;
+    private DefaultImageDownloader defaultImageDownloader;
 
     private UUebView.UUebViewComponent executor;
 
@@ -37,8 +38,9 @@ public class LayoutMachineTests : MiyamasuTestRunner
         executor.SetCore(core);
 
         loader = new ResourceLoader(executor.Core.CoroutineExecutor);
+        defaultImageDownloader = new DefaultImageDownloader(executor.Core.CoroutineExecutor, loader);
 
-        parser = new HTMLParser(loader);
+        parser = new HTMLParser(loader, defaultImageDownloader);
     }
 
     [MTeardown]
