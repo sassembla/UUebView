@@ -544,6 +544,10 @@ namespace UUebView
          */
         public IEnumerator<Sprite> LoadImageAsync(string uriSource)
         {
+            var schemeAndPath = uriSource.Split(new char[] { '/' }, 2);
+            var scheme = schemeAndPath[0];
+            uriSource = ModifyUri(scheme, uriSource);
+
             while (spriteDownloadingUris.Contains(uriSource))
             {
                 yield return null;
@@ -567,8 +571,6 @@ namespace UUebView
                             ^assetbundle://	assetbundle scheme => load asset from assetBundle.
                             ^resources://   resources scheme => (Resources/)somewhere/resource path.
                     */
-                    var schemeAndPath = uriSource.Split(new char[] { '/' }, 2);
-                    var scheme = schemeAndPath[0];
 
                     IEnumerator<Sprite> cor = null;
                     switch (scheme)
@@ -586,37 +588,12 @@ namespace UUebView
                             }
                         case ".":
                             {
-                                if (uriSource[1] != '/')
-                                {
-                                    throw new Exception("unsupported scheme:" + scheme);
-                                }
-
-                                switch (basePath)
-                                {
-                                    case "":
-                                        {
-                                            var modifiedUriSource = uriSource.Substring(2);
-                                            cor = LoadImageFromResources(modifiedUriSource);
-                                            break;
-                                        }
-                                    default:
-                                        {
-                                            if (string.IsNullOrEmpty(basePath))
-                                            {
-                                                throw new Exception("unknown error, basePath is empty.");
-                                            }
-
-                                            var modifiedUriSource = basePath + "/" + uriSource.Substring(2);
-                                            cor = LoadImageFromWeb(modifiedUriSource);
-                                            break;
-                                        }
-                                }
+                                cor = LoadImageFromWeb(uriSource);
                                 break;
                             }
                         case "resources:":
                             {
-                                var resourcePath = uriSource.Substring("resources:".Length + 2);
-                                cor = LoadImageFromResources(resourcePath);
+                                cor = LoadImageFromResources(uriSource);
                                 break;
                             }
                         default:
@@ -646,6 +623,52 @@ namespace UUebView
                     spriteDownloadingUris.Remove(uriSource);
                     yield return spriteCache[uriSource];
                 }
+            }
+        }
+
+        private string ModifyUri(string scheme, string uriSource)
+        {
+            switch (scheme)
+            {
+                case "assetbundle:":
+                case "https:":
+                case "http:":
+                    return uriSource;
+                case ".":
+                    {
+                        if (uriSource[1] != '/')
+                        {
+                            throw new Exception("unsupported scheme:" + scheme);
+                        }
+
+                        switch (basePath)
+                        {
+                            case "":
+                                {
+                                    var modifiedUriSource = uriSource.Substring(2);
+                                    return modifiedUriSource;
+                                }
+                            default:
+                                {
+                                    if (string.IsNullOrEmpty(basePath))
+                                    {
+                                        throw new Exception("unknown error, basePath is empty.");
+                                    }
+
+                                    var modifiedUriSource = basePath + "/" + uriSource.Substring(2);
+                                    return modifiedUriSource;
+                                }
+                        }
+                    }
+                case "resources:":
+                    {
+                        var resourcePath = uriSource.Substring("resources:".Length + 2);
+                        return resourcePath;
+                    }
+                default:
+                    {// other.
+                        throw new Exception("unsupported scheme:" + scheme);
+                    }
             }
         }
 
