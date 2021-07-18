@@ -63,10 +63,12 @@ namespace UUebView
         private string basePath;
         public readonly GameObject cacheBox;
         public readonly Action<IEnumerator> LoadParallel;
+        private Action<string> reloadAct;
 
-        public ResourceLoader(Action<IEnumerator> LoadParallel, MyHttpRequestHeaderDelegate requestHeader = null, MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null)
+        public ResourceLoader(Action<IEnumerator> LoadParallel, Action<string> reloadAct, MyHttpRequestHeaderDelegate requestHeader = null, MyHttpResponseHandlingDelegate httpResponseHandlingDelegate = null)
         {
             this.LoadParallel = LoadParallel;
+            this.reloadAct = reloadAct;
 
             cacheBox = new GameObject("UUebViewGOPool");
             cacheBox.SetActive(false);
@@ -317,7 +319,7 @@ namespace UUebView
             }
         }
 
-        public IEnumerator<GameObject> LoadGameObjectFromPrefab(string id, int tagValue, TreeType treeType)
+        public IEnumerator<GameObject> LoadGameObjectFromPrefab(string id, int tagValue, TreeType treeType, AttributeKVs attributes)
         {
             GameObject gameObj = null;
             var tagName = GetTagFromValue(tagValue);
@@ -421,6 +423,34 @@ namespace UUebView
                                         var loadedPrefab = cor.Current;
 
                                         gameObj = GameObject.Instantiate(loadedPrefab);
+
+                                        // IUUebViewAttributableコンポーネントがついている場合、コンポーネントに対してこのHTMLのcoreをreloadできる権限を持たせる。
+                                        if (gameObj.TryGetComponent<IUUebViewAttributable>(out var component))
+                                        {
+                                            // このコンポーネントから、html全体を更新可能にする。
+                                            component.HTMLReloadAct = reloadAct;
+
+                                            // このコンポーネントから画像などのリソースの追加を可能にする
+                                            // TODO: 現在は画像のみを扱っているが、mp4とかも扱えるはず。
+                                            component.ResourceDownloadAct = (string url, Action<object> onLoaded, Action onLoadFailed) =>
+                                            {
+                                                var radditionalResourceDownloadCor = this.DownloadAdditionalResource(url, onLoaded, onLoadFailed);
+                                                LoadParallel(radditionalResourceDownloadCor);
+                                            };
+
+                                            // アトリビュートが一つ以上ある場合、kvsに入っているattrのkey-valueをIUUebViewAttributableコンポーネントにセットする。
+                                            if (attributes.Any())
+                                            {
+                                                foreach (var item in attributes)
+                                                {
+                                                    // 小文字化することで大文字小文字不一致問題を避ける。
+                                                    var attr = item.Key.ToString().ToLower();
+                                                    var value = item.Value;
+
+                                                    component.OnInitialize(attr, value);
+                                                }
+                                            }
+                                        }
                                         break;
                                     }
                             }
@@ -646,6 +676,79 @@ namespace UUebView
                     spriteDownloadingUris.Remove(uriSource);
                     yield return spriteCache[uriSource];
                 }
+            }
+        }
+
+        // IUUebViewAttributableから呼び出せる機構
+        private IEnumerator DownloadAdditionalResource(string src, Action<object> onLoaded, Action onFailed)
+        {
+            IEnumerator cor = null;
+
+            // TODO: 画像のみをサポートしているので、mp4とかそういうのが増えたら足す
+            cor = LoadImageAsync(src);
+
+            while (cor.MoveNext())
+            {
+                if (cor.Current != null)
+                {
+                    break;
+                }
+                yield return null;
+            }
+
+            if (cor.Current != null)
+            {
+                onLoaded(cor.Current);
+                yield break;
+            }
+
+            // DL失敗
+            onFailed();
+        }
+
+        private string ModifyUri(string scheme, string uriSource)
+        {
+            switch (scheme)
+            {
+                case "assetbundle:":
+                case "https:":
+                case "http:":
+                    return uriSource;
+                case ".":
+                    {
+                        if (uriSource[1] != '/')
+                        {
+                            throw new Exception("unsupported scheme:" + scheme);
+                        }
+
+                        switch (basePath)
+                        {
+                            case "":
+                                {
+                                    var modifiedUriSource = uriSource.Substring(2);
+                                    return modifiedUriSource;
+                                }
+                            default:
+                                {
+                                    if (string.IsNullOrEmpty(basePath))
+                                    {
+                                        throw new Exception("unknown error, basePath is empty.");
+                                    }
+
+                                    var modifiedUriSource = basePath + "/" + uriSource.Substring(2);
+                                    return modifiedUriSource;
+                                }
+                        }
+                    }
+                case "resources:":
+                    {
+                        var resourcePath = uriSource.Substring("resources:".Length + 2);
+                        return resourcePath;
+                    }
+                default:
+                    {// other.
+                        throw new Exception("unsupported scheme:" + scheme);
+                    }
             }
         }
 
@@ -1160,7 +1263,7 @@ namespace UUebView
                 return defaultTagStrIntPair[tagCandidateStr];
             }
             // collect undefined tag.
-            // Debug.LogError("tagCandidateStr:" + tagCandidateStr);
+            // Debug.LogError("tagCandidateStr:" + tagCandidateStr + " uuebTags:" + uuebTags);
 
             if (undefinedTagDict.ContainsKey(uuebTags.viewName + tagCandidateStr))
             {

@@ -28,7 +28,9 @@ namespace UUebView
         LISTEN,
         BUTTON,
         HIDDEN,
+
+        // ここに含まれないattributeは、boxにのみ作用する特殊なattrとして扱われる。
     }
 
-    public class AttributeKVs : Dictionary<HTMLAttribute, object> { }
+    public class AttributeKVs : Dictionary<object, object> { }
 }

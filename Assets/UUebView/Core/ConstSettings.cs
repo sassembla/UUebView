@@ -6,7 +6,7 @@ namespace UUebView
         public const int TAG_MAX_LEN = 100;
         public const double TIMEOUT_SEC = 10.0;
 
-        public static readonly HTMLAttribute[] ShouldInheritAttributes = new HTMLAttribute[]{
+        public static readonly object[] ShouldInheritAttributes = new object[]{
             HTMLAttribute.HREF,
         };
 

@@ -893,10 +893,15 @@ namespace UUebView
                 // = is found.
 
                 var keyStr = source.Substring(index, eqIndex - index);
-                HTMLAttribute keyEnum = HTMLAttribute._UNKNOWN;
+                object keyEnum = HTMLAttribute._UNKNOWN;
                 try
                 {
                     keyEnum = (HTMLAttribute)Enum.Parse(typeof(HTMLAttribute), keyStr, true);
+                }
+                catch (ArgumentException e)
+                {
+                    // passさせる
+                    keyEnum = keyStr;
                 }
                 catch (Exception e)
                 {
@@ -918,7 +923,7 @@ namespace UUebView
                 var val = source.Substring(valStartIndex + 1, valEndIndex - (valStartIndex + 1));
 
                 // align check.
-                if (keyEnum == HTMLAttribute.ALIGN)
+                if (keyEnum is HTMLAttribute && (HTMLAttribute)keyEnum == HTMLAttribute.ALIGN)
                 {
                     try
                     {
@@ -942,8 +947,9 @@ namespace UUebView
                 index = spaceIndex + 1;
             }
 
-            // foreach (var dict in kvDict) {
-            // 	Debug.LogError("kv:" + dict.Key + " val:" + dict.Value);
+            // foreach (var dict in kvDict)
+            // {
+            //     Debug.Log("kv:" + dict.Key + " val:" + dict.Value);
             // }
 
             return kvDict;

@@ -164,7 +164,7 @@ namespace UUebView
             //     yield break;
             // }
 
-            var objCor = resLoader.LoadGameObjectFromPrefab(tree.id, tree.tagValue, tree.treeType);
+            var objCor = resLoader.LoadGameObjectFromPrefab(tree.id, tree.tagValue, tree.treeType, tree.keyValueStore);
 
             while (objCor.MoveNext())
             {
@@ -303,6 +303,12 @@ namespace UUebView
                     }
                 }
                 yield return null;
+            }
+
+            // IUUebViewAttributableコンポーネントがついている場合、コンポーネントに対してこのHTMLのcoreをreloadできる権限を持たせる。
+            if (newGameObject.TryGetComponent<IUUebViewAttributable>(out var component))
+            {
+                component.OnLayouted();
             }
         }
 

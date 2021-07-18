@@ -54,7 +54,7 @@ namespace UUebView
 
             this.view = uuebView;
 
-            resLoader = new ResourceLoader(this.LoadParallel, requestHeader, httpResponseHandlingDelegate);
+            resLoader = new ResourceLoader(this.LoadParallel, ReloadAct, requestHeader, httpResponseHandlingDelegate);
             this.view.AddChild(resLoader.cacheBox.transform);
 
             defaultImageDownloader = new DefaultImageDownloader(this.LoadParallel, resLoader);
@@ -422,6 +422,18 @@ namespace UUebView
             {
                 yield return null;
             }
+        }
+
+
+        /**
+            HTMLを与えられて、自分自身をリロードする
+        */
+        private void ReloadAct(string source)
+        {
+            viewState = ViewState.Loading;
+
+            var cor = Parse(source, 0f);// TODO: 位置は0固定にしてあるが、問題が出るかどうかによって調整が必要。
+            CoroutineExecutor(cor);
         }
 
         /**
