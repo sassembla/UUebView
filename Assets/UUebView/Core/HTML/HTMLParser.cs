@@ -100,18 +100,6 @@ namespace UUebView
                 // Debug.LogError("chr:" + chr);
                 switch (chr)
                 {
-                    case '"':
-                    case '\'':
-                        {
-                            var nextChr = data.IndexOf(chr, charIndex + 1);
-
-                            if (nextChr == -1)
-                            {// close chr not found.
-                                throw new Exception("failed to find close chr:" + chr + " in data:" + data);
-                            }
-                            charIndex = nextChr;
-                            break;
-                        }
                     case '<':
                         {
                             var foundTag = IsTag(data, charIndex);

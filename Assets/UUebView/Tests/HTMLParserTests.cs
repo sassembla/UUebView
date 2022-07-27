@@ -446,22 +446,6 @@ public class HTMLParserTests : MiyamasuTestRunner
         True(pChildren.Count == 3, "not match, count:" + pChildren.Count);
     }
 
-    [MTest]
-    public IEnumerator CoronWrappedContentSupport()
-    {
-        var sampleHtml = @"
-<p>
-    a'<a href=''>aqua color string</a>'b
-</p>";
-        ParsedTree parsedRoot = null;
-        yield return GetParsedRoot(sampleHtml, parsedRootSource => { parsedRoot = parsedRootSource; });
-        var pChildren = parsedRoot.GetChildren()[0].GetChildren();
-        foreach (var pp in pChildren)
-        {
-            True(pp.keyValueStore[HTMLAttribute._CONTENT] as string == "a'<a href=''>aqua color string</a>'b", "not match, " + pp.keyValueStore[HTMLAttribute._CONTENT]);
-        }
-        True(pChildren.Count == 1, "not match, pChildren count:" + pChildren.Count);
-    }
 
     [MTest]
     public IEnumerator UnityRichTextColorSupport()
